@@ -27,6 +27,7 @@ The architecture is modular, allowing easy integration of new detection features
 
 ---
 
+
 ## 🧠 Features Implemented
 
 ### 👁️ Face Detection
@@ -143,3 +144,8 @@ Secure cloud-based deployment
 Sukrit Goswami
 CSE (Data Science)
 Aspiring Machine Learning Engineer
+
+
+⭐ Support
+
+If you find this project useful or interesting, consider starring ⭐ the repository.
