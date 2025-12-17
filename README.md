@@ -1,135 +1,130 @@
-🎯 AI-Based Anti-Cheat Interview Monitoring System
+# 🛡️ AI-Based Anti-Cheat Interview System
 
-An AI-powered interview proctoring system designed to detect and restrict unfair practices during online technical interviews by analyzing visual, behavioral, and audio cues in real time.
+An AI-powered proctoring and monitoring system designed to detect suspicious behavior during online technical interviews using computer vision, audio analysis, and behavioral signals.
 
-📌 Problem Statement
+This project focuses on improving fairness, transparency, and integrity in remote interview processes.
 
-With the rapid shift to remote interviews, maintaining fairness and integrity has become a major challenge.
-Candidates may engage in cheating behaviors such as:
+---
 
-Looking away repeatedly (external assistance)
+## 📌 Problem Statement
 
-Switching tabs or screens
+With the rapid adoption of remote interviews, ensuring interview integrity has become challenging. Common cheating practices include:
 
-Receiving verbal hints
-
-Using unauthorized resources during coding rounds
+- Looking away frequently for external help
+- Presence of multiple people in the interview environment
+- Receiving verbal hints or background assistance
+- Using unauthorized resources during coding rounds
 
 Manual monitoring is time-consuming, subjective, and not scalable.
 
-💡 Solution Overview
+---
 
-This project provides an automated anti-cheat interview system that continuously monitors a candidate’s behavior using computer vision and audio analysis, and flags suspicious activities during interviews.
+## 💡 Proposed Solution
 
-The system is designed to be transparent, modular, and extensible.
+This system continuously monitors a candidate during an interview using AI-based detectors and flags suspicious behavior patterns in real time.
 
-🧠 Features Implemented
-👁️ Face Detection
+The architecture is modular, allowing easy integration of new detection features.
 
-Detects presence of candidate throughout the interview
+---
 
-Flags multiple faces or absence from frame
+## 🧠 Features Implemented
 
-😑 Blink Detection
+### 👁️ Face Detection
+- Ensures candidate presence throughout the interview
+- Flags absence or multiple faces in the frame
 
-Tracks blink frequency
+### 😑 Blink Detection
+- Tracks blink frequency
+- Helps identify abnormal behavioral patterns
 
-Identifies abnormal blinking patterns (stress / distraction)
+### 👀 Gaze Tracking
+- Monitors eye movement and direction
+- Detects frequent off-screen gaze
 
-👀 Gaze Tracking
+### 🎤 Audio Monitoring
+- Detects background voices or unusual audio activity
 
-Monitors eye direction
+---
 
-Flags frequent off-screen gaze indicating external help
+## 🚧 Features Under Development
 
-🎤 Audio Monitoring
+### 💻 Coding Simulator
+- Browser-based coding environment
+- Time-bound problem solving
+- Tab-switch and copy-paste detection
 
-Detects background voices and unusual audio activity
+### 📊 Behavior Scoring System
+- Weighted scoring instead of binary decisions
+- Transparent evaluation criteria
 
-Helps identify verbal assistance
+### 📄 Interview Summary Report
+- Auto-generated behavioral analysis report
+- Downloadable for interviewers
 
-🚧 Features Under Development
-💻 Coding Simulator
+---
 
-In-browser coding environment
+## 🛠️ Tech Stack
 
-Time-bound problem solving
+- Python
+- OpenCV
+- MediaPipe
+- NumPy
+- Computer Vision
+- Machine Learning
 
-Copy-paste & tab-switch detection
+---
 
-📊 Behavior Scoring System
+## 🗂️ Project Structure
 
-Weighted scoring for suspicious activities
-
-Transparent evaluation instead of black-box decisions
-
-📁 Interview Report Generation
-
-Summary of detected events
-
-Downloadable evaluation report for interviewers
-
-🛠️ Tech Stack
-
-Python
-
-OpenCV
-
-MediaPipe
-
-NumPy
-
-Machine Learning
-
-Computer Vision
-
-(Planned) Web-based coding environment
-
-🗂️ Project Structure
-anti-cheat-interview-system/
+Anti-cheat-interview-system/
 │
 ├── audio_detection/
 ├── face_detection/
 ├── blink_detection/
 ├── gaze_tracking/
-├── coding_simulator/        # (In progress)
+├── coding_simulator/ # In progress
 │
 ├── main.py
 ├── requirements.txt
 └── README.md
 
-⚙️ Installation & Setup
-git clone https://github.com/your-username/anti-cheat-interview-system.git
-cd anti-cheat-interview-system
+
+---
+
+## ⚙️ Installation & Setup
+
+```bash
+git clone https://github.com/sukrit-89/Anti-cheat-interview-system.git
+cd Anti-cheat-interview-system
 pip install -r requirements.txt
 python main.py
 
 
-⚠️ A webcam and microphone are required for full functionality.
+A webcam and microphone are required for full functionality.
 
-📈 Use Cases
+🎯 Use Cases
 
 Online technical interviews
 
-Hackathon preliminary rounds
+Hackathon preliminary screening
 
 Remote assessments
 
-Academic integrity monitoring (research use)
+Academic research on interview integrity
 
 ⚠️ Ethical & Privacy Disclaimer
 
-This project is developed strictly for educational and research purposes.
+This project is intended strictly for educational and research purposes.
 
-No biometric data is stored
+No biometric identity recognition is performed
 
-No facial identity recognition is performed
+No facial or audio data is stored
 
-All monitoring happens in real time
+Monitoring is done in real time only
 
-Designed to promote fairness and transparency
+Explicit candidate consent is required before usage
 
-Any deployment must comply with local privacy laws and informed user consent.
+Any real-world deployment must comply with applicable data protection and privacy laws.
 
 🚀 Future Scope
 
@@ -137,18 +132,14 @@ AI-based cheating pattern classification
 
 Browser extension integration
 
-Plagiarism detection in coding rounds
+Code plagiarism detection
 
-Real-time dashboard for interviewers
+Real-time interviewer dashboard
 
 Secure cloud-based deployment
 
 👨‍💻 Author
 
 Sukrit Goswami
-CSE (Data Science) Student
+CSE (Data Science)
 Aspiring Machine Learning Engineer
-
-⭐ Final Note
-
-If you find this project useful or interesting, feel free to star ⭐ the repository and explore future updates.
