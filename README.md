@@ -1,151 +1,224 @@
-# 🛡️ AI-Based Anti-Cheat Interview System
+# 🎯 ZeroShotHire Guard - AI-Powered Interview Integrity System
 
-An AI-powered proctoring and monitoring system designed to detect suspicious behavior during online technical interviews using computer vision, audio analysis, and behavioral signals.
+<div align="center">
 
-This project focuses on improving fairness, transparency, and integrity in remote interview processes.
+![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
+![OpenCV](https://img.shields.io/badge/OpenCV-4.10-green.svg)
+![MediaPipe](https://img.shields.io/badge/MediaPipe-0.10-orange.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+*An intelligent, real-time interview proctoring system that ensures fairness and integrity in remote technical interviews through advanced computer vision and audio analysis.*
+
+</div>
 
 ---
 
 ## 📌 Problem Statement
 
-With the rapid adoption of remote interviews, ensuring interview integrity has become challenging. Common cheating practices include:
+The shift to remote hiring has introduced significant challenges in maintaining interview integrity. Traditional manual monitoring is:
+- ⏱️ **Time-consuming** and resource-intensive
+- 🎲 **Subjective** and inconsistent across evaluators
+- 📈 **Not scalable** for high-volume recruitment
 
-- Looking away frequently for external help
-- Presence of multiple people in the interview environment
-- Receiving verbal hints or background assistance
-- Using unauthorized resources during coding rounds
+**Common Cheating Behaviors:**
+- 👀 Looking away for external assistance
+- 💻 Tab/screen switching to access resources
+- 🗣️ Receiving verbal hints from others
+- 📱 Using unauthorized devices or notes
 
-Manual monitoring is time-consuming, subjective, and not scalable.
+## 💡 Solution Overview
 
----
-
-## 💡 Proposed Solution
-
-This system continuously monitors a candidate during an interview using AI-based detectors and flags suspicious behavior patterns in real time.
-
-The architecture is modular, allowing easy integration of new detection features.
-
----
-
-
-## 🧠 Features Implemented
-
-### 👁️ Face Detection
-- Ensures candidate presence throughout the interview
-- Flags absence or multiple faces in the frame
-
-### 😑 Blink Detection
-- Tracks blink frequency
-- Helps identify abnormal behavioral patterns
-
-### 👀 Gaze Tracking
-- Monitors eye movement and direction
-- Detects frequent off-screen gaze
-
-### 🎤 Audio Monitoring
-- Detects background voices or unusual audio activity
+**ZeroShotHire Guard** is an automated anti-cheat system that leverages **AI-powered computer vision** and **audio analysis** to monitor candidate behavior in real-time. The system provides:
+- 🔍 Transparent, explainable flagging system
+- 📊 Quantifiable risk assessment
+- 🏗️ Modular, extensible architecture
+- 🎯 Both live monitoring and post-interview analysis
 
 ---
 
-## 🚧 Features Under Development
+## ✨ Key Features
 
-### 💻 Coding Simulator
-- Browser-based coding environment
-- Time-bound problem solving
-- Tab-switch and copy-paste detection
+### 🟢 Implemented Features
 
-### 📊 Behavior Scoring System
-- Weighted scoring instead of binary decisions
-- Transparent evaluation criteria
+| Feature | Description | Technology |
+|---------|-------------|------------|
+| **👁️ Face Detection** | Continuous presence verification<br/>• Detects absence from frame<br/>• Flags multiple faces | OpenCV + MediaPipe |
+| **😑 Blink Analysis** | Behavioral pattern recognition<br/>• Tracks blink frequency<br/>• Identifies stress/distraction | MediaPipe Face Mesh |
+| **👀 Gaze Tracking** | Eye direction monitoring<br/>• Auto-calibrates baseline<br/>• Flags off-screen attention | 3D Head Pose Estimation |
+| **🎤 Audio Monitoring** | Voice activity detection<br/>• Background noise analysis<br/>• Multi-speaker identification | PyAudio + Signal Processing |
+| **� Dual Modes** | Live webcam + Recorded video analysis | Threading + OpenCV |
 
-### 📄 Interview Summary Report
-- Auto-generated behavioral analysis report
-- Downloadable for interviewers
+### 🔶 Planned Enhancements
+
+- **📊 Scoring System** - Weighted risk calculation with confidence intervals
+- **📝 Report Generation** - Exportable JSON/PDF interview summaries
+- **💻 Coding Simulator** - Integrated IDE with copy-paste detection
+- **🌐 Web Dashboard** - Real-time interviewer monitoring interface
+- **🤖 ML Classification** - Pattern-based cheating behavior prediction
+
+---
+
+## 🏗️ System Architecture
+
+```
+zeroshothire/
+│
+├── src/
+│   ├── main.py                 # Entry point with CLI
+│   ├── video/
+│   │   ├── face_detector.py    # Multi-face detection
+│   │   ├── blink_detector.py   # EAR-based blink analysis
+│   │   ├── gaze_detector.py    # 3D pose estimation
+│   │   └── ...
+│   └── audio/
+│       └── audio_detector.py   # Voice activity detection
+│
+├── data/                       # Sample videos for testing
+├── reports/                    # Generated analysis outputs
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.8+
+- Webcam (for live monitoring)
+- Microphone (for audio analysis)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/sukrit-89/Anti-cheat-interview-system.git
+cd zeroshothire
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Usage
+
+#### 🔴 Live Monitoring (Webcam + Microphone)
+```bash
+python src/main.py --live
+```
+- **ESC** to exit
+- System calibrates gaze baseline for 3 seconds
+- Real-time flags displayed on screen and console
+
+#### 📹 Video Analysis (Post-Interview)
+```bash
+python src/main.py --video data/sample.mp4 --report reports/analysis.json
+```
+Generates a detailed JSON report with:
+- Total suspicious events
+- Risk score (0.0 - 1.0)
+- Timestamped flag descriptions
+
+---
+
+## 🎥 Demo
+
+### Live Monitoring Interface
+*Real-time detection with visual feedback:*
+- ✅ Green indicators for compliant behavior
+- ⚠️ Red warnings for suspicious activities
+- 📊 Live pitch/yaw gaze metrics
+
+### Sample Output
+```json
+{
+  "total_flags": 23,
+  "risk_score": 0.69,
+  "flags": [
+    {"time": 12.5, "type": "multiple_faces"},
+    {"time": 45.2, "type": "looking_away"},
+    {"time": 78.1, "type": "no_face"}
+  ]
+}
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-- Python
-- OpenCV
-- MediaPipe
-- NumPy
-- Computer Vision
-- Machine Learning
+| Category | Technologies |
+|----------|-------------|
+| **Core Language** | Python 3.8+ |
+| **Computer Vision** | OpenCV, MediaPipe |
+| **Audio Processing** | PyAudio, NumPy |
+| **Utilities** | imutils, threading |
+| **Future Stack** | React (Web UI), Flask/FastAPI (Backend) |
 
 ---
 
-## 🗂️ Project Structure
+## 📊 Use Cases
 
-Anti-cheat-interview-system/
-│
-├── audio_detection/
-├── face_detection/
-├── blink_detection/
-├── gaze_tracking/
-├── coding_simulator/ # In progress
-│
-├── main.py
-├── requirements.txt
-└── README.md
-
+- 🏢 **Corporate Recruitment** - High-stakes technical interviews
+- 🎓 **Academic Assessments** - Remote examination monitoring
+- 🏆 **Hackathons** - Preliminary screening rounds
+- 🔬 **Research** - Behavioral analysis studies
 
 ---
 
-## ⚙️ Installation & Setup
+## ⚖️ Ethics & Privacy
 
-```bash
-git clone https://github.com/sukrit-89/Anti-cheat-interview-system.git
-cd Anti-cheat-interview-system
-pip install -r requirements.txt
-python main.py
+> [!CAUTION]
+> This system is designed **exclusively** for ethical, transparent, and consented monitoring.
 
+**Privacy Commitments:**
+- ❌ **No biometric storage** - Face embeddings not saved
+- ❌ **No identity recognition** - Only presence/behavior detection
+- ✅ **Real-time only** - Processing happens locally
+- ✅ **Transparent flags** - Explainable decision-making
 
-A webcam and microphone are required for full functionality.
+**Compliance Requirements:**
+- 📋 Informed consent from all participants
+- 🔒 GDPR/local privacy law adherence
+- 🎯 Purpose limitation (hiring/education only)
 
-🎯 Use Cases
+---
 
-Online technical interviews
+## � Future Roadmap
 
-Hackathon preliminary screening
+- [ ] **ML-Based Classification** - Train on behavioral patterns
+- [ ] **Browser Extension** - Tab-switch detection
+- [ ] **Plagiarism Engine** - Code similarity analysis
+- [ ] **Cloud Deployment** - Scalable SaaS solution
+- [ ] **Mobile Support** - iOS/Android monitoring
 
-Remote assessments
+---
 
-Academic research on interview integrity
+## 🤝 Contributing
 
-⚠️ Ethical & Privacy Disclaimer
+Contributions are welcome! Areas of interest:
+- 🧪 Testing on diverse datasets
+- 🌐 Web interface development
+- 🤖 ML model training
+- 📖 Documentation improvements
 
-This project is intended strictly for educational and research purposes.
+---
 
-No biometric identity recognition is performed
+## 👨‍💻 Author
 
-No facial or audio data is stored
+**Sukrit Goswami**  
+🎓 CSE (Data Science) Student  
+🚀 Aspiring ML Engineer  
+📧 [Contact](mailto:sukrit.goswami.work@gmail.com) | 🔗 [LinkedIn](https://www.linkedin.com/in/sukrit-goswami-5558a5321/)
 
-Monitoring is done in real time only
+---
 
-Explicit candidate consent is required before usage
+## ⭐ Support
 
-Any real-world deployment must comply with applicable data protection and privacy laws.
+If this project helps your work or research, please **star** ⭐ the repository!
 
-🚀 Future Scope
+---
 
-AI-based cheating pattern classification
+<div align="center">
 
-Browser extension integration
+**Built with ❤️ for fair and transparent remote hiring**
 
-Code plagiarism detection
-
-Real-time interviewer dashboard
-
-Secure cloud-based deployment
-
-👨‍💻 Author
-
-Sukrit Goswami
-CSE (Data Science)
-Aspiring Machine Learning Engineer
-
-
-⭐ Support
-
-If you find this project useful or interesting, consider starring ⭐ the repository.
+</div>
