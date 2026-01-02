@@ -278,7 +278,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 For issues and questions:
 - Open an [Issue](https://github.com/sukrit-89/Anti-cheat-interview-system/issues)
-- Email: [your-email@example.com]
+- Email: [sukrit.goswami.work@gmail.com]
 
 ---
 
