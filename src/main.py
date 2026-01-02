@@ -15,33 +15,73 @@ from video.face_detector import FaceDetector
 from video.blink_detector import BlinkDetector
 from video.gaze_detector import GazeDetector
 from audio.audio_detector import AudioDetector
+from reporting.scoring_engine import ScoringEngine
+from reporting.report_generator import ReportGenerator
 
 
-def analyze_video(video_path, report_path):
-    """Analyze a recorded video file."""
+def collect_video_metadata(video_path):
+    """Extract metadata from video file."""
+    cap = cv2.VideoCapture(video_path)
+    
+    if not cap.isOpened():
+        return {
+            'video_path': video_path,
+            'duration_seconds': 0,
+            'total_frames': 0,
+            'fps': 30.0,
+        }
+    
+    fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    duration = total_frames / fps if fps > 0 else 0
+    
+    cap.release()
+    
+    return {
+        'video_path': video_path,
+        'duration_seconds': duration,
+        'total_frames': total_frames,
+        'fps': fps,
+    }
+
+
+def analyze_video(video_path, report_path, format='json', candidate_id=None):
+    """Analyze a recorded video file with comprehensive reporting."""
+    print("[INFO] Starting video analysis...")
+    
+    # Collect metadata
+    metadata = collect_video_metadata(video_path)
+    print(f"[INFO] Video: {metadata['duration_seconds']:.1f}s, {metadata['total_frames']} frames @ {metadata['fps']:.1f} FPS")
+    
+    # Initialize detectors
     face_detector = FaceDetector()
     blink_detector = BlinkDetector()
+    gaze_detector = GazeDetector()
 
     print("[INFO] Analyzing faces...")
     face_flags = face_detector.analyze_video(video_path)
 
     print("[INFO] Analyzing blinks...")
     blink_flags = blink_detector.analyze_video(video_path)
+    
+    print("[INFO] Analyzing gaze...")
+    gaze_flags = gaze_detector.analyze_video(video_path)
 
-    all_flags = face_flags + blink_flags
-    risk_score = min(len(all_flags) * 0.1, 1.0)
-
-    report = {
-        "video": video_path,
-        "total_flags": len(all_flags),
-        "risk_score": risk_score,
-        "flags": all_flags,
-    }
-
-    os.makedirs(os.path.dirname(report_path), exist_ok=True)
-    with open(report_path, "w") as f:
-        json.dump(report, f, indent=2)
-    print(f"[INFO] Report saved to {report_path}")
+    # Combine all flags
+    all_flags = face_flags + blink_flags + gaze_flags
+    print(f"[INFO] Total flags detected: {len(all_flags)}")
+    
+    # Generate comprehensive report
+    report_generator = ReportGenerator()
+    output_path = report_generator.generate_report(
+        flags=all_flags,
+        metadata=metadata,
+        output_path=report_path,
+        format=format,
+        candidate_id=candidate_id
+    )
+    
+    print(f"[INFO] Analysis complete! Report saved to {output_path}")
 
 
 def analyze_live_camera():
@@ -130,24 +170,51 @@ def analyze_live_camera():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="ZeroShotHire-Guard")
+    parser = argparse.ArgumentParser(
+        description="ZeroShotHire Guard - AI-Powered Interview Integrity System",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  Live monitoring:
+    python src/main.py --live
+  
+  Video analysis (JSON report):
+    python src/main.py --video data/sample.mp4
+  
+  Video analysis (PDF report):
+    python src/main.py --video data/sample.mp4 --format pdf
+  
+  Video analysis (with candidate ID):
+    python src/main.py --video data/sample.mp4 --candidate-id CAND001 --format both
+        """
+    )
+    
     parser.add_argument("--live", action="store_true",
                         help="Use webcam + mic for live detection")
     parser.add_argument("--video", type=str,
                         help="Path to video file for offline analysis")
     parser.add_argument("--report", type=str,
                         default="reports/report.json",
-                        help="Path to save JSON report (video mode only)")
+                        help="Path to save report (default: reports/report.json)")
+    parser.add_argument("--format", type=str, choices=['json', 'pdf', 'both'],
+                        default='json',
+                        help="Report format: json, pdf, or both (default: json)")
+    parser.add_argument("--candidate-id", type=str,
+                        help="Optional candidate identifier for reports")
+    
     args = parser.parse_args()
 
     if args.live:
         analyze_live_camera()
     elif args.video:
-        analyze_video(args.video, args.report)
+        analyze_video(
+            video_path=args.video,
+            report_path=args.report,
+            format=args.format,
+            candidate_id=args.candidate_id
+        )
     else:
-        print("Usage examples:")
-        print("  python src/main.py --live")
-        print("  python src/main.py --video data/sample.mp4")
+        parser.print_help()
 
 
 if __name__ == "__main__":

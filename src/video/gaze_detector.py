@@ -96,6 +96,49 @@ class GazeDetector:
         looking_away = delta_yaw > threshold or delta_pitch > threshold
         return (pitch, yaw, roll), looking_away, None
 
+    def analyze_video(self, video_path):
+        """
+        Analyze gaze direction in a recorded video file.
+        Returns list of flags for gaze violations.
+        """
+        cap = cv2.VideoCapture(video_path)
+        if not cap.isOpened():
+            print(f"[ERROR] Cannot open video: {video_path}")
+            return []
+        
+        fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+        flags = []
+        frame_idx = 0
+        
+        # Reset calibration for new video
+        self.calibrated = False
+        if hasattr(self, '_calibration_start'):
+            delattr(self, '_calibration_start')
+        
+        print("[INFO] Analyzing gaze in video...")
+        
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            
+            pose, looking_away, remaining = self.analyze_frame(frame)
+            
+            # Once calibrated, start tracking violations
+            if self.calibrated and looking_away:
+                timestamp = frame_idx / fps
+                flags.append({
+                    "frame": frame_idx,
+                    "time": timestamp,
+                    "type": "gaze_violation"
+                })
+            
+            frame_idx += 1
+        
+        cap.release()
+        print(f"[INFO] Gaze analysis complete. Found {len(flags)} violations.")
+        return flags
+
     def analyze_live_camera(self):
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():

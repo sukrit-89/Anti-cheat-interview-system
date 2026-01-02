@@ -1,5 +1,55 @@
-.vscode/
-venv/
+# Python
 __pycache__/
-*.pyc
-.env
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Reports & Uploads
+reports/
+uploads/
+*.pdf
+*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+.pnpm-debug.log*
+.yarn/
+
+# Build
+*.log
+npm-debug.log*
+
+# Temporary
+*.tmp
+temp/
+
+# Charts
+charts/
+*.png
+!frontend/public/*.png
+!frontend/src/assets/*.png
