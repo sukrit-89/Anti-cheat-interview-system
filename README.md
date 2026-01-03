@@ -280,4 +280,4 @@ For issues and questions:
 
 ---
 
-**Built with ❤️ in India**
+**Built with ❤️**

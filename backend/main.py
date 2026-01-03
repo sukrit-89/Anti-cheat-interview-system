@@ -1,22 +1,31 @@
 # backend/main.py
 """
-FastAPI main application
-Provides REST API and WebSocket endpoints for interview monitoring
+Satya Guard - FastAPI Backend
+Main application with REST API endpoints for interview session management
 """
 
-from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, WebSocket, WebSocketDisconnect, Form
+from fastapi import FastAPI, UploadFile, File, Form, Depends, HTTPException, status
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
-from typing import List
+from typing import Optional
 import os
 import shutil
 from datetime import datetime
+import random
+import string
+import tempfile
 
 from . import schemas, models
 from .database import get_db, init_db, engine
 from .analysis_service import AnalysisService
+from .firebase_auth import (
+    initialize_firebase,
+    get_current_user,
+    require_role
+)
+from .cloudinary_service import CloudinaryService
+from .utils import generate_unique_join_code
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -45,6 +54,16 @@ app.mount("/reports", StaticFiles(directory="reports"), name="reports")
 # Initialize database
 models.Base.metadata.create_all(bind=engine)
 
+# Initialize Firebase
+try:
+    initialize_firebase()
+except Exception as e:
+    print(f"⚠️  Warning: Firebase initialization failed: {e}")
+    print("   Make sure firebase-service-account.json is in the project root")
+
+# Initialize Cloudinary service
+cloudinary_service = CloudinaryService()
+
 
 # ============================================================================
 # REST API Endpoints
@@ -54,15 +73,155 @@ models.Base.metadata.create_all(bind=engine)
 async def root():
     """API root endpoint"""
     return {
-        "message": "ZeroShotHire Guard API",
-        "version": "2.0.0",
+        "message": "Satya Guard API",
+        "version": "3.0.0",
         "endpoints": {
+            "auth": "/api/auth/register, /api/auth/login",
             "sessions": "/api/sessions",
             "upload": "/api/upload",
-            "live": "/ws/live"
+            "live": "/api/live"
         }
     }
 
+
+# ============================================================================
+# Authentication Endpoints
+# ============================================================================
+
+@app.post("/api/auth/sync", response_model=schemas.UserResponse)
+async def sync_firebase_user(
+    user_data: schemas.FirebaseUserSync,
+    db: Session = Depends(get_db)
+):
+    """
+    Sync Firebase user to database after registration
+    Called from frontend after Firebase createUserWithEmailAndPassword
+    """
+    # Check if user already exists
+    existing_user = db.query(models.User).filter(
+        models.User.firebase_uid == user_data.firebase_uid
+    ).first()
+    
+    if existing_user:
+        # Update existing user
+        existing_user.email = user_data.email
+        existing_user.full_name = user_data.full_name
+        existing_user.role = user_data.role
+        db.commit()
+        db.refresh(existing_user)
+        return existing_user
+    
+    # Create new user in database
+    db_user = models.User(
+        firebase_uid=user_data.firebase_uid,
+        email=user_data.email,
+        full_name=user_data.full_name,
+        role=user_data.role
+    )
+    
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    
+    return db_user
+
+
+@app.get("/api/auth/me", response_model=schemas.UserResponse)
+async def get_current_user_info(current_user: models.User = Depends(get_current_user)):
+    """Get current authenticated user information"""
+    return current_user
+
+
+# ============================================================================
+# Session Management with Authentication
+# ============================================================================
+
+@app.post("/api/sessions/create")
+async def create_session_with_code(
+    candidate_id: str = Form(...),
+    current_user: models.User = Depends(require_role([models.UserRole.INTERVIEWER])),
+    db: Session = Depends(get_db)
+):
+    """Create a new interview session with join code (INTERVIEWER only)"""
+    # Generate unique join code
+    join_code = generate_unique_join_code(db)
+    
+    # Create session
+    db_session = models.Session(
+        candidate_id=candidate_id,
+        status=models.SessionStatus.PENDING,
+        interviewer_id=current_user.id,
+        join_code=join_code,
+        is_active=True
+    )
+    
+    db.add(db_session)
+    db.commit()
+    db.refresh(db_session)
+    
+    return {
+        "session_id": db_session.id,
+        "candidate_id": db_session.candidate_id,
+        "join_code": join_code,
+        "message": f"Session created with join code: {join_code}"
+    }
+
+
+@app.post("/api/sessions/join")
+async def join_session(
+    join_data: schemas.SessionJoin,
+    current_user: models.User = Depends(require_role([models.UserRole.INTERVIEWEE])),
+    db: Session = Depends(get_db)
+):
+    """Join an interview session using join code (INTERVIEWEE only)"""
+    # Find session by join code
+    session = db.query(models.Session).filter(
+        models.Session.join_code == join_data.join_code,
+        models.Session.is_active == True
+    ).first()
+    
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Invalid or expired join code"
+        )
+    
+    if session.interviewee_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Session already has an interviewee"
+        )
+    
+    # Assign interviewee to session
+    session.interviewee_id = current_user.id
+    db.commit()
+    db.refresh(session)
+    
+    return {
+        "session_id": session.id,
+        "candidate_id": session.candidate_id,
+        "message": "Successfully joined interview session"
+    }
+
+
+@app.get("/api/sessions/my-reports", response_model=schemas.SessionList)
+async def get_my_reports(
+    current_user: models.User = Depends(require_role([models.UserRole.INTERVIEWEE])),
+    db: Session = Depends(get_db)
+):
+    """Get all reports for current interviewee (INTERVIEWEE only)"""
+    sessions = db.query(models.Session).filter(
+        models.Session.interviewee_id == current_user.id
+    ).order_by(models.Session.created_at.desc()).all()
+    
+    total = len(sessions)
+    
+    return schemas.SessionList(sessions=sessions, total=total)
+
+
+# ============================================================================  
+# Original Session Endpoints (now without auth - will update later)
+# ============================================================================
 
 @app.post("/api/sessions", response_model=schemas.SessionResponse)
 async def create_session(

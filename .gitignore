@@ -8,36 +8,54 @@ __pycache__/
 dist/
 build/
 
-# Virtual Environment
+# Virtual# Python
+__pycache__/
+*.py[cod]
 venv/
 env/
-ENV/
+*.egg-info/
+
+# Build artifacts
+build/
+dist/
+*.spec
+
+# Video and analysis files
+uploads/
+reports/
+*.mp4
+*.avi
+*.mov
+*.webm
 
 # Database
 *.db
-*.sqlite
 *.sqlite3
 
-# Reports & Uploads
-reports/
-uploads/
-*.pdf
-*.json
+# Environment variables
+.env
+backend/.env
+frontend/.env
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Firebase credentials
+firebase-service-account.json
+backend/firebase-service-account.json
+
+# Logs
+*.log
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Node
-node_modules/
-.pnpm-debug.log*
+# IDE
+.vscode/
+.idea/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
 .yarn/
 
 # Build

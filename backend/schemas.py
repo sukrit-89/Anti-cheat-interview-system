@@ -20,6 +20,31 @@ class RiskLevel(str, Enum):
     HIGH = "HIGH"
 
 
+class UserRole(str, Enum):
+    INTERVIEWER = "INTERVIEWER"
+    INTERVIEWEE = "INTERVIEWEE"
+
+
+# Authentication schemas  
+class FirebaseUserSync(BaseModel):
+    firebase_uid: str = Field(..., description="Firebase user ID")
+    email: str = Field(..., description="User email address")
+    full_name: str = Field(..., description="User's full name")
+    role: UserRole = Field(..., description="User role (INTERVIEWER or INTERVIEWEE)")
+
+
+class UserResponse(BaseModel):
+    id: int
+    firebase_uid: str
+    email: str
+    full_name: str
+    role: UserRole
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
 # Session schemas
 class SessionBase(BaseModel):
     candidate_id: str = Field(..., description="Candidate identifier")
@@ -27,6 +52,10 @@ class SessionBase(BaseModel):
 
 class SessionCreate(SessionBase):
     pass
+
+
+class SessionJoin(BaseModel):
+    join_code: str = Field(..., min_length=6, max_length=6, description="6-character join code")
 
 
 class SessionResponse(SessionBase):
