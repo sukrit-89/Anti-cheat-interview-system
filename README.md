@@ -29,8 +29,6 @@
 - **Gaze Tracking**: Off-screen looking detection via 3D pose estimation
 - **Audio Analysis**: Multi-voice detection (Libros
 
-a)
-
 ### 📊 **Professional Dashboard**
 - Beautiful modern UI with gradient design
 - Session management with CRUD operations
