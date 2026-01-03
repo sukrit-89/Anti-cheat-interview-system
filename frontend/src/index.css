@@ -509,7 +509,7 @@ tbody td {
 }
 
 @keyframes shimmer {
-    to end {
+    to {
         left: 200%;
     }
 }
