@@ -106,7 +106,7 @@ class Report(Base):
     generated_at = Column(DateTime, default=datetime.utcnow)
     
     overall_score = Column(Float, nullable=False)
-    risk_level = Column(Enum(RiskLevel), nullable=False)
+    risk_level = Column(SQLEnum(RiskLevel), nullable=False)
     recommendation = Column(Text, nullable=True)
     
     # File paths
