@@ -54,10 +54,15 @@ function App() {
                         <img
                             src="/logo-icon.png"
                             alt="Satya Guard"
-                            style={{ height: '40px', width: '40px' }}
+                            style={{
+                                height: '50px',
+                                width: '50px',
+                                objectFit: 'contain',
+                                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+                            }}
                         />
                         <div>
-                            <h1 style={{ margin: 0, fontSize: '1.5rem' }}>Satya Guard</h1>
+                            <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '700' }}>Satya Guard</h1>
                             <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.9 }}>Interview Integrity Platform</p>
                         </div>
                     </div>
