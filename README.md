@@ -1,247 +1,301 @@
-# 🛡️ Satya Guard - Interview Integrity Platform
+# 🛡️ Satya Guard (सत्य)
 
-**Satya** (सत्य = Truth) **Guard** is an AI-powered interview integrity monitoring platform that uses computer vision and audio analysis to detect suspicious behavior during remote technical interviews.
+**AI-Powered Interview Integrity Platform**
 
-![Platform Status](https://img.shields.io/badge/status-production--ready-brightgreen)
-![Python](https://img.shields.io/badge/python-3.11+-blue)
-![React](https://img.shields.io/badge/react-18-blue)
-![FastAPI](https://img.shields.io/badge/fastapi-0.104-green)
+An advanced, real-time interview monitoring system that uses computer vision and audio analysis to detect suspicious behavior during virtual interviews. Built with cutting-edge technologies including Firebase Authentication, Cloudinary storage, and comprehensive AI-powered analysis.
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
+![React](https://img.shields.io/badge/react-18.0+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)
 
 ---
 
-## ✨ Features
+## 🌟 Features
 
-### 🎯 **Real-Time Monitoring**
-- Live webcam-based interview monitoring
-- Instant flag detection and logging
-- Real-time risk score calculation
-- Session persistence with full reports
+### 🔐 **Authentication & Access Control**
+- **Firebase Authentication** - Secure user registration and login
+- **Role-Based Access** - Distinct permissions for Interviewers and Interviewees
+- **Join Code System** - 6-character codes for session joining
+- **JWT Token Verification** - Backend validates Firebase tokens
 
-### 📹 **Video Analysis**
-- Upload pre-recorded interview videos
-- Automated integrity analysis
-- Comprehensive PDF & JSON reports
-- Visual analytics with charts
+### 🎥 **Real-Time Monitoring**
+- **Live Video Analysis** - Frame-by-frame behavioral detection
+- **Audio Anomaly Detection** - Identifies suspicious audio patterns
+- **Gaze Tracking** - MediaPipe-powered eye movement analysis
+- **Face Detection** - Multiple face detection and verification
+- **Object Recognition** - Phone and suspicious object detection
 
-### 🧠 **AI Detection** (No LLM Required!)
-- **Face Detection**: Multiple face/no face detection (MediaPipe)
-- **Blink Analysis**: Suspicious eye behavior patterns  
-- **Gaze Tracking**: Off-screen looking detection via 3D pose estimation
-- **Audio Analysis**: Multi-voice detection (Libros
+### 📊 **Comprehensive Reporting**
+- **Risk Assessment** - AI-calculated integrity scores (0-100)
+- **Detailed Analytics** - Timestamped flags with severity levels
+- **PDF Reports** - Professional, downloadable analysis reports
+- **Visual Dashboards** - Real-time statistics and charts
+- **Export Options** - JSON and PDF report formats
 
-### 📊 **Professional Dashboard**
-- Beautiful modern UI with gradient design
-- Session management with CRUD operations
-- Detailed session timelines
-- Risk-level categorization (LOW/MEDIUM/HIGH)
-- Downloadable PDF reports
+### ☁️ **Cloud Infrastructure**
+- **Cloudinary Integration** - Scalable video and report storage
+- **Firebase Backend** - Reliable authentication infrastructure
+- **CDN Delivery** - Fast, global content distribution
+- **Secure URLs** - Signed, time-limited resource access
+
+### 🎨 **Premium UI/UX**
+- **Glassmorphism Design** - Modern, translucent card effects
+- **Animated Gradients** - Eye-catching background animations
+- **Dark Mode Support** - Elegant color schemes
+- **Responsive Layout** - Mobile and desktop optimized
+- **Interactive Animations** - Smooth transitions and micro-interactions
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Satya Guard Platform                     │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                ┌─────────────┼─────────────┐
+                ▼             ▼             ▼
+        ┌──────────┐   ┌──────────┐  ┌──────────┐
+        │ Firebase │   │ Frontend │  │  Backend │
+        │   Auth   │   │  (React) │  │ (FastAPI)│
+        └──────────┘   └──────────┘  └──────────┘
+                              │             │
+                              └──────┬──────┘
+                                     ▼
+                        ┌────────────────────────┐
+                        │   Analysis Pipeline    │
+                        │ ┌──────────────────┐   │
+                        │ │ Video Analysis   │   │
+                        │ │ Audio Detection  │   │
+                        │ │ Gaze Tracking    │   │
+                        │ │ Risk Scoring     │   │
+                        │ └──────────────────┘   │
+                        └────────────────────────┘
+                                     │
+                        ┌────────────┴───────────┐
+                        ▼                        ▼
+                  ┌──────────┐           ┌──────────┐
+                  │Cloudinary│           │  SQLite  │
+                  │ Storage  │           │ Database │
+                  └──────────┘           └──────────┘
+```
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Python 3.11+
 - Node.js 18+
-- npm or yarn
+- Firebase Project
+- Cloudinary Account
 
-### Backend Setup
+### 1. Clone Repository
 
 ```bash
-# Clone repository
 git clone https://github.com/sukrit-89/Anti-cheat-interview-system.git
 cd Anti-cheat-interview-system
+```
 
+### 2. Backend Setup
+
+```bash
 # Create virtual environment
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+
+# Activate (Windows)
+venv\Scripts\activate
+# Activate (Linux/Mac)
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
-
-# Run backend
-python run_backend.py
 ```
 
-Backend will be available at: **http://localhost:8000**  
-API docs: **http://localhost:8000/docs**
+### 3. Environment Configuration
 
-### Frontend Setup
+**Backend (.env):**
+```env
+FIREBASE_SERVICE_ACCOUNT_PATH=./firebase-service-account.json
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+**Frontend (.env):**
+```env
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
+### 4. Firebase Setup
+
+1. Create Firebase project at [Firebase Console](https://console.firebase.google.com/)
+2. Enable **Email/Password** authentication
+3. Download service account JSON → save as `firebase-service-account.json`
+4. Copy Firebase config to frontend `.env`
+
+### 5. Frontend Setup
 
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
+```
 
-# Run development server
+### 6. Run Application
+
+**Terminal 1 - Backend:**
+```bash
+python run_backend.py
+# API: http://localhost:8000
+# Docs: http://localhost:8000/docs
+```
+
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
 npm run dev
-```
-
-Frontend will be available at: **http://localhost:3000**
-
----
-
-## 📖 Usage
-
-### 1. **Live Monitoring**
-1. Navigate to "Live Monitor" tab
-2. Enter candidate ID
-3. Click "Start Live Monitoring"
-4. Flags are detected and logged in real-time
-5. Click "Stop & Generate Report" when done
-6. Full report auto-generated and saved
-
-### 2. **Video Upload**
-1. Go to "Upload Video" tab
-2. Drag & drop video file or browse
-3. Enter candidate ID
-4. Click "Upload & Analyze"
-5. View instant results with risk score
-
-### 3. **Review Sessions**
-1. Navigate to "Sessions" tab
-2. View all interview sessions
-3. Click "View" for detailed timeline
-4. Download PDF reports
-
----
-
-## 🏗️ Architecture
-
-### Backend (FastAPI)
-```
-backend/
-├── main.py              # FastAPI app with REST endpoints
-├── models.py            # SQLAlchemy database models
-├── schemas.py           # Pydantic validation schemas
-├── database.py          # Database configuration
-└── analysis_service.py  # Video analysis integration
-```
-
-### Frontend (React + Vite)
-```
-frontend/
-├── src/
-│   ├── components/
-│   │   ├── Dashboard.jsx
-│   │   ├── SessionList.jsx
-│   │   ├── VideoUpload.jsx
-│   │   ├── SessionDetail.jsx
-│   │   └── LiveMonitor.jsx
-│   ├── services/
-│   │   └── api.js
-│   └── App.jsx
-└── public/
-    ├── logo-icon.png
-    └── logo-full.png
-```
-
-### Detection Modules
-```
-src/
-├── video/
-│   ├── face_detector.py    # MediaPipe face detection
-│   ├── blink_detector.py   # Eye aspect ratio analysis
-│   └── gaze_detector.py    # 3D head pose estimation
-├── audio/
-│   └── audio_detector.py   # Voice activity detection
-└── reporting/
-    ├── scoring_engine.py   # Risk calculation
-    └── report_generator.py # PDF/JSON generation
+# App: http://localhost:3000
 ```
 
 ---
 
-## 🔧 Technology Stack
+## 📖 Usage Guide
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Computer Vision** | MediaPipe 0.10.14 | Face/gaze/blink detection |
-| **Backend API** | FastAPI 0.104+ | REST endpoints |
-| **Database** | SQLite (SQLAlchemy 2.0) | Session storage |
-| **Frontend** | React 18 + Vite 5 | Modern UI |
-| **Reporting** | ReportLab + Matplotlib | PDF & charts |
-| **Audio** | Librosa + sounddevice | Voice analysis |
+### For Interviewers
+
+1. **Register** - Create account with INTERVIEWER role
+2. **Create Session** - Generate unique join code
+3. **Share Code** - Send 6-character code to interviewee
+4. **Monitor Live** - Watch real-time analysis dashboard
+5. **Review Reports** - Access detailed PDF reports
+
+### For Interviewees
+
+1. **Register** - Create account with INTERVIEWEE role
+2. **Join Session** - Enter 6-character join code
+3. **Complete Interview** - System monitors automatically
+4. **View Results** - Access your own interview reports
+
+---
+
+## 🛠️ Technology Stack
+
+### Backend
+- **FastAPI** 0.104+ - Modern Python web framework
+- **SQLAlchemy** 2.0 - SQL toolkit and ORM
+- **Firebase Admin SDK** - Backend authentication
+- **Cloudinary SDK** - Cloud storage integration
+- **MediaPipe** 0.10.14 - Computer vision models
+- **Librosa** - Audio analysis library
+- **OpenCV** 4.8+ - Image processing
+- **ReportLab** - PDF report generation
+
+### Frontend
+- **React** 18.0 - UI library
+- **Vite** 5.0 - Build tool and dev server
+- **Firebase SDK** - Client-side authentication
+- **Fetch API** - HTTP requests with JWT tokens
+- **CSS3** - Custom animations and glassmorphism
+
+### Infrastructure
+- **Firebase Authentication** - User management
+- **Cloudinary** - Video and PDF storage
+- **SQLite** - Local database
+- **WebSocket** - Real-time communication
 
 ---
 
 ## 📊 Detection Capabilities
 
-### Face Detection
-- ✅ No face detected
-- ✅ Multiple faces detected
-- ✅ Face tracking across frames
-
-### Gaze Tracking
-- ✅ Looking away from screen
-- ✅ Head orientation analysis
-- ✅ Dynamic calibration
-
-### Blink Analysis
-- ✅ Abnormal blink patterns
-- ✅ Eye closure detection
-- ✅ Baseline comparison
-
-### Audio Analysis
-- ✅ Multiple speakers
-- ✅ Voice activity detection
-- ✅ Background noise analysis
+| Category | Detection Methods | Severity Levels |
+|----------|------------------|-----------------|
+| **Gaze** | Eye movement tracking, looking away detection | Low, Medium, High |
+| **Face** | Multiple face detection, face absence | High |
+| **Audio** | Voice anomalies, background noise, silence | Low, Medium |
+| **Objects** | Phone detection, suspicious items | Medium, High |
+| **Behavior** | Head movements, posture changes | Low, Medium |
 
 ---
 
-## 📈 Sample Output
+## 🎯 API Endpoints
 
-**Risk Score**: 0.000 - 1.000  
-**Risk Levels**: LOW (<0.3) | MEDIUM (0.3-0.6) | HIGH (>0.6)  
-**Report Formats**: JSON (machine-readable) + PDF (human-readable)
+### Authentication
+- `POST /api/auth/sync` - Sync Firebase user to database
+- `GET /api/auth/me` - Get current user info
 
-**PDF Report Includes**:
-- Executive summary
-- Risk assessment with confidence intervals
-- Flag distribution pie chart
-- Temporal distribution bar chart
-- Risk gauge visualization
-- Timestamped flag timeline
+### Sessions
+- `POST /api/sessions/create` - Create session (Interviewer)
+- `POST /api/sessions/join` - Join with code (Interviewee)
+- `GET /api/sessions` - List all sessions
+- `GET /api/sessions/{id}` - Get session details
+- `GET /api/sessions/my-reports` - Get own reports (Interviewee)
 
----
+### Analysis
+- `POST /api/upload` - Upload interview video
+- `GET /api/reports/{id}/json` - Get JSON report
+- `GET /api/reports/{id}/pdf` - Download PDF report
 
-## 🎨 Branding
-
-**Name**: Satya Guard (सत्य = Truth in Sanskrit)  
-**Tagline**: Interview Integrity Platform  
-**Logo**: Purple shield with eye (monitoring) and circuit elements (AI)  
-
----
-
-## 🔐 Privacy & Ethics
-
-- **Offline Processing**: All analysis runs locally, no external API calls
-- **Data Privacy**: Video files and reports stored locally
-- **Transparency**: Clear disclosure to candidates required
-- **Fairness**: Algorithmic detection, no bias in ML models
-- **Purpose**: Designed to ensure fair interview processes
+### Live Monitoring
+- `WebSocket /ws/live/{session_id}` - Real-time analysis stream
 
 ---
 
-## 🛣️ Roadmap
+## 🔒 Security Features
 
-### Phase 3 (Future)
-- [ ] Advanced ML-based behavioral classification
-- [ ] Browser tab monitoring extension
-- [ ] Code plagiarism detection
-- [ ] Multi-language support
-- [ ] Cloud deployment
-- [ ] User authentication (JWT)
-- [ ] Email notifications
-- [ ] Analytics dashboard
+- **Firebase Authentication** - Industry-standard user auth
+- **JWT Token Verification** - Secure API access
+- **Role-Based Access Control** - Permission-based features
+- **Signed URLs** - Time-limited Cloudinary access
+- **CORS Protection** - Configured allowed origins
+- **Input Validation** - Pydantic schema validation
+- **SQL Injection Protection** - SQLAlchemy ORM
+
+---
+
+## 📁 Project Structure
+
+```
+Anti-cheat-interview-system/
+├── backend/
+│   ├── main.py                 # FastAPI application
+│   ├── models.py               # Database models
+│   ├── schemas.py              # Pydantic schemas
+│   ├── firebase_auth.py        # Firebase authentication
+│   ├── cloudinary_service.py   # Cloud storage service
+│   ├── analysis_service.py     # Video analysis pipeline
+│   ├── report_generator.py     # PDF report creation
+│   ├── scoring_engine.py       # Risk assessment
+│   └── utils.py                # Helper functions
+├── frontend/
+│   ├── src/
+│   │   ├── components/         # React components
+│   │   ├── services/           # API integration
+│   │   ├── firebase.js         # Firebase config
+│   │   ├── App.jsx             # Main application
+│   │   └── index.css           # Styles
+│   └── package.json
+├── src/
+│   ├── video/                  # Video analysis modules
+│   │   └── gaze_detector.py
+│   └── audio/                  # Audio analysis modules
+│       └── audio_detector.py
+├── requirements.txt            # Python dependencies
+└── README.md
+```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please follow these steps:
 
 1. Fork the repository
 2. Create feature branch (`git checkout -b feature/AmazingFeature`)
@@ -253,31 +307,40 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 👥 Author
+## 👨‍💻 Author
 
-**Sukrit** - [GitHub](https://github.com/sukrit-89)
+**Sukrit Goswami**
+- Email: sukrit.goswami.work@gmail.com
+- GitHub: [@sukrit-89](https://github.com/sukrit-89)
 
 ---
 
 ## 🙏 Acknowledgments
 
-- MediaPipe team for face detection models
-- FastAPI for excellent API framework
-- React team for modern frontend library
-- Open-source community
+- **MediaPipe** - For powerful computer vision models
+- **Firebase** - For authentication infrastructure
+- **Cloudinary** - For reliable cloud storage
+- **FastAPI** - For modern Python web framework
+- **React** - For excellent UI development
 
 ---
 
-## 📧 Support
+## 📞 Support
 
-For issues and questions:
-- Open an [Issue](https://github.com/sukrit-89/Anti-cheat-interview-system/issues)
-- Email: [sukrit.goswami.work@gmail.com]
+For issues, questions, or suggestions:
+- 🐛 [Create an Issue](https://github.com/sukrit-89/Anti-cheat-interview-system/issues)
+- 📧 Email: sukrit.goswami.work@gmail.com
 
 ---
+
+<div align="center">
 
 **Built with ❤️**
+
+⭐ Star this repo if you find it helpful!
+
+</div>
