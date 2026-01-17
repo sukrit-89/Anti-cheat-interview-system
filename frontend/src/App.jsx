@@ -11,6 +11,8 @@ import SessionDetail from './components/SessionDetail';
 import LiveMonitor from './components/LiveMonitor';
 import Login from './components/Login';
 import Register from './components/Register';
+import InterviewerDashboard from './components/InterviewerDashboard';
+import IntervieweeDashboard from './components/IntervieweeDashboard';
 
 import './App.css';
 
@@ -296,11 +298,19 @@ function App() {
             <main className="app-main">
                 <div className="container">
                     {view === 'dashboard' && (
-                        <Dashboard
-                            sessions={sessions}
-                            onViewSession={handleViewSession}
-                            userRole={userData?.role}
-                        />
+                        userData?.role === 'INTERVIEWER' ? (
+                            <InterviewerDashboard
+                                sessions={sessions}
+                                onViewSession={handleViewSession}
+                                onRefresh={loadSessions}
+                            />
+                        ) : (
+                            <IntervieweeDashboard
+                                sessions={sessions}
+                                onViewSession={handleViewSession}
+                                onRefresh={loadSessions}
+                            />
+                        )
                     )}
                     {view === 'sessions' && (
                         <SessionList
