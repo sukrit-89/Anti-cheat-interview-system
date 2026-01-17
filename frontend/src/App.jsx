@@ -66,7 +66,23 @@ function App() {
     const loadSessions = async () => {
         try {
             setLoading(true);
-            const data = await sessionAPI.getSessions();
+            let data;
+
+            // Role-based session filtering
+            if (userData?.role === 'INTERVIEWEE') {
+                // Interviewees see only their sessions
+                data = await sessionAPI.getMyReports();
+            } else {
+                // Interviewers see all sessions they created
+                const allSessions = await sessionAPI.getSessions();
+                // Filter sessions where current user is the interviewer
+                data = {
+                    sessions: allSessions.sessions?.filter(
+                        s => s.interviewer_id === userData?.id
+                    ) || []
+                };
+            }
+
             setSessions(data.sessions || []);
         } catch (error) {
             console.error('Failed to load sessions:', error);
