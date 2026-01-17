@@ -58,12 +58,13 @@ class SessionJoin(BaseModel):
     join_code: str = Field(..., min_length=6, max_length=6, description="6-character join code")
 
 
+
 class SessionResponse(SessionBase):
     id: int
     created_at: datetime
     status: SessionStatus
     video_filename: Optional[str] = None
-    duration_seconds: float = 0.0
+    duration_seconds: Optional[float] = None
     risk_score: Optional[float] = None
     risk_level: Optional[RiskLevel] = None
     total_flags: int = 0
