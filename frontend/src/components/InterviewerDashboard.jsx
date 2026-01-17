@@ -17,7 +17,13 @@ const InterviewerDashboard = ({ sessions, onViewSession, onRefresh }) => {
             const result = await sessionAPI.createSession(candidateId);
             setJoinCode(result.join_code);
             setCandidateId('');
-            if (onRefresh) onRefresh();
+
+            // Refresh session list in background
+            if (onRefresh) {
+                setTimeout(() => {
+                    onRefresh();
+                }, 1000); // Refresh after showing join code
+            }
         } catch (err) {
             setError(err.message || 'Failed to create session');
         } finally {
@@ -30,6 +36,11 @@ const InterviewerDashboard = ({ sessions, onViewSession, onRefresh }) => {
         setJoinCode('');
         setCandidateId('');
         setError('');
+
+        // Final refresh when modal closes
+        if (onRefresh) {
+            onRefresh();
+        }
     };
 
     const copyJoinCode = () => {
