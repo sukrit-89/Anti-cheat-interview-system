@@ -273,35 +273,59 @@ async def get_session(session_id: int, db: Session = Depends(get_db)):
 async def upload_video(
     file: UploadFile = File(...),
     candidate_id: str = Form(...),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
-    Upload video file for analysis
-    Creates a session and starts analysis
+    Upload video file to Cloudinary and run analysis
     """
-    # Create session
-    db_session = models.Session(
-        candidate_id=candidate_id,
-        status=models.SessionStatus.PROCESSING,
-        video_filename=file.filename
-    )
-    db.add(db_session)
-    db.commit()
-    db.refresh(db_session)
+    temp_video_path = None
+    analysis_video_path = None
     
-    # Save uploaded file
-    file_path = os.path.join(UPLOAD_DIR, f"session_{db_session.id}_{file.filename}")
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    db_session.video_path = file_path
-    db.commit()
-    
-    # Start analysis
     try:
+        # Create session
+        db_session = models.Session(
+            candidate_id=candidate_id,
+            status=models.SessionStatus.PROCESSING,
+            interviewer_id=current_user.id if current_user.role == models.UserRole.INTERVIEWER else None,
+            interviewee_id=current_user.id if current_user.role == models.UserRole.INTERVIEWEE else None
+        )
+        db.add(db_session)
+        db.commit()
+        db.refresh(db_session)
+        
+        # Save temporary file for Cloudinary upload
+        temp_video_path = f"temp_upload_{db_session.id}_{file.filename}"
+        with open(temp_video_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        # Upload to Cloudinary
+        upload_result = cloudinary_service.upload_video(
+            temp_video_path,
+            public_id=f"session_{db_session.id}"
+        )
+        
+        # Store Cloudinary URL in database
+        db_session.video_filename = upload_result['url']
+        if upload_result.get('duration'):
+            db_session.duration_seconds = upload_result['duration']
+        db.commit()
+        
+        # Clean up upload temp file
+        if os.path.exists(temp_video_path):
+            os.remove(temp_video_path)
+            temp_video_path = None
+        
+        # Download from Cloudinary for analysis
+        analysis_video_path = f"temp_analysis_{db_session.id}.mp4"
+        cloudinary_service.download_video(upload_result['url'], analysis_video_path)
+        
+        # Run analysis
+        db_session.video_path = analysis_video_path  # Temporarily set for analysis
+        
         analysis_service = AnalysisService()
         result = analysis_service.analyze_video(
-            video_path=file_path,
+            video_path=analysis_video_path,
             session_id=db_session.id,
             candidate_id=candidate_id
         )
@@ -314,6 +338,7 @@ async def upload_video(
         db_session.risk_level = models.RiskLevel[result['risk_data']['risk_level']]
         db_session.total_flags = len(result['flags'])
         db_session.status = models.SessionStatus.COMPLETED
+        db_session.video_path = None  # Clear temp path
         
         # Save flags to database
         for flag in result['flags']:
@@ -334,16 +359,33 @@ async def upload_video(
             risk_data=result['risk_data']
         )
         
+        # Upload PDF report to Cloudinary if generated
+        pdf_url = None
+        if reports.get('pdf_path') and os.path.exists(reports['pdf_path']):
+            pdf_result = cloudinary_service.upload_pdf(
+                reports['pdf_path'],
+                public_id=f"report_{db_session.id}"
+            )
+            pdf_url = pdf_result['url']
+            
+            # Delete local PDF after upload
+            os.remove(reports['pdf_path'])
+        
         # Save report info
         db_report = models.Report(
             session_id=db_session.id,
             overall_score=result['risk_data']['overall_score'],
             risk_level=models.RiskLevel[result['risk_data']['risk_level']],
             recommendation=result['risk_data']['recommendation'],
-            json_path=reports['json_path'],
-            pdf_path=reports['pdf_path']
+            json_path=reports.get('json_path'),
+            pdf_path=pdf_url  # Store Cloudinary URL
         )
         db.add(db_report)
+        
+        # Clean up analysis temp file
+        if os.path.exists(analysis_video_path):
+            os.remove(analysis_video_path)
+            analysis_video_path = None
         
         db.commit()
         db.refresh(db_session)
@@ -351,13 +393,29 @@ async def upload_video(
         return {
             "message": "Analysis complete",
             "session_id": db_session.id,
+            "video_url": upload_result['url'],
             "risk_score": db_session.risk_score,
             "risk_level": db_session.risk_level.value,
-            "total_flags": db_session.total_flags
+            "total_flags": db_session.total_flags,
+            "report_url": pdf_url
         }
         
     except Exception as e:
-        db_session.status = models.SessionStatus.FAILED
+        # Update session status to failed
+        if 'db_session' in locals():
+            db_session.status = models.SessionStatus.FAILED
+            db.commit()
+        
+        # Clean up temp files
+        if temp_video_path and os.path.exists(temp_video_path):
+            os.remove(temp_video_path)
+        if analysis_video_path and os.path.exists(analysis_video_path):
+            os.remove(analysis_video_path)
+        
+        raise HTTPException(
+            status_code=500,
+            detail=f"Upload/analysis failed: {str(e)}"
+        )
         db.commit()
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
