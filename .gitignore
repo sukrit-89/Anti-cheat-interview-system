@@ -51,6 +51,20 @@ Thumbs.db
 # Docker
 docker-data/
 
+# Frontend build and node_modules
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env*
+frontend/.vercel/
+frontend/coverage/
+frontend/.pnp
+frontend/.pnp.*
+frontend/.yarn/
+frontend/next-env.d.ts
+frontend/*.tsbuildinfo
+
 # Uploads & Storage
 uploads/
 recordings/
