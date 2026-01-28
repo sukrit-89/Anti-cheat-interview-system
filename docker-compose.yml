@@ -1,0 +1,203 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: interview_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-interview_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-interview_platform}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-interview_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: interview_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Application
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: interview_api
+    ports:
+      - "8000:8000"
+    environment:
+      # Application
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      DEBUG: ${DEBUG:-False}
+      
+      # Database
+      POSTGRES_USER: ${POSTGRES_USER:-interview_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-interview_platform}
+      
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      
+      # Security
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      
+      # LiveKit
+      LIVEKIT_API_KEY: ${LIVEKIT_API_KEY}
+      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET}
+      LIVEKIT_WS_URL: ${LIVEKIT_WS_URL}
+      
+      # S3
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      
+      # AI Services
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      
+      # Code Execution
+      JUDGE0_API_URL: ${JUDGE0_API_URL}
+      JUDGE0_API_KEY: ${JUDGE0_API_KEY}
+    
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    
+    restart: unless-stopped
+
+  # Celery Worker for Agents
+  worker_agents:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: interview_worker_agents
+    command: celery -A app.workers.celery_app worker --loglevel=info -Q agents --concurrency=4
+    environment:
+      # Same as API
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      POSTGRES_USER: ${POSTGRES_USER:-interview_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-interview_platform}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    
+    depends_on:
+      - postgres
+      - redis
+    
+    restart: unless-stopped
+
+  # Celery Worker for Sessions
+  worker_sessions:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: interview_worker_sessions
+    command: celery -A app.workers.celery_app worker --loglevel=info -Q sessions --concurrency=2
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      POSTGRES_USER: ${POSTGRES_USER:-interview_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-interview_platform}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    
+    depends_on:
+      - postgres
+      - redis
+    
+    restart: unless-stopped
+
+  # Celery Beat (Scheduler)
+  beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: interview_beat
+    command: celery -A app.workers.celery_app beat --loglevel=info
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      POSTGRES_USER: ${POSTGRES_USER:-interview_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-interview_platform}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    
+    depends_on:
+      - postgres
+      - redis
+    
+    restart: unless-stopped
+
+  # MinIO - S3-Compatible Storage (FREE)
+  minio:
+    image: minio/minio:latest
+    container_name: interview_minio
+    ports:
+      - "9000:9000"  # API
+      - "9001:9001"  # Console
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY:-minioadmin}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Ollama - Local LLM (100% FREE)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: interview_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    # Optional: Uncomment to pull model on startup
+    # command: >
+    #   sh -c "ollama serve & sleep 5 && ollama pull llama2 && wait"
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  ollama_data:

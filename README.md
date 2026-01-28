@@ -1,313 +1,404 @@
-# 🛡️ Satya Guard (सत्य)
+# 🎯 AI-Powered Technical Interview Platform
 
-**AI-Powered Interview Integrity Platform**
+**Production-grade real-time interview system with autonomous AI agents**
 
-An advanced, real-time interview monitoring system that uses computer vision and audio analysis to detect suspicious behavior during virtual interviews. Built with cutting-edge technologies including Firebase Authentication, Cloudinary storage, and comprehensive AI-powered analysis.
-
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
-![React](https://img.shields.io/badge/react-18.0+-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)
+Scalable, event-driven platform for conducting live technical interviews with real-time AI-powered evaluation. Features WebRTC video, live coding, and multi-agent assessment pipeline.
 
 ---
 
-## 🌟 Features
+## 🚀 Quick Start
 
-### 🔐 **Authentication & Access Control**
-- **Firebase Authentication** - Secure user registration and login
-- **Role-Based Access** - Distinct permissions for Interviewers and Interviewees
-- **Join Code System** - 6-character codes for session joining
-- **JWT Token Verification** - Backend validates Firebase tokens
+```powershell
+# 1. Setup environment
+cp .env.example .env
+# Edit .env with your credentials
 
-### 🎥 **Real-Time Monitoring**
-- **Live Video Analysis** - Frame-by-frame behavioral detection
-- **Audio Anomaly Detection** - Identifies suspicious audio patterns
-- **Gaze Tracking** - MediaPipe-powered eye movement analysis
-- **Face Detection** - Multiple face detection and verification
-- **Object Recognition** - Phone and suspicious object detection
+# 2. Start services with Docker
+docker-compose up -d
 
-### 📊 **Comprehensive Reporting**
-- **Risk Assessment** - AI-calculated integrity scores (0-100)
-- **Detailed Analytics** - Timestamped flags with severity levels
-- **PDF Reports** - Professional, downloadable analysis reports
-- **Visual Dashboards** - Real-time statistics and charts
-- **Export Options** - JSON and PDF report formats
+# 3. Initialize database
+python init_db.py
 
-### ☁️ **Cloud Infrastructure**
-- **Cloudinary Integration** - Scalable video and report storage
-- **Firebase Backend** - Reliable authentication infrastructure
-- **CDN Delivery** - Fast, global content distribution
-- **Secure URLs** - Signed, time-limited resource access
+# 4. Start the platform
+uvicorn app.main:app --reload
 
-### 🎨 **Premium UI/UX**
-- **Glassmorphism Design** - Modern, translucent card effects
-- **Animated Gradients** - Eye-catching background animations
-- **Dark Mode Support** - Elegant color schemes
-- **Responsive Layout** - Mobile and desktop optimized
-- **Interactive Animations** - Smooth transitions and micro-interactions
+# 5. Open API docs
+# http://localhost:8000/docs
+```
+
+---
+
+## 🧪 Testing
+
+Comprehensive test suite with 56 tests covering all functionality:
+
+```powershell
+# Run all tests
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ --cov=app --cov-report=html
+```
+
+**Test Coverage:**
+- ✅ Authentication & Security (14 tests)
+- ✅ Session Management (10 tests)
+- ✅ Database Operations (8 tests)
+- ✅ Integration Workflows (6 tests)
+- ✅ Configuration (10 tests)
+- ✅ System Validation (8 tests)
+
+---
+
+## ✨ Core Features
+
+### 🎥 **Live Interview Sessions**
+- WebRTC-powered video/audio streaming via LiveKit
+- Embedded Monaco code editor
+- Real-time collaborative coding environment
+- Session join codes for easy access
+
+### 🤖 **Autonomous AI Agents**
+Each agent operates independently and asynchronously:
+
+- **CodingAgent** - Analyzes code quality, execution patterns, problem-solving approach
+- **SpeechAgent** - Evaluates communication clarity, technical vocabulary, explanation quality
+- **VisionAgent** - Monitors engagement, attention, presence detection
+- **ReasoningAgent** - Assesses logical thinking, problem decomposition, adaptability
+- **EvaluationAgent** - Aggregates all outputs into hiring recommendation
+
+### 📊 **Real-Time Monitoring**
+- WebSocket-based live updates
+- Recruiter dashboard with metrics
+- Activity tracking and presence detection
+- Instant feedback on candidate performance
+
+### 🔐 **Enterprise Security**
+- JWT-based authentication
+- Role-based access control (Recruiter/Candidate/Admin)
+- PostgreSQL with async SQLAlchemy
+- Secure session management
+
+### 📈 **Scalable Architecture**
+- Event-driven with Redis pub/sub
+- Celery workers for background processing
+- Horizontal scaling support
+- Docker containerization
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+- **FastAPI** 0.104+ - Modern async Python framework
+- **PostgreSQL** 15+ - Production database with async support
+- **Redis** 7+ - Caching and pub/sub messaging
+- **Celery** 5.3+ - Distributed task queue
+- **SQLAlchemy** 2.0+ - Async ORM
+- **Pydantic** v2 - Data validation
+
+### Real-Time Infrastructure
+- **LiveKit** - WebRTC video/audio streaming
+- **WebSockets** - Real-time event delivery
+- **Redis Pub/Sub** - Inter-service communication
+
+### AI/ML
+- **Ollama** - Local LLM for reasoning analysis
+- **Whisper** - Speech-to-text transcription (optional)
+
+### DevOps
+- **Docker** & **Docker Compose** - Containerization
+- **Uvicorn** - ASGI server
+- **MinIO** - S3-compatible object storage
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     Satya Guard Platform                     │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    Interview Platform Stack                      │
+└─────────────────────────────────────────────────────────────────┘
                               │
-                ┌─────────────┼─────────────┐
-                ▼             ▼             ▼
-        ┌──────────┐   ┌──────────┐  ┌──────────┐
-        │ Firebase │   │ Frontend │  │  Backend │
-        │   Auth   │   │  (React) │  │ (FastAPI)│
-        └──────────┘   └──────────┘  └──────────┘
-                              │             │
-                              └──────┬──────┘
-                                     ▼
-                        ┌────────────────────────┐
-                        │   Analysis Pipeline    │
-                        │ ┌──────────────────┐   │
-                        │ │ Video Analysis   │   │
-                        │ │ Audio Detection  │   │
-                        │ │ Gaze Tracking    │   │
-                        │ │ Risk Scoring     │   │
-                        │ └──────────────────┘   │
-                        └────────────────────────┘
-                                     │
-                        ┌────────────┴───────────┐
-                        ▼                        ▼
-                  ┌──────────┐           ┌──────────┐
-                  │Cloudinary│           │  SQLite  │
-                  │ Storage  │           │ Database │
-                  └──────────┘           └──────────┘
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+   ┌─────────┐         ┌──────────┐         ┌──────────┐
+   │ FastAPI │         │PostgreSQL│         │  Redis   │
+   │   API   │────────▶│  Database│◀────────│  Cache   │
+   └─────────┘         └──────────┘         │  Pub/Sub │
+        │                                    └──────────┘
+        │                                          │
+        ▼                                          ▼
+   ┌─────────────────────────────────────────────────┐
+   │           Event-Driven Pipeline                 │
+   │  SessionCreated → RecordingStarted →           │
+   │  AgentsProcess → EvaluationComplete            │
+   └─────────────────────────────────────────────────┘
+                         │
+        ┌────────────────┼────────────────┐
+        ▼                ▼                ▼
+   ┌─────────┐     ┌─────────┐     ┌─────────┐
+   │ Coding  │     │ Speech  │     │ Vision  │
+   │  Agent  │     │  Agent  │     │  Agent  │
+   └─────────┘     └─────────┘     └─────────┘
+        │                ▼                │
+        └──────────▶┌─────────┐◀─────────┘
+                    │Reasoning│
+                    │  Agent  │
+                    └─────────┘
+                         │
+                         ▼
+                   ┌──────────┐
+                   │Evaluation│
+                   │  Agent   │
+                   └──────────┘
 ```
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Python 3.11+
-- Node.js 18+
-- Firebase Project
-- Cloudinary Account
-
-### 1. Clone Repository
-
-```bash
-git clone https://github.com/sukrit-89/Anti-cheat-interview-system.git
-cd Anti-cheat-interview-system
-```
-
-### 2. Backend Setup
-
-```bash
-# Create virtual environment
-python -m venv venv
-
-# Activate (Windows)
-venv\Scripts\activate
-# Activate (Linux/Mac)
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 3. Environment Configuration
-
-**Backend (.env):**
-```env
-FIREBASE_SERVICE_ACCOUNT_PATH=./firebase-service-account.json
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-```
-
-**Frontend (.env):**
-```env
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your-project-id
-VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-```
-
-### 4. Firebase Setup
-
-1. Create Firebase project at [Firebase Console](https://console.firebase.google.com/)
-2. Enable **Email/Password** authentication
-3. Download service account JSON → save as `firebase-service-account.json`
-4. Copy Firebase config to frontend `.env`
-
-### 5. Frontend Setup
-
-```bash
-cd frontend
-npm install
-```
-
-### 6. Run Application
-
-**Terminal 1 - Backend:**
-```bash
-python run_backend.py
-# API: http://localhost:8000
-# Docs: http://localhost:8000/docs
-```
-
-**Terminal 2 - Frontend:**
-```bash
-cd frontend
-npm run dev
-# App: http://localhost:3000
-```
-
----
-
-## 📖 Usage Guide
-
-### For Interviewers
-
-1. **Register** - Create account with INTERVIEWER role
-2. **Create Session** - Generate unique join code
-3. **Share Code** - Send 6-character code to interviewee
-4. **Monitor Live** - Watch real-time analysis dashboard
-5. **Review Reports** - Access detailed PDF reports
-
-### For Interviewees
-
-1. **Register** - Create account with INTERVIEWEE role
-2. **Join Session** - Enter 6-character join code
-3. **Complete Interview** - System monitors automatically
-4. **View Results** - Access your own interview reports
-
----
-
-## 🛠️ Technology Stack
-
-### Backend
-- **FastAPI** 0.104+ - Modern Python web framework
-- **SQLAlchemy** 2.0 - SQL toolkit and ORM
-- **Firebase Admin SDK** - Backend authentication
-- **Cloudinary SDK** - Cloud storage integration
-- **MediaPipe** 0.10.14 - Computer vision models
-- **Librosa** - Audio analysis library
-- **OpenCV** 4.8+ - Image processing
-- **ReportLab** - PDF report generation
-
-### Frontend
-- **React** 18.0 - UI library
-- **Vite** 5.0 - Build tool and dev server
-- **Firebase SDK** - Client-side authentication
-- **Fetch API** - HTTP requests with JWT tokens
-- **CSS3** - Custom animations and glassmorphism
-
-### Infrastructure
-- **Firebase Authentication** - User management
-- **Cloudinary** - Video and PDF storage
-- **SQLite** - Local database
-- **WebSocket** - Real-time communication
-
----
-
-## 📊 Detection Capabilities
-
-| Category | Detection Methods | Severity Levels |
-|----------|------------------|-----------------|
-| **Gaze** | Eye movement tracking, looking away detection | Low, Medium, High |
-| **Face** | Multiple face detection, face absence | High |
-| **Audio** | Voice anomalies, background noise, silence | Low, Medium |
-| **Objects** | Phone detection, suspicious items | Medium, High |
-| **Behavior** | Head movements, posture changes | Low, Medium |
-
----
-
-## 🎯 API Endpoints
-
-### Authentication
-- `POST /api/auth/sync` - Sync Firebase user to database
-- `GET /api/auth/me` - Get current user info
-
-### Sessions
-- `POST /api/sessions/create` - Create session (Interviewer)
-- `POST /api/sessions/join` - Join with code (Interviewee)
-- `GET /api/sessions` - List all sessions
-- `GET /api/sessions/{id}` - Get session details
-- `GET /api/sessions/my-reports` - Get own reports (Interviewee)
-
-### Analysis
-- `POST /api/upload` - Upload interview video
-- `GET /api/reports/{id}/json` - Get JSON report
-- `GET /api/reports/{id}/pdf` - Download PDF report
-
-### Live Monitoring
-- `WebSocket /ws/live/{session_id}` - Real-time analysis stream
-
----
-
-## 🔒 Security Features
-
-- **Firebase Authentication** - Industry-standard user auth
-- **JWT Token Verification** - Secure API access
-- **Role-Based Access Control** - Permission-based features
-- **Signed URLs** - Time-limited Cloudinary access
-- **CORS Protection** - Configured allowed origins
-- **Input Validation** - Pydantic schema validation
-- **SQL Injection Protection** - SQLAlchemy ORM
 
 ---
 
 ## 📁 Project Structure
 
 ```
-Anti-cheat-interview-system/
-├── backend/
-│   ├── main.py                 # FastAPI application
-│   ├── models.py               # Database models
-│   ├── schemas.py              # Pydantic schemas
-│   ├── firebase_auth.py        # Firebase authentication
-│   ├── cloudinary_service.py   # Cloud storage service
-│   ├── analysis_service.py     # Video analysis pipeline
-│   ├── report_generator.py     # PDF report creation
-│   ├── scoring_engine.py       # Risk assessment
-│   └── utils.py                # Helper functions
-├── frontend/
-│   ├── src/
-│   │   ├── components/         # React components
-│   │   ├── services/           # API integration
-│   │   ├── firebase.js         # Firebase config
-│   │   ├── App.jsx             # Main application
-│   │   └── index.css           # Styles
-│   └── package.json
-├── src/
-│   ├── video/                  # Video analysis modules
-│   │   └── gaze_detector.py
-│   └── audio/                  # Audio analysis modules
-│       └── audio_detector.py
-├── requirements.txt            # Python dependencies
-└── README.md
+app/
+├── api/                    # API endpoints
+│   ├── auth.py            # Authentication endpoints
+│   ├── sessions.py        # Session management
+│   └── websocket.py       # WebSocket handlers
+├── agents/                # AI agents
+│   ├── base.py           # Base agent class
+│   ├── coding_agent.py
+│   ├── speech_agent.py
+│   ├── vision_agent.py
+│   ├── reasoning_agent.py
+│   └── evaluation_agent.py
+├── core/                  # Core utilities
+│   ├── config.py         # Pydantic settings
+│   ├── database.py       # DB connection
+│   ├── auth.py           # JWT authentication
+│   ├── redis.py          # Redis client
+│   ├── events.py         # Event system
+│   └── logging.py        # Structured logging
+├── models/               # Database models
+│   └── models.py        # SQLAlchemy models
+├── schemas/             # Pydantic schemas
+│   └── schemas.py      # Request/response models
+├── services/           # Business logic
+│   ├── livekit_service.py
+│   ├── storage_service.py
+│   ├── metrics_service.py
+│   └── ai_service.py
+├── workers/           # Background tasks
+│   ├── celery_app.py
+│   ├── agent_tasks.py
+│   └── session_tasks.py
+└── main.py           # FastAPI application
+
+tests/                # Test suite
+├── conftest.py      # Shared fixtures
+├── test_auth.py     # Authentication tests
+├── test_sessions.py # Session management tests
+├── test_database.py # Database model tests
+├── test_config.py   # Configuration tests
+├── test_integration.py # Integration tests
+└── test_system.py   # End-to-end tests
 ```
 
 ---
 
-## 🤝 Contributing
+## 🔄 Event-Driven Flow
 
-Contributions are welcome! Please follow these steps:
+### Session Lifecycle
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
+1. **Recruiter Creates Session**
+   - `POST /api/sessions` creates session
+   - Generates unique join code
+   - Creates LiveKit room
+   - Publishes `SESSION_CREATED` event
+
+2. **Candidate Joins**
+   - `POST /api/sessions/join` with code
+   - Validates session status
+   - Generates LiveKit token
+   - Publishes `CANDIDATE_JOINED` event
+
+3. **Interview Starts**
+   - `POST /api/sessions/{id}/start`
+   - Updates status to `LIVE`
+   - Publishes `SESSION_STARTED` event
+   - Begins recording
+
+4. **Real-Time Activity**
+   - Coding events → Redis pub/sub → WebSocket
+   - Speech transcription → Database → WebSocket
+   - Vision metrics → Database → WebSocket
+
+5. **Interview Ends**
+   - `POST /api/sessions/{id}/end`
+   - Status → `COMPLETED`
+   - Publishes `SESSION_ENDED` event
+   - **Triggers agent pipeline**
+
+6. **Agent Processing**
+   - Celery dispatches agents in parallel:
+     - CodingAgent analyzes code
+     - SpeechAgent analyzes communication
+     - VisionAgent analyzes engagement
+     - ReasoningAgent analyzes problem-solving
+   - Each agent saves output to `agent_outputs` table
+   - Publishes `AGENT_PROCESSING_COMPLETED` events
+
+7. **Final Evaluation**
+   - EvaluationAgent aggregates all outputs
+   - Generates hiring recommendation
+   - Creates `Evaluation` record
+   - Publishes `EVALUATION_COMPLETED` event
 
 ---
 
-## 📝 License
+## 🔌 API Endpoints
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login and get JWT tokens
+- `GET /api/auth/me` - Get current user
+- `POST /api/auth/refresh` - Refresh access token
+
+### Sessions
+- `POST /api/sessions` - Create session (Recruiter)
+- `POST /api/sessions/join` - Join with code (Candidate)
+- `GET /api/sessions` - List sessions
+- `GET /api/sessions/{id}` - Get session details
+- `PATCH /api/sessions/{id}` - Update session
+- `POST /api/sessions/{id}/start` - Start session
+- `POST /api/sessions/{id}/end` - End session
+- `GET /api/sessions/{id}/candidates` - List candidates
+
+### WebSocket
+- `WS /api/ws/session/{id}` - Real-time session events
+- `WS /api/ws/live/{id}` - Live monitoring dashboard
+
+---
+
+## 🗄️ Database Schema
+
+### Core Tables
+- **users** - User accounts (recruiters, candidates, admins)
+- **sessions** - Interview sessions
+- **candidates** - Session participation records
+
+### Activity Tables
+- **coding_events** - Code changes and executions
+- **speech_segments** - Transcribed speech
+- **vision_metrics** - Engagement and attention data
+
+### AI Tables
+- **agent_outputs** - Individual agent analysis
+- **evaluations** - Final hiring recommendations
+
+---
+
+## ⚙️ Environment Configuration
+
+See [.env.example](.env.example) for full configuration.
+
+Key settings:
+```env
+# Database
+DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/interview_platform
+
+# Redis
+REDIS_URL=redis://localhost:6379/0
+
+# JWT
+JWT_SECRET_KEY=your-secret-key-here
+JWT_ALGORITHM=HS256
+
+# LiveKit
+LIVEKIT_API_KEY=your-api-key
+LIVEKIT_API_SECRET=your-api-secret
+LIVEKIT_URL=wss://your-livekit-server.com
+
+# Storage (MinIO/S3)
+S3_ENDPOINT_URL=http://localhost:9000
+S3_ACCESS_KEY_ID=minioadmin
+S3_SECRET_ACCESS_KEY=minioadmin
+S3_BUCKET_NAME=interview-recordings
+```
+
+---
+
+## 🐳 Docker Services
+
+```yaml
+services:
+  api:        # FastAPI application
+  postgres:   # PostgreSQL database
+  redis:      # Redis cache/pub-sub
+  minio:      # S3-compatible storage
+  ollama:     # Local LLM
+  worker:     # Celery worker for background tasks
+```
+
+---
+
+## 🔧 Development
+
+### Database Migrations
+
+```bash
+# Create migration
+alembic revision --autogenerate -m "description"
+
+# Apply migrations
+alembic upgrade head
+
+# Rollback
+alembic downgrade -1
+```
+
+### Running Celery Workers
+
+```bash
+# Agent processing workers
+celery -A app.workers.celery_app worker -Q agents --loglevel=info
+
+# Session task workers
+celery -A app.workers.celery_app worker -Q sessions --loglevel=info
+```
+
+---
+
+## 📊 Production Deployment
+
+### Recommended Setup
+
+1. **Load Balancer** - Nginx/Traefik
+2. **Application** - Multiple FastAPI instances
+3. **Workers** - Dedicated Celery worker pools
+4. **Database** - PostgreSQL with replication
+5. **Cache** - Redis cluster
+6. **Storage** - S3-compatible object storage
+7. **Monitoring** - Prometheus + Grafana
+
+### Scaling Guidelines
+
+- **API**: Scale horizontally based on request load
+- **Workers**: Scale based on queue depth
+- **Database**: Use read replicas for analytics
+- **Redis**: Use Redis Cluster for high availability
+
+---
+
+## 🔒 Security Best Practices
+
+- Never commit `.env` file
+- Use strong `JWT_SECRET_KEY` (32+ bytes)
+- Enable HTTPS in production
+- Rotate credentials regularly
+- Implement rate limiting
+- Use database connection pooling
+- Enable CORS only for trusted origins
+- Sanitize all user inputs
 
 ---
 
@@ -319,28 +410,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🙏 Acknowledgments
-
-- **MediaPipe** - For powerful computer vision models
-- **Firebase** - For authentication infrastructure
-- **Cloudinary** - For reliable cloud storage
-- **FastAPI** - For modern Python web framework
-- **React** - For excellent UI development
-
----
-
-## 📞 Support
-
-For issues, questions, or suggestions:
-- 🐛 [Create an Issue](https://github.com/sukrit-89/Anti-cheat-interview-system/issues)
-- 📧 Email: sukrit.goswami.work@gmail.com
-
----
-
-<div align="center">
-
-**Built with ❤️**
-
-⭐ Star this repo if you find it helpful!
-
-</div>
+**Built for scalability. Designed for production. Powered by AI.**

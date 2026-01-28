@@ -7,67 +7,83 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+*.pyc
 
-# Virtual# Python
-__pycache__/
-*.py[cod]
+# Virtual Environment
 venv/
 env/
-*.egg-info/
-
-# Build artifacts
-build/
-dist/
-*.spec
-
-# Video and analysis files
-uploads/
-reports/
-*.mp4
-*.avi
-*.mov
-*.webm
+ENV/
+.venv
 
 # Database
 *.db
 *.sqlite3
+postgres_data/
 
 # Environment variables
 .env
-backend/.env
-frontend/.env
+.env.local
+.env.*.local
 
-# Firebase credentials
+# Sensitive files
 firebase-service-account.json
-backend/firebase-service-account.json
+*.pem
+*.key
 
 # Logs
 *.log
+logs/
 
 # OS
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
 
 # IDE
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea/
+*.sublime-*
 
-# Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/build/
-.yarn/
+# Docker
+docker-data/
 
-# Build
-*.log
-npm-debug.log*
+# Uploads & Storage
+uploads/
+recordings/
+minio_data/
+
+# Redis
+redis_data/
+
+# Ollama
+ollama_data/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+.tox/
 
 # Temporary
 *.tmp
 temp/
+.temp/
 
-# Charts
-charts/
-*.png
-!frontend/public/*.png
-!frontend/src/assets/*.png
+# Build artifacts
+*.spec
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/coverage/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid

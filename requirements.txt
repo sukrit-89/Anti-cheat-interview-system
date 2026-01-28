@@ -1,17 +1,61 @@
+# Production Python Dependencies
+# AI-Powered Technical Interview Platform
+
+# Core Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+pydantic[email]
+
+# Database
+sqlalchemy==2.0.23
+asyncpg==0.29.0
+alembic==1.12.1
+psycopg2-binary==2.9.9
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1  # Pin compatible version with passlib
+python-multipart==0.0.6
+
+# Redis & Caching
+redis==5.0.1
+
+# Celery & Task Queue
+celery==5.3.4
+kombu==5.3.4
+
+# LiveKit
+livekit==0.11.0
+livekit-api==0.5.0
+
+# AI & ML
+openai==1.3.7
+anthropic==0.7.7
+
+# Audio Processing
+librosa==0.10.1
+soundfile==0.12.1
+
+# Video Processing (for vision agent)
 opencv-python==4.10.0.84
 mediapipe==0.10.14
-opencv-python>=4.8.1
-mediapipe==0.10.14
-sounddevice>=0.4.6
-librosa>=0.10.1
-matplotlib>=3.8.2
-reportlab>=4.0.7
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
-sqlalchemy>=2.0.0
-python-multipart>=0.0.6
-websockets>=12.0
-firebase-admin>=6.2.0
-cloudinary>=1.36.0
-python-dotenv>=1.0.0
-requests>=2.31.0
+
+# Utilities
+python-dotenv==1.0.0
+httpx==0.25.2
+aiofiles==23.2.1
+tenacity==8.2.3
+boto3==1.34.28  # For S3/MinIO storage
+
+# Monitoring & Logging
+structlog==23.2.0
+
+# Development & Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+faker==20.1.0
+httpx==0.25.2
