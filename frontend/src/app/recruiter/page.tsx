@@ -33,7 +33,7 @@ export default function RecruiterDashboard() {
       return
     }
     
-    if (user.role !== 'RECRUITER') {
+    if (user.role !== 'recruiter') {
       router.push('/candidate')
       return
     }

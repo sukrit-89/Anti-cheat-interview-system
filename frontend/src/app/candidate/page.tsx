@@ -24,7 +24,7 @@ export default function CandidateDashboard() {
       return
     }
     
-    if (user.role !== 'CANDIDATE') {
+    if (user.role !== 'candidate') {
       router.push('/recruiter')
     }
   }, [user, router])

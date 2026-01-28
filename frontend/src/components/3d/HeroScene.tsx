@@ -75,9 +75,7 @@ function Points() {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={particlesRef.current.length / 3}
-          array={particlesRef.current}
-          itemSize={3}
+          args={[particlesRef.current, 3]}
         />
       </bufferGeometry>
       <pointsMaterial size={0.02} color="#8B5CF6" transparent opacity={0.6} />

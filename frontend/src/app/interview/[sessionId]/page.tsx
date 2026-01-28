@@ -121,7 +121,7 @@ export default function InterviewRoom() {
           >
             {audioEnabled ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
           </Button>
-          {user?.role === 'RECRUITER' && (
+          {user?.role === 'recruiter' && (
             <Button variant="ghost" size="sm">
               <Monitor className="h-4 w-4 mr-2" />
               Monitor
