@@ -163,6 +163,18 @@ services:
     
     restart: unless-stopped
 
+  # Frontend - Vite React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: interview_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
   # MinIO - S3-Compatible Storage (FREE)
   minio:
     image: minio/minio:latest

@@ -13,6 +13,70 @@ build/
 venv/
 env/
 ENV/
+
+# Node.js
+node_modules/
+app/node_modules/
+frontend/node_modules/
+app/dist/
+frontend/dist/
+app/.next/
+frontend/.next/
+app/.vercel/
+frontend/.vercel/
+app/.pnp
+frontend/.pnp
+app/.pnp.*
+frontend/.pnp.*
+app/.yarn/
+frontend/.yarn/
+app/coverage/
+frontend/coverage/
+app/next-env.d.ts
+frontend/next-env.d.ts
+app/*.tsbuildinfo
+frontend/*.tsbuildinfo
+
+# Build outputs
+*.log
+logs/
+*.swo
+*.swp
+*.tmp
+temp/
+.temp/
+*.spec
+
+# Editor folders
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.sublime-*
+
+# Docker
+docker-data/
+
+# Uploads & Storage
+uploads/
+recordings/
+minio_data/
+
+# Redis
+redis_data/
+
+# Ollama
+ollama_data/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+.tox/
+
 .venv
 
 # Database
@@ -37,11 +101,6 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
-*.swp
-*.swo
-
-# IDE
-.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
