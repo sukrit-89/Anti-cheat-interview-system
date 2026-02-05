@@ -1,91 +1,133 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-  }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-  }
-}
-
-@layer base {
+  /* Base styles with Neural Precision aesthetic */
   * {
-    @apply border-border;
+    border-color: theme('colors.neural.border');
   }
+
   body {
-    @apply bg-background text-foreground;
+    background-color: #0A0E1A;
+    color: #FFFFFF;
+    font-family: 'Work Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    background-image: var(--neural-grid);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #0A0E1A;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: theme('colors.neural.border');
+    border-radius: 0.25rem;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 217, 255, 0.3);
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: rgba(0, 217, 255, 0.3);
+    color: #FFFFFF;
   }
 }
 
-/* Custom dark theme for interview platform */
-body {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-  color: #ffffff;
-  overflow-x: hidden;
+@layer components {
+
+  /* Glass Card Component */
+  .glass-card {
+    @apply bg-neural-surface/80 backdrop-blur-md;
+    @apply border border-neural-border;
+    @apply rounded-lg;
+  }
+
+  /* Hover states with precision */
+  .interactive-hover {
+    @apply transition-all duration-200;
+    @apply hover:border-accent-cyan/50;
+  }
+
+  /* Code blocks */
+  .code-block {
+    @apply bg-neural-bg font-mono text-sm;
+    @apply p-4 rounded border border-neural-border;
+  }
+
+  /* Agent status indicators */
+  .agent-active {
+    @apply relative;
+  }
+
+  .agent-active::before {
+    content: '';
+    @apply absolute -left-2 top-0 bottom-0 w-1 bg-accent-cyan;
+    @apply rounded-full;
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+
+  /*  Neural grid background */
+  .neural-bg {
+    background-image:
+      linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
 }
 
-/* Glassmorphism effects */
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
+@layer utilities {
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
+  /* Accessibility - reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
 
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-}
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.5);
-  border-radius: 4px;
-}
+  /* Focus states for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-accent-cyan focus:ring-offset-2 focus:ring-offset-neural-bg;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.7);
+  /* Text gradients for headings */
+  .text-gradient-cyan {
+    @apply bg-gradient-to-r from-accent-cyan to-accent-violet bg-clip-text text-transparent;
+  }
+
+  /* Staggered reveal animations */
+  .stagger-1 {
+    animation: slideUp 0.4s ease-out 0.1s backwards;
+  }
+
+  .stagger-2 {
+    animation: slideUp 0.4s ease-out 0.2s backwards;
+  }
+
+  .stagger-3 {
+    animation: slideUp 0.4s ease-out 0.3s backwards;
+  }
+
+  .stagger-4 {
+    animation: slideUp 0.4s ease-out 0.4s backwards;
+  }
 }
