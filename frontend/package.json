@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@livekit/components-react": "^2.9.19",
+    "@livekit/components-styles": "^1.2.0",
     "@monaco-editor/react": "^4.7.0",
     "axios": "^1.13.4",
     "clsx": "^2.1.1",
     "livekit-client": "^2.17.1",
+    "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0",
@@ -36,9 +38,6 @@
     "tailwindcss": "^3.4.19",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "npm:rolldown-vite@7.2.5"
-  },
-  "overrides": {
-    "vite": "npm:rolldown-vite@7.2.5"
+    "vite": "^5.4.10"
   }
 }

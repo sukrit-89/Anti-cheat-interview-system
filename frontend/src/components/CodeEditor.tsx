@@ -1,7 +1,7 @@
 /**
  * Code Editor Component with real-time sync
  */
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { codingApi } from '@/lib/api';
 import { Button } from './Button';
@@ -23,7 +23,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     const [isExecuting, setIsExecuting] = React.useState(false);
     const [output, setOutput] = React.useState<string>('');
     const [error, setError] = React.useState<string>('');
-    const typingTimeoutRef = useRef<NodeJS.Timeout>();
+    const typingTimeoutRef = useRef<number | undefined>(undefined);
 
     const handleChange = useCallback(
         (newValue: string | undefined) => {
@@ -35,7 +35,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
                     clearTimeout(typingTimeoutRef.current);
                 }
 
-                typingTimeoutRef.current = setTimeout(() => {
+                typingTimeoutRef.current = window.setTimeout(() => {
                     // Send keystroke event to backend
                     codingApi
                         .createEvent({
@@ -44,11 +44,11 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
                             code_snapshot: newValue,
                             language,
                         })
-                        .catch((err) => console.error('Failed to track coding event:', err));
+                        .catch((err: unknown) => console.error('Failed to track coding event:', err));
                 }, 1000);
             }
         },
-        [sessionId, language, onChange]
+        [sessionId, onChange, language]
     );
 
     const handleExecute = async () => {
@@ -74,8 +74,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
                 execution_output: result.output,
                 execution_error: result.error,
             });
-        } catch (err: any) {
-            setError(err.response?.data?.detail || 'Execution failed');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Execution failed');
         } finally {
             setIsExecuting(false);
         }

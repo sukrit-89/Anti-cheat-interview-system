@@ -3,7 +3,8 @@
  * Manages interview sessions and real-time updates
  */
 import { create } from 'zustand';
-import { Session, sessionsApi, SessionCreateRequest, SessionJoinRequest } from '@/lib/api';
+import { sessionsApi } from '../lib/api';
+import type { Session, SessionCreateRequest, SessionJoinRequest } from '../lib/api';
 
 interface SessionState {
   sessions: Session[];
@@ -20,6 +21,7 @@ interface SessionState {
   setCurrentSession: (session: Session | null) => void;
   startSession: (sessionId: number) => Promise<void>;
   endSession: (sessionId: number) => Promise<void>;
+  fetchSession: (sessionId: number) => Promise<void>;
   clearError: () => void;
 }
 
@@ -39,6 +41,19 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     } catch (error: any) {
       set({
         error: error.response?.data?.detail || 'Failed to fetch sessions',
+        isLoading: false,
+      });
+    }
+  },
+
+  fetchSession: async (sessionId: number) => {
+    set({ isLoading: true, error: null });
+    try {
+      const session = await sessionsApi.getSession(sessionId);
+      set({ currentSession: session, isLoading: false });
+    } catch (error: any) {
+      set({
+        error: error.response?.data?.detail || 'Failed to fetch session',
         isLoading: false,
       });
     }

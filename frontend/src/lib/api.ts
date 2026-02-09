@@ -2,7 +2,8 @@
  * API Client for Integrity AI Platform
  * Handles all HTTP requests to the backend
  */
-import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios from 'axios';
+import type { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 // API Base URL - from environment or default
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -129,7 +130,7 @@ export interface SessionCreateRequest {
   title: string;
   description?: string;
   scheduled_at?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface Session {
@@ -210,7 +211,12 @@ export const codingApi = {
     await apiClient.post('/api/coding-events', data);
   },
 
-  executeCode: async (sessionId: number, code: string, language: string): Promise<any> => {
+  executeCode: async (sessionId: number, code: string, language: string): Promise<{
+    output?: string;
+    error?: string;
+    execution_time?: number;
+    exit_code?: number;
+  }> => {
     const response = await apiClient.post('/api/coding-events/execute', {
       session_id: sessionId,
       code,
@@ -236,7 +242,7 @@ export interface Evaluation {
   confidence_level?: number;
   strengths: string[];
   weaknesses: string[];
-  key_findings: any[];
+  key_findings: unknown[];
   summary?: string;
   detailed_report?: string;
   evaluated_at: string;

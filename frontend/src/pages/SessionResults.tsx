@@ -1,23 +1,29 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Download, FileText, Scale, TrendingUp, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
+import { Button } from '../components/Button';
+import { Card, EvidenceCard, MetricCard } from '../components/Card';
 
 interface EvaluationScore {
   category: string;
   score: number;
   maxScore: number;
   feedback: string;
+  agent: string;
 }
 
 interface Finding {
   content: string;
-  sentiment: 'positive' | 'negative' | 'neutral';
+  severity: 'positive' | 'negative' | 'neutral';
+  category: string;
 }
 
 interface AIAgent {
   name: string;
   status: 'completed' | 'processing' | 'failed';
   findings: Finding[];
+  confidence: number;
 }
 
 export default function SessionResults() {
@@ -27,6 +33,7 @@ export default function SessionResults() {
   const [evaluationScores, setEvaluationScores] = useState<EvaluationScore[]>([]);
   const [agentReports, setAgentReports] = useState<AIAgent[]>([]);
   const [overallScore, setOverallScore] = useState<number>(0);
+  const [recommendation, setRecommendation] = useState<'HIRE' | 'MAYBE' | 'NO_HIRE'>('MAYBE');
 
   useEffect(() => {
     if (sessionId) {
@@ -36,245 +43,350 @@ export default function SessionResults() {
   }, [sessionId, fetchSession]);
 
   const loadMockEvaluation = () => {
-    setOverallScore(72);
+    setOverallScore(78);
+    setRecommendation('HIRE');
+    
     setEvaluationScores([
       {
         category: 'Problem Solving',
-        score: 78,
+        score: 82,
         maxScore: 100,
         feedback: 'Strong analytical skills, efficient algorithmic approach',
+        agent: 'ReasoningAgent'
       },
       {
         category: 'Code Quality',
         score: 85,
         maxScore: 100,
-        feedback: 'Clean code structure, good naming conventions',
+        feedback: 'Clean, well-structured code with good practices',
+        agent: 'CodingAgent'
       },
       {
         category: 'Communication',
-        score: 65,
+        score: 74,
         maxScore: 100,
-        feedback: 'Adequate explanation, could improve clarity',
+        feedback: 'Clear explanations, good technical vocabulary',
+        agent: 'SpeechAgent'
       },
       {
-        category: 'Technical Knowledge',
-        score: 70,
+        category: 'Engagement',
+        score: 71,
         maxScore: 100,
-        feedback: 'Solid fundamentals, some advanced concepts unclear',
-      },
-      {
-        category: 'Behavioral',
-        score: 60,
-        maxScore: 100,
-        feedback: 'Moderate eye contact, some signs of stress',
-      },
+        feedback: 'Consistent attention, professional demeanor',
+        agent: 'VisionAgent'
+      }
     ]);
 
     setAgentReports([
       {
-        name: 'Code Execution Analysis',
+        name: 'CodingAgent',
         status: 'completed',
+        confidence: 92,
         findings: [
-          { content: 'Implemented optimal solution with O(n log n) complexity', sentiment: 'positive' },
-          { content: 'Used appropriate data structures', sentiment: 'positive' },
-          { content: 'Code passed 8/10 test cases', sentiment: 'neutral' },
-          { content: 'Minor edge case handling issues detected', sentiment: 'negative' },
-        ],
+          { content: 'Implemented efficient binary search algorithm', severity: 'positive', category: 'Algorithm' },
+          { content: 'Code follows SOLID principles', severity: 'positive', category: 'Best Practices' },
+          { content: 'Minor optimization opportunities in loop structure', severity: 'neutral', category: 'Optimization' }
+        ]
       },
       {
-        name: 'Speech Pattern Analysis',
+        name: 'SpeechAgent',
         status: 'completed',
+        confidence: 88,
         findings: [
-          { content: 'Clear pronunciation and pace', sentiment: 'positive' },
-          { content: 'Used technical terminology correctly', sentiment: 'positive' },
-          { content: 'Explained thought process adequately', sentiment: 'neutral' },
-          { content: 'Some filler words detected (12 instances)', sentiment: 'negative' },
-        ],
+          { content: 'Excellent technical explanation clarity', severity: 'positive', category: 'Communication' },
+          { content: 'Used appropriate industry terminology', severity: 'positive', category: 'Vocabulary' },
+          { content: 'Occasional filler words during complex explanations', severity: 'neutral', category: 'Delivery' }
+        ]
       },
       {
-        name: 'Behavioral Observation',
+        name: 'VisionAgent',
         status: 'completed',
+        confidence: 85,
         findings: [
-          { content: 'Maintained eye contact 65% of the time', sentiment: 'neutral' },
-          { content: 'Neutral facial expressions', sentiment: 'neutral' },
-          { content: 'No suspicious behavior detected', sentiment: 'positive' },
-          { content: 'Slight signs of nervousness noted', sentiment: 'negative' },
-        ],
+          { content: 'Maintained consistent eye contact with screen', severity: 'positive', category: 'Attention' },
+          { content: 'Professional posture throughout interview', severity: 'positive', category: 'Demeanor' },
+          { content: 'Brief attention lapses during complex problems', severity: 'negative', category: 'Focus' }
+        ]
       },
       {
-        name: 'Reasoning Assessment',
+        name: 'ReasoningAgent',
         status: 'completed',
+        confidence: 90,
         findings: [
-          { content: 'Logical problem decomposition', sentiment: 'positive' },
-          { content: 'Identified trade-offs effectively', sentiment: 'positive' },
-          { content: 'Made reasonable assumptions', sentiment: 'neutral' },
-          { content: 'Could improve time complexity analysis', sentiment: 'negative' },
-        ],
-      },
-      {
-        name: 'Final Evaluation',
-        status: 'completed',
-        findings: [
-          { content: 'Overall performance: Above Average', sentiment: 'positive' },
-          { content: 'Recommended for next round', sentiment: 'positive' },
-          { content: 'Strong technical foundation', sentiment: 'positive' },
-          { content: 'Suggested improvement areas: Advanced algorithms, system design', sentiment: 'neutral' },
-        ],
-      },
+          { content: 'Systematic problem decomposition approach', severity: 'positive', category: 'Methodology' },
+          { content: 'Logical progression through solution steps', severity: 'positive', category: 'Logic' },
+          { content: 'Good adaptation to edge cases', severity: 'positive', category: 'Adaptability' }
+        ]
+      }
     ]);
   };
 
-  const getVerdict = (score: number) => {
-    if (score >= 80) return { text: 'Advance to Next Round', type: 'success' };
-    if (score >= 60) return { text: 'Conditional Recommendation', type: 'warning' };
-    return { text: 'Decline', type: 'critical' };
+  const handleDownloadReport = () => {
+    // PDF generation logic here
+    console.log('Downloading PDF report...');
+  };
+
+  const getRecommendationColor = (rec: string) => {
+    switch (rec) {
+      case 'HIRE': return 'text-semantic-success';
+      case 'NO_HIRE': return 'text-semantic-critical';
+      default: return 'text-semantic-warning';
+    }
+  };
+
+  const getRecommendationBg = (rec: string) => {
+    switch (rec) {
+      case 'HIRE': return 'bg-semantic-success/10 border-semantic-success';
+      case 'NO_HIRE': return 'bg-semantic-critical/10 border-semantic-critical';
+      default: return 'bg-semantic-warning/10 border-semantic-warning';
+    }
   };
 
   if (!currentSession) {
     return (
       <div className="min-h-screen bg-verdict-bg flex items-center justify-center">
-        <div className="text-verdict-text-tertiary">Loading evaluation results...</div>
+        <div className="text-verdict-text-secondary">Loading results...</div>
       </div>
     );
   }
 
-  const verdict = getVerdict(overallScore);
-
   return (
     <div className="min-h-screen bg-verdict-bg">
-      {/* Header */}
-      <header className="border-b border-verdict-border bg-verdict-surface/50 backdrop-blur">
-        <div className="max-w-5xl mx-auto px-8 py-6">
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="text-sm text-verdict-text-secondary hover:text-verdict-text-primary mb-4 transition-colors"
-          >
-            ← Return to Dashboard
-          </button>
-          <h1 className="font-serif text-3xl font-semibold text-verdict-text-primary mb-2">
-            Evaluation Report
-          </h1>
-          <p className="text-verdict-text-secondary">{currentSession.title}</p>
+      {/* Evidence Report Header */}
+      <header className="verdict-card border-b border-verdict-border-strong px-6 py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-3">
+              <FileText className="w-6 h-6 text-accent-bronze" />
+              <div>
+                <h1 className="text-headline font-display text-verdict-text-primary">
+                  Evaluation Report
+                </h1>
+                <p className="text-micro text-verdict-text-tertiary">
+                  {currentSession.title} · Session {currentSession.join_code}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate(`/sessions/${sessionId}/monitor`)}
+            >
+              Back to Monitor
+            </Button>
+            
+            <Button 
+              variant="primary" 
+              size="sm"
+              onClick={handleDownloadReport}
+              icon={<Download className="w-4 h-4" />}
+            >
+              Download PDF
+            </Button>
+          </div>
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-8 py-12">
-        {/* Verdict Section */}
-        <section className="mb-12 border-b border-verdict-border pb-8">
-          <div className="flex items-baseline justify-between mb-6">
-            <h2 className="font-serif text-xl font-medium text-verdict-text-primary">
-              Final Assessment
-            </h2>
-            <div className={`text-xs uppercase tracking-widest ${{
-              success: 'text-semantic-success',
-              warning: 'text-semantic-warning',
-              critical: 'text-semantic-critical'
-            }[verdict.type]}`}>
-              {verdict.text}
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto px-8 py-12 space-editorial">
+        {/* Final Verdict */}
+        <section className="editorial-section">
+          <h2 className="text-subheadline mb-6">Final Verdict</h2>
           
-          <div className="flex items-end gap-12">
-            <div>
-              <div className="text-xs uppercase tracking-wide text-verdict-text-tertiary mb-2">
-                Composite Score
-              </div>
-              <div className="font-mono text-6xl text-verdict-text-primary">
-                {overallScore}
-                <span className="text-2xl text-verdict-text-tertiary ml-1">/100</span>
-              </div>
+          <div className="grid-control">
+            <div className="grid-control-8">
+              <MetricCard
+                title="Overall Score"
+                value={overallScore}
+                unit="/100"
+                status="success"
+                description="Comprehensive evaluation"
+              />
             </div>
-            <div className="flex-1 pb-4">
-              <div className="h-2 bg-verdict-border">
-                <div 
-                  className={`h-full ${{
-                    success: 'bg-semantic-success',
-                    warning: 'bg-semantic-warning',
-                    critical: 'bg-semantic-critical'
-                  }[verdict.type]}`}
-                  style={{ width: `${overallScore}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Metrics Breakdown */}
-        <section className="mb-12">
-          <h2 className="font-serif text-xl font-medium text-verdict-text-primary mb-6 border-b border-verdict-border pb-3">
-            Assessment Criteria
-          </h2>
-          <div className="space-y-6">
-            {evaluationScores.map((score, index) => (
-              <div key={index} className="border-l-2 border-verdict-line pl-6">
-                <div className="flex items-baseline justify-between mb-2">
-                  <h3 className="text-sm font-medium text-verdict-text-primary uppercase tracking-wide">
-                    {score.category}
-                  </h3>
-                  <span className="font-mono text-lg text-verdict-text-primary">
-                    {score.score}
-                    <span className="text-sm text-verdict-text-tertiary ml-1">/{score.maxScore}</span>
-                  </span>
-                </div>
-                <div className="h-1 bg-verdict-border mb-3">
-                  <div 
-                    className="h-full bg-verdict-line"
-                    style={{ width: `${(score.score / score.maxScore) * 100}%` }}
-                  />
-                </div>
-                <p className="text-sm text-verdict-text-secondary leading-relaxed">
-                  {score.feedback}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Agent Analysis */}
-        <section>
-          <h2 className="font-serif text-xl font-medium text-verdict-text-primary mb-6 border-b border-verdict-border pb-3">
-            Evidence & Observations
-          </h2>
-          <div className="space-y-8">
-            {agentReports.map((agent, index) => (
-              <div key={index}>
-                <h3 className="text-sm uppercase tracking-widest text-verdict-text-tertiary mb-4 flex items-center gap-3">
-                  {agent.name}
-                  <div className={`w-1.5 h-1.5 rounded-full ${
-                    agent.status === 'completed' ? 'bg-semantic-success' :
-                    agent.status === 'processing' ? 'bg-semantic-warning' :
-                    'bg-semantic-critical'
-                  }`} />
-                </h3>
-                <div className="space-y-2">
-                  {agent.findings.map((finding, idx) => (
-                    <div key={idx} className="flex items-start gap-3 text-sm">
-                      <div className={`w-1 h-1 rounded-full mt-2 flex-shrink-0 ${
-                        finding.sentiment === 'positive' ? 'bg-semantic-success' :
-                        finding.sentiment === 'negative' ? 'bg-semantic-critical' :
-                        'bg-verdict-line'
-                      }`} />
-                      <p className="text-verdict-text-secondary leading-relaxed">
-                        {finding.content}
-                      </p>
+            
+            <div className="grid-control-4">
+              <Card variant="evidence" className={`text-center ${getRecommendationBg(recommendation)}`}>
+                <div className="space-y-3">
+                  <Scale className="w-8 h-8 mx-auto text-accent-bronze" />
+                  <div>
+                    <div className={`text-2xl font-bold ${getRecommendationColor(recommendation)}`}>
+                      {recommendation.replace('_', ' ')}
                     </div>
-                  ))}
+                    <p className="text-micro text-verdict-text-secondary">
+                      Hiring Recommendation
+                    </p>
+                  </div>
                 </div>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Category Breakdown */}
+        <section className="editorial-section">
+          <h2 className="text-subheadline mb-6">Performance Analysis</h2>
+          
+          <div className="grid-control">
+            {evaluationScores.map((score, index) => (
+              <div key={index} className="grid-control-6">
+                <Card variant="control" className="h-full">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-subheadline font-semibold text-verdict-text-primary">
+                        {score.category}
+                      </h3>
+                      <span className={`text-micro px-2 py-1 rounded-sm ${
+                        score.score >= 80 ? 'bg-semantic-success/10 text-semantic-success' :
+                        score.score >= 60 ? 'bg-semantic-warning/10 text-semantic-warning' :
+                        'bg-semantic-critical/10 text-semantic-critical'
+                      }`}>
+                        {score.score}/100
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-micro">
+                        <span className="text-verdict-text-tertiary">Agent:</span>
+                        <span className="font-mono text-verdict-text-secondary">{score.agent}</span>
+                      </div>
+                      
+                      <div className="w-full bg-verdict-border rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full ${
+                            score.score >= 80 ? 'bg-semantic-success' :
+                            score.score >= 60 ? 'bg-semantic-warning' :
+                            'bg-semantic-critical'
+                          }`}
+                          style={{ width: `${score.score}%` }}
+                        />
+                      </div>
+                    </div>
+                    
+                    <p className="text-body text-verdict-text-secondary">
+                      {score.feedback}
+                    </p>
+                  </div>
+                </Card>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="mt-16 pt-8 border-t border-verdict-border text-center">
-          <p className="text-xs text-verdict-text-tertiary">
-            This report was generated by Integrity AI evaluation system on {new Date().toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
-          </p>
-        </footer>
+        {/* AI Agent Reports */}
+        <section className="editorial-section">
+          <h2 className="text-subheadline mb-6">Agent Analysis</h2>
+          
+          <div className="grid-control">
+            {agentReports.map((agent, index) => (
+              <div key={index} className="grid-control-6">
+                <Card variant="evidence" className="h-full">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-subheadline font-semibold text-verdict-text-primary">
+                        {agent.name}
+                      </h3>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${
+                          agent.status === 'completed' ? 'bg-semantic-success' :
+                          agent.status === 'processing' ? 'bg-semantic-warning' :
+                          'bg-semantic-critical'
+                        }`} />
+                        <span className="text-micro text-verdict-text-secondary">
+                          {agent.confidence}% confidence
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-paragraph">
+                      {agent.findings.map((finding, findingIndex) => (
+                        <div key={findingIndex} className="flex items-start space-x-3">
+                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                            finding.severity === 'positive' ? 'bg-semantic-success' :
+                            finding.severity === 'negative' ? 'bg-semantic-critical' :
+                            'bg-semantic-warning'
+                          }`} />
+                          <div className="flex-1">
+                            <p className="text-body text-verdict-text-primary">
+                              {finding.content}
+                            </p>
+                            <p className="text-micro text-verdict-text-tertiary">
+                              {finding.category}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Session Metadata */}
+        <section className="editorial-section">
+          <h2 className="text-subheadline mb-6">Session Information</h2>
+          
+          <div className="grid-control">
+            <div className="grid-control-6">
+              <Card variant="control">
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 text-micro text-verdict-text-secondary">
+                    <Clock className="w-4 h-4" />
+                    <span>Duration</span>
+                  </div>
+                  <p className="text-body font-mono text-verdict-text-primary">
+                    45 minutes
+                  </p>
+                </div>
+              </Card>
+            </div>
+            
+            <div className="grid-control-6">
+              <Card variant="control">
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 text-micro text-verdict-text-secondary">
+                    <TrendingUp className="w-4 h-4" />
+                    <span>Complexity</span>
+                  </div>
+                  <p className="text-body text-verdict-text-primary">
+                    Medium-Hard
+                  </p>
+                </div>
+              </Card>
+            </div>
+            
+            <div className="grid-control-6">
+              <Card variant="control">
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 text-micro text-verdict-text-secondary">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Status</span>
+                  </div>
+                  <p className="text-body text-verdict-text-primary">
+                    Completed Successfully
+                  </p>
+                </div>
+              </Card>
+            </div>
+            
+            <div className="grid-control-6">
+              <Card variant="control">
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 text-micro text-verdict-text-secondary">
+                    <AlertTriangle className="w-4 h-4" />
+                    <span>Flags</span>
+                  </div>
+                  <p className="text-body text-verdict-text-primary">
+                    2 minor issues detected
+                  </p>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

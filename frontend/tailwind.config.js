@@ -7,75 +7,111 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Serious, restrained palette - semantic only
+                // Editorial, authority-driven palette
                 verdict: {
-                    bg: '#0D0D0D',           // Near black
-                    surface: '#1A1A1A',      // Elevated surface
+                    bg: '#0A0A0A',           // Deep black - seriousness
+                    surface: '#111111',      // Elevated surface
+                    'surface-elevated': '#1A1A1A', // Higher elevation
                     border: '#2A2A2A',       // Subtle borders
+                    'border-strong': '#333333', // Strong borders
                     line: '#3A3A3A',         // Dividers
                     text: {
-                        primary: '#F5F5F5',   // Off-white for readability
-                        secondary: '#A0A0A0', // Muted gray
-                        tertiary: '#707070',  // Deemphasized
+                        primary: '#F1F1F1',   // Warm white for readability
+                        secondary: '#B8B8B8', // Muted gray
+                        tertiary: '#888888',  // Deemphasized
+                        quaternary: '#666666', // Very muted
                     }
                 },
-                // Semantic colors only
+                // Semantic colors only - meaning-driven
                 semantic: {
-                    critical: '#C41E3A',     // Dark red - integrity violations
-                    warning: '#C17817',      // Muted gold - flags
-                    success: '#1F7A1F',      // Forest green - pass
-                    neutral: '#5A5A5A',      // Neutral gray
-                    emphasis: '#8B7355',     // Muted bronze - authority
+                    critical: '#B91C1C',     // Critical red - integrity violations
+                    'critical-light': '#991B1B', // Darker critical
+                    warning: '#92400E',      // Muted amber - flags
+                    'warning-light': '#78350F', // Darker warning
+                    success: '#14532D',      // Forest green - pass
+                    'success-light': '#166534', // Darker success
+                    neutral: '#6B7280',      // Neutral gray
+                    emphasis: '#78716C',     // Stone - authority, judgment
+                    'emphasis-light': '#57534E', // Darker emphasis
+                },
+                // Accent colors for minimal highlights
+                accent: {
+                    bronze: '#92400E',       // Authority bronze
+                    'bronze-light': '#B45309', // Lighter bronze
                 }
             },
             fontFamily: {
-                // Editorial serif-sans combination
+                // Editorial serif-sans combination - character-rich
                 serif: ['"Crimson Pro"', 'Georgia', 'serif'],
                 sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
                 mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+                display: ['"Crimson Pro"', 'Georgia', 'serif'], // For headings
             },
             fontSize: {
-                // Editorial type scale
-                'xs': ['0.75rem', { lineHeight: '1.125rem', letterSpacing: '0.01em' }],
-                'sm': ['0.875rem', { lineHeight: '1.375rem', letterSpacing: '0' }],
-                'base': ['1rem', { lineHeight: '1.625rem', letterSpacing: '0' }],
-                'lg': ['1.125rem', { lineHeight: '1.75rem', letterSpacing: '-0.01em' }],
+                // Editorial type scale - deliberate hierarchy
+                'xs': ['0.75rem', { lineHeight: '1.25rem', letterSpacing: '0.025em' }],
+                'sm': ['0.875rem', { lineHeight: '1.5rem', letterSpacing: '0.01em' }],
+                'base': ['1rem', { lineHeight: '1.75rem', letterSpacing: '0' }],
+                'lg': ['1.125rem', { lineHeight: '1.75rem', letterSpacing: '-0.005em' }],
                 'xl': ['1.25rem', { lineHeight: '1.875rem', letterSpacing: '-0.01em' }],
-                '2xl': ['1.5rem', { lineHeight: '2.125rem', letterSpacing: '-0.02em' }],
-                '3xl': ['1.875rem', { lineHeight: '2.375rem', letterSpacing: '-0.02em' }],
-                '4xl': ['2.25rem', { lineHeight: '2.75rem', letterSpacing: '-0.03em' }],
-                '5xl': ['3rem', { lineHeight: '3.5rem', letterSpacing: '-0.03em' }],
+                '2xl': ['1.5rem', { lineHeight: '2rem', letterSpacing: '-0.015em' }],
+                '3xl': ['1.875rem', { lineHeight: '2.25rem', letterSpacing: '-0.02em' }],
+                '4xl': ['2.25rem', { lineHeight: '2.5rem', letterSpacing: '-0.025em' }],
+                '5xl': ['3rem', { lineHeight: '3.25rem', letterSpacing: '-0.03em' }],
+                '6xl': ['3.75rem', { lineHeight: '4rem', letterSpacing: '-0.035em' }],
             },
             borderRadius: {
                 'none': '0',
-                'sm': '2px',      // Sharp, deliberate
-                DEFAULT: '3px',
-                'md': '4px',
-                'lg': '6px',
+                'sm': '1px',      // Sharp, deliberate
+                DEFAULT: '2px',
+                'md': '3px',
+                'lg': '4px',
+                'xl': '6px',
+            },
+            spacing: {
+                '18': '4.5rem',
+                '88': '22rem',
+                '92': '23rem',
+                '96': '24rem',
+                '100': '25rem',
+                '104': '26rem',
+                '108': '27rem',
+                '112': '28rem',
+                '116': '29rem',
+                '120': '30rem',
             },
             animation: {
-                'reveal': 'reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+                'reveal-slow': 'reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                'reveal-slower': 'reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                'fade-in': 'fadeIn 0.6s ease-out',
+                'slide-up': 'slideUp 0.5s ease-out',
+                'pulse-subtle': 'pulseSubtle 3s ease-in-out infinite',
             },
             keyframes: {
                 reveal: {
-                    '0%': { opacity: '0', transform: 'translateY(8px)' },
+                    '0%': { opacity: '0', transform: 'translateY(12px)' },
                     '100%': { opacity: '1', transform: 'translateY(0)' },
                 },
-            },
-        },
-    },
-    plugins: [],
-}
+                fadeIn: {
                     '0%': { opacity: '0' },
                     '100%': { opacity: '1' },
                 },
                 slideUp: {
-                    '0%': { transform: 'translateY(10px)', opacity: '0' },
+                    '0%': { transform: 'translateY(8px)', opacity: '0' },
                     '100%': { transform: 'translateY(0)', opacity: '1' },
                 },
+                pulseSubtle: {
+                    '0%, 100%': { opacity: '1' },
+                    '50%': { opacity: '0.7' },
+                },
             },
-            backgroundImage: {
-                'neural-grid': "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300D9FF' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+            boxShadow: {
+                'subtle': '0 1px 3px 0 rgba(0, 0, 0, 0.3)',
+                'medium': '0 4px 6px -1px rgba(0, 0, 0, 0.4)',
+                'strong': '0 10px 15px -3px rgba(0, 0, 0, 0.5)',
+            },
+            backdropBlur: {
+                'xs': '2px',
             },
         },
     },

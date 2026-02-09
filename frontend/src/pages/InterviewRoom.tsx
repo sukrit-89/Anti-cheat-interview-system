@@ -1,5 +1,5 @@
 /**
- * Interview Room - Main interview interface with video + code editor
+ * Interview Room - Document-style interview interface with authority
  */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -9,18 +9,19 @@ import { useSessionStore } from '../store/useSessionStore';
 import { useWebSocket } from '../lib/websocket';
 import { CodeEditor } from '../components/CodeEditor';
 import { Button } from '../components/Button';
-import { LogOut, Code, Video, Maximize2, Minimize2 } from 'lucide-react';
+import { LogOut, Code, Maximize2, Minimize2, FileText, Clock } from 'lucide-react';
 
 const LIVEKIT_WS_URL = import.meta.env.VITE_LIVEKIT_WS_URL;
 
 export const InterviewRoom: React.FC = () => {
     const navigate = useNavigate();
     const { currentSession, roomToken } = useSessionStore();
-    const { isConnected, lastMessage } = useWebSocket(currentSession?.id || null);
+    const { isConnected } = useWebSocket(currentSession?.id || null);
 
     const [isCodeExpanded, setIsCodeExpanded] = useState(false);
     const [currentCode, setCurrentCode] = useState('');
     const [language, setLanguage] = useState('typescript');
+    const [elapsedTime, setElapsedTime] = useState(0);
 
     useEffect(() => {
         if (!currentSession || !roomToken) {
@@ -28,131 +29,188 @@ export const InterviewRoom: React.FC = () => {
         }
     }, [currentSession, roomToken, navigate]);
 
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setElapsedTime(prev => prev + 1);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
+
     const handleLeave = () => {
         if (confirm('Are you sure you want to leave the interview?')) {
             navigate('/join');
         }
     };
 
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
     if (!currentSession || !roomToken) {
         return (
-            <div className="min-h-screen neural-bg flex items-center justify-center">
-                <div className="text-neural-text-secondary">Loading interview room...</div>
+            <div className="min-h-screen bg-verdict-bg flex items-center justify-center">
+                <div className="text-verdict-text-secondary">Loading interview room...</div>
             </div>
         );
     }
 
     return (
-        <div className="h-screen flex flex-col neural-bg overflow-hidden">
-            {/* Header */}
-            <header className="glass-card border-b border-neural-border px-6 py-3 flex-shrink-0">
+        <div className="h-screen flex flex-col bg-verdict-bg overflow-hidden">
+            {/* Authority Header */}
+            <header className="verdict-card border-b border-verdict-border-strong px-6 py-4 flex-shrink-0">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-cyan to-accent-violet flex items-center justify-center">
-                            <span className="text-sm font-bold text-neural-bg font-mono">I</span>
+                    <div className="flex items-center space-x-6">
+                        <div className="flex items-center space-x-3">
+                            <FileText className="w-5 h-5 text-accent-bronze" />
+                            <div>
+                                <h1 className="text-headline font-display text-verdict-text-primary">
+                                    {currentSession.title}
+                                </h1>
+                                <p className="text-micro text-verdict-text-tertiary">
+                                    Session Code: {currentSession.join_code}
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h1 className="text-lg font-semibold text-neural-text-primary">
-                                {currentSession.title}
-                            </h1>
-                            <p className="text-xs text-neural-text-secondary">
-                                Session: {currentSession.session_code}
-                            </p>
+                        
+                        <div className="flex items-center space-x-2 text-micro text-verdict-text-secondary">
+                            <Clock className="w-4 h-4" />
+                            <span className="font-mono">{formatTime(elapsedTime)}</span>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 text-sm">
-                            <div
-                                className={`w-2 h-2 rounded-full ${
-                                    isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'
-                                }`}
-                            />
-                            <span className="text-neural-text-secondary">
-                                {isConnected ? 'Connected' : 'Disconnected'}
+                    <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2">
+                            <div className={`w-2 h-2 rounded-full ${
+                                isConnected ? 'bg-semantic-success' : 'bg-semantic-critical'
+                            }`} />
+                            <span className="text-micro text-verdict-text-secondary">
+                                {isConnected ? 'CONNECTED' : 'CONNECTING'}
                             </span>
                         </div>
-                        <Button
-                            variant="secondary"
+                        
+                        <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => setIsCodeExpanded(!isCodeExpanded)}
+                            icon={isCodeExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                        >
+                            {isCodeExpanded ? 'Minimize' : 'Expand'} Editor
+                        </Button>
+
+                        <Button 
+                            variant="critical" 
                             size="sm"
                             onClick={handleLeave}
-                            className="flex items-center gap-2"
+                            icon={<LogOut className="w-4 h-4" />}
                         >
-                            <LogOut className="w-4 h-4" />
-                            Leave
+                            Leave Interview
                         </Button>
                     </div>
                 </div>
             </header>
 
-            {/* Main Content */}
+            {/* Main Content Area */}
             <div className="flex-1 flex overflow-hidden">
-                {/* Left Panel - Video */}
-                <div
-                    className={`${
-                        isCodeExpanded ? 'w-1/4' : 'w-1/2'
-                    } transition-all duration-300 border-r border-neural-border bg-black/20`}
-                >
-                    <LiveKitRoom
-                        serverUrl={LIVEKIT_WS_URL}
-                        token={roomToken}
-                        connect={true}
-                        audio={true}
-                        video={true}
-                        onDisconnected={() => {
-                            console.log('Disconnected from LiveKit');
-                        }}
-                        className="h-full"
-                    >
-                        <VideoConference />
-                        <RoomAudioRenderer />
-                    </LiveKitRoom>
-                </div>
-
-                {/* Right Panel - Code Editor */}
-                <div className={`${isCodeExpanded ? 'w-3/4' : 'w-1/2'} transition-all duration-300 flex flex-col`}>
-                    <div className="flex-shrink-0 glass-card border-b border-neural-border px-4 py-2 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2">
-                                <Code className="w-4 h-4 text-accent-cyan" />
-                                <span className="text-sm font-medium text-neural-text-primary">
-                                    Code Editor
+                {/* Video Conference Panel */}
+                <div className={`${isCodeExpanded ? 'w-1/2' : 'w-2/3'} border-r border-verdict-border flex flex-col`}>
+                    <div className="flex-1 p-4">
+                        <LiveKitRoom
+                            token={roomToken}
+                            serverUrl={LIVEKIT_WS_URL}
+                            connectOptions={{ autoSubscribe: true }}
+                        >
+                            <VideoConference className="h-full" />
+                            <RoomAudioRenderer />
+                        </LiveKitRoom>
+                    </div>
+                    
+                    {/* Session Status Bar */}
+                    <div className="verdict-card border-t border-verdict-border-strong px-4 py-3">
+                        <div className="flex items-center justify-between text-micro">
+                            <div className="flex items-center space-x-4">
+                                <span className="text-verdict-text-tertiary">Status:</span>
+                                <span className={`verdict-badge ${
+                                    currentSession.status === 'LIVE' ? 'verdict-badge-critical' : 'verdict-badge-neutral'
+                                }`}>
+                                    {currentSession.status}
                                 </span>
                             </div>
-                            <select
-                                value={language}
-                                onChange={(e) => setLanguage(e.target.value)}
-                                className="px-3 py-1 bg-neural-surface border border-neural-border rounded text-sm text-neural-text-primary focus:outline-none focus:border-accent-cyan"
-                            >
-                                <option value="typescript">TypeScript</option>
-                                <option value="javascript">JavaScript</option>
-                                <option value="python">Python</option>
-                                <option value="java">Java</option>
-                                <option value="cpp">C++</option>
-                                <option value="go">Go</option>
-                                <option value="rust">Rust</option>
-                            </select>
+                            
+                            <div className="flex items-center space-x-4">
+                                <span className="text-verdict-text-tertiary">Language:</span>
+                                <span className="font-mono text-verdict-text-secondary">{language.toUpperCase()}</span>
+                            </div>
                         </div>
-                        <button
-                            onClick={() => setIsCodeExpanded(!isCodeExpanded)}
-                            className="p-1.5 hover:bg-white/5 rounded transition-colors"
-                            title={isCodeExpanded ? 'Minimize' : 'Maximize'}
-                        >
-                            {isCodeExpanded ? (
-                                <Minimize2 className="w-4 h-4 text-neural-text-secondary" />
-                            ) : (
-                                <Maximize2 className="w-4 h-4 text-neural-text-secondary" />
-                            )}
-                        </button>
                     </div>
+                </div>
 
-                    <div className="flex-1 overflow-hidden">
-                        <CodeEditor
-                            sessionId={currentSession.id}
-                            language={language}
-                            value={currentCode}
-                            onChange={setCurrentCode}
-                        />
+                {/* Code Editor Panel */}
+                <div className={`${isCodeExpanded ? 'w-1/2' : 'w-1/3'} flex flex-col`}>
+                    <div className="flex-1 flex flex-col">
+                        {/* Editor Header */}
+                        <div className="verdict-card border-b border-verdict-border-strong px-4 py-3">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <Code className="w-4 h-4 text-accent-bronze" />
+                                    <span className="text-subheadline font-semibold">Code Editor</span>
+                                </div>
+                                
+                                <select 
+                                    value={language}
+                                    onChange={(e) => setLanguage(e.target.value)}
+                                    className="input-authority text-sm px-2 py-1 w-24"
+                                >
+                                    <option value="typescript">TypeScript</option>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="python">Python</option>
+                                    <option value="java">Java</option>
+                                    <option value="cpp">C++</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Code Editor */}
+                        <div className="flex-1 p-4">
+                            <CodeEditor
+                                value={currentCode}
+                                onChange={setCurrentCode}
+                                language={language}
+                                height="100%"
+                                theme="vs-dark"
+                                options={{
+                                    minimap: { enabled: false },
+                                    fontSize: 14,
+                                    lineNumbers: 'on',
+                                    renderLineHighlight: 'gutter',
+                                    scrollBeyondLastLine: false,
+                                }}
+                            />
+                        </div>
+
+                        {/* Editor Footer */}
+                        <div className="verdict-card border-t border-verdict-border-strong px-4 py-3">
+                            <div className="flex items-center justify-between text-micro">
+                                <div className="flex items-center space-x-4">
+                                    <span className="text-verdict-text-tertiary">Lines:</span>
+                                    <span className="font-mono text-verdict-text-secondary">
+                                        {currentCode.split('\n').length}
+                                    </span>
+                                </div>
+                                
+                                <Button 
+                                    variant="primary" 
+                                    size="sm"
+                                    onClick={() => {
+                                        console.log('Executing code...');
+                                    }}
+                                >
+                                    Run Code
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

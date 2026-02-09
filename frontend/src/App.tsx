@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { Landing } from './pages/Landing';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
@@ -23,6 +24,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/join" element={<SessionJoin />} />
@@ -47,7 +49,6 @@ function App() {
           path="/sessions/:sessionId/results"
           element={isAuthenticated ? <SessionResults /> : <Navigate to="/login" />}
         />
-        <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
     </Router>
   );

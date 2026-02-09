@@ -4,7 +4,8 @@
  */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { authApi, User, LoginRequest, RegisterRequest } from '@/lib/api';
+import { authApi } from '@/lib/api';
+import type { User, LoginRequest, RegisterRequest } from '@/lib/api';
 
 interface AuthState {
   user: User | null;
@@ -46,8 +47,9 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             error: null,
           });
-        } catch (error: any) {
-          const message = error.response?.data?.detail || 'Login failed';
+        } catch (error: unknown) {
+          const axiosError = error as { response?: { data?: { detail?: string } } };
+          const message = axiosError.response?.data?.detail || 'Login failed';
           set({
             user: null,
             isAuthenticated: false,
@@ -83,8 +85,9 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             error: null,
           });
-        } catch (error: any) {
-          const message = error.response?.data?.detail || 'Registration failed';
+        } catch (error: unknown) {
+          const axiosError = error as { response?: { data?: { detail?: string } } };
+          const message = axiosError.response?.data?.detail || 'Registration failed';
           set({
             user: null,
             isAuthenticated: false,
@@ -121,7 +124,7 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             error: null,
           });
-        } catch (error) {
+        } catch {
           // Token invalid or expired
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
