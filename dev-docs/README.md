@@ -30,6 +30,15 @@ dev-docs/
 - Review `ARCHITECTURE.md` for understanding
 - Use `API_REFERENCE.md` for integration
 
+### **📁 Essential Documentation**
+- [`dev-docs/README.md`](dev-docs/README.md) - Documentation overview
+- [`dev-docs/DEVELOPMENT.md`](dev-docs/DEVELOPMENT.md) - Development setup
+- [`dev-docs/API_REFERENCE.md`](dev-docs/API_REFERENCE.md) - Complete API docs
+- [`dev-docs/ARCHITECTURE.md`](dev-docs/ARCHITECTURE.md) - System architecture
+- [`dev-docs/END_TO_END_SETUP.md`](dev-docs/END_TO_END_SETUP.md) - Complete 15-minute setup guide
+- [`dev-docs/PRODUCTION_SETUP.md`](dev-docs/PRODUCTION_SETUP.md) - Production deployment
+- [`dev-docs/SUPABASE_DEPLOYMENT.md`](dev-docs/SUPABASE_DEPLOYMENT.md) - Supabase specific setup
+
 ### **For Deployment**
 - Follow `DEPLOYMENT.md` for production
 - Use `TROUBLESHOOTING.md` for issues
