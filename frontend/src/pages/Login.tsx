@@ -1,15 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { useAuthStore } from '../store/useAuthStore';
 
 export const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const navigate = useNavigate();
+    const { login, isAuthenticated, error, clearError } = useAuthStore();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
+
+    useEffect(() => {
+        return () => clearError();
+    }, [clearError]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement login logic
-        console.log('Login:', { email, password });
+        setIsLoading(true);
+        
+        try {
+            await login({ email, password });
+            // Navigation handled by useEffect
+        } catch (err) {
+            console.error('Login error:', err);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -38,6 +62,12 @@ export const Login: React.FC = () => {
                 {/* Glass Card */}
                 <div className="glass-card p-8 stagger-2">
                     <h2 className="text-2xl font-semibold mb-6">Sign In</h2>
+
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                            {error}
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="stagger-3">
@@ -79,8 +109,9 @@ export const Login: React.FC = () => {
                                 Forgot password?
                             </a>
                         </div>
-
-                        <Button
+    disabled={isLoading}
+                        >
+                            {isLoading ? 'Signing in...' : 'Sign In'}
                             type="submit"
                             variant="primary"
                             size="lg"
@@ -93,12 +124,12 @@ export const Login: React.FC = () => {
                     <div className="mt-6 text-center">
                         <p className="text-neural-text-secondary text-sm">
                             Don't have an account?{' '}
-                            <a
-                                href="#"
+                            <Link
+                                to="/register"
                                 className="text-accent-cyan hover:underline font-medium"
                             >
                                 Create account
-                            </a>
+                            </Link>
                         </p>
                     </div>
                 </div>
