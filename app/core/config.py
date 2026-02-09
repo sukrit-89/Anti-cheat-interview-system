@@ -29,34 +29,22 @@ class Settings(BaseSettings):
     PORT: int = 8000
     WORKERS: int = 4
     
-    # Security
-    JWT_SECRET_KEY: str
-    JWT_ALGORITHM: str = "HS256"
-    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
-    JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    # Security - Supabase handles authentication
+    # No JWT needed - Supabase manages tokens
     
-    # Database
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_HOST: str
-    POSTGRES_PORT: int = 5432
-    POSTGRES_DB: str
-    DATABASE_URL: Optional[PostgresDsn] = None
+    # Database - Supabase Only
+    SUPABASE_URL: str
+    SUPABASE_ANON_KEY: str
+    SUPABASE_SERVICE_ROLE_KEY: str
     
     @field_validator("DATABASE_URL", mode="before")
     @classmethod
     def assemble_db_url(cls, v: Optional[str], info) -> str:
         if isinstance(v, str):
             return v
-        values = info.data
-        return PostgresDsn.build(
-            scheme="postgresql+asyncpg",
-            username=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_HOST"),
-            port=values.get("POSTGRES_PORT"),
-            path=f"{values.get('POSTGRES_DB') or ''}",
-        )
+        
+        # Always use Supabase URL
+        return info.data.get("SUPABASE_URL")
     
     # Redis
     REDIS_HOST: str = "localhost"

@@ -1,23 +1,100 @@
+# 🎯 Integrity AI
+# AI-Powered Technical Interview Platform
+
 <div align="center">
 
-# 🎯 Integrity AI
+![Integrity AI](https://img.shields.io/badge/Integrity%20AI-blue?style=for-the-badge)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-### Enterprise AI-Powered Technical Interview Platform
+</div>
 
-*Production-grade real-time interview system with autonomous AI agent evaluation*
+## 🚀 Overview
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
+Integrity AI is a **production-ready technical interview platform** that combines real-time collaboration, AI-powered evaluation, and secure code execution. Built for modern recruiting teams to conduct comprehensive technical interviews with intelligent assessment.
+
+### ✨ Key Features
+
+- 🤖 **AI-Powered Evaluation** - Multi-agent analysis of coding skills, communication, and problem-solving
+- 📹 **Real-time Video Interviews** - Live video/audio streaming with screen sharing
+- 💻 **Collaborative Code Editor** - Real-time code sharing and execution in 50+ languages
+- 🔒 **Enterprise Security** - Supabase authentication with role-based access control
+- 📊 **Comprehensive Reporting** - Detailed evaluation reports with actionable insights
+- ⚡ **High Performance** - Async FastAPI with real-time WebSocket communication
 [![React](https://img.shields.io/badge/React-18+-black.svg)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-78%25%20Complete-success.svg)](PROJECT_BRIEF.md)
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [API Docs](#-api-documentation) • [Deployment](#-deployment)
+## 🛠️ Tech Stack
 
-</div>
+### **Frontend**
+- **React 18** with TypeScript and Hooks
+- **Vite** for lightning-fast development
+- **TailwindCSS** for utility-first styling
+- **Zustand** for lightweight state management
+- **LiveKit React** for WebRTC video/audio
+- **React Router** for client-side routing
 
----
+### **Backend**
+- **FastAPI** for high-performance async API
+- **SQLAlchemy 2.0** with async PostgreSQL
+- **Supabase** for managed database and auth
+- **Celery** for background task processing
+- **Pydantic** for data validation and serialization
+- **WebSocket** for real-time communication
+
+### **Infrastructure**
+- **Docker** for containerization
+- **Nginx** for reverse proxy and load balancing
+- **Redis** for caching and pub/sub messaging
+- **Judge0** for secure code execution sandbox
+- **Ollama** for local AI processing
+
+## 🚀 Quick Start
+
+### **Prerequisites**
+- Docker Desktop
+- Node.js 18+
+- Python 3.11+
+- Supabase Account
+
+### **5-Minute Setup**
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-username/integrity-ai.git
+cd integrity-ai
+
+# 2. Configure environment
+cp .env.example .env
+# Edit .env with your Supabase credentials
+
+# 3. Start all services
+cd dev-docs
+# Follow END_TO_END_SETUP.md for complete setup
+```
+
+### **Development URLs**
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+
+## 📚 Documentation
+
+### **📁 Developer Docs**
+- [`dev-docs/README.md`](dev-docs/README.md) - Documentation overview
+- [`dev-docs/DEVELOPMENT.md`](dev-docs/DEVELOPMENT.md) - Development setup
+- [`dev-docs/API_REFERENCE.md`](dev-docs/API_REFERENCE.md) - Complete API docs
+- [`dev-docs/ARCHITECTURE.md`](dev-docs/ARCHITECTURE.md) - System architecture
+- [`dev-docs/END_TO_END_SETUP.md`](dev-docs/END_TO_END_SETUP.md) - Complete setup guide
+
+### **🚀 Deployment Guides**
+- [`dev-docs/PRODUCTION_SETUP.md`](dev-docs/PRODUCTION_SETUP.md) - Production deployment
+- [`dev-docs/SUPABASE_DEPLOYMENT.md`](dev-docs/SUPABASE_DEPLOYMENT.md) - Supabase setup
 
 ## 📖 Overview
 

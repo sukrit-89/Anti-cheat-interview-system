@@ -12,7 +12,7 @@ from app.core.config import settings
 from app.core.database import init_db, close_db
 from app.core.redis import redis_client
 from app.core.logging import logger
-from app.api import auth, sessions, websocket, coding_events, speech
+from app.api import supabase_auth, sessions, websocket, coding_events, speech
 
 
 @asynccontextmanager
@@ -64,7 +64,7 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Include routers
-app.include_router(auth.router, prefix="/api")
+app.include_router(supabase_auth.router, prefix="/api")
 app.include_router(sessions.router, prefix="/api")
 app.include_router(websocket.router, prefix="/api")
 
