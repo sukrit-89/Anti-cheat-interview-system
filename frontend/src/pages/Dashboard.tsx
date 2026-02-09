@@ -1,27 +1,151 @@
-/**
- * Recruiter Dashboard - Main page for recruiters
- * Create sessions, view history, manage interviews
- */
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useSessionStore } from '../store/useSessionStore';
-import { Button } from '../components/Button';
-import { Plus, Calendar, Play, CheckCircle, XCircle, LogOut, User } from 'lucide-react';
 
-export const Dashboard: React.FC = () => {
-    const navigate = useNavigate();
-    const { user, logout, isAuthenticated } = useAuthStore();
-    const { sessions, fetchSessions, isLoading } = useSessionStore();
-    const [filter, setFilter] = useState<string | undefined>(undefined);
+export function Dashboard() {
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const { sessions, fetchSessions } = useSessionStore();
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            navigate('/login');
-            return;
-        }
-        fetchSessions(filter);
-    }, [isAuthenticated, filter, navigate, fetchSessions]);
+  useEffect(() => {
+    fetchSessions();
+  }, [fetchSessions]);
+
+  const stats = {
+    total: sessions.length,
+    live: sessions.filter(s => s.status === 'LIVE').length,
+    scheduled: sessions.filter(s => s.status === 'SCHEDULED').length,
+    completed: sessions.filter(s => s.status === 'COMPLETED').length,
+  };
+
+  return (
+    <div className="min-h-screen bg-verdict-bg">
+      {/* Header */}
+      <header className="border-b border-verdict-border bg-verdict-surface/50 backdrop-blur">
+        <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between">
+          <div>
+            <h1 className="font-serif text-2xl font-semibold text-verdict-text-primary mb-1">
+              Evaluation Dashboard
+            </h1>
+            <p className="text-sm text-verdict-text-tertiary">
+              {user?.full_name} · {user?.role}
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/sessions/create')}
+            className="px-6 py-2.5 bg-verdict-text-primary text-verdict-bg font-medium hover:bg-verdict-text-secondary transition-colors text-sm"
+          >
+            Schedule Interview
+          </button>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-8 py-12">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-4 gap-px bg-verdict-border mb-12">
+          <StatCard label="Total Sessions" value={stats.total} />
+          <StatCard label="Live Now" value={stats.live} status="live" />
+          <StatCard label="Scheduled" value={stats.scheduled} />
+          <StatCard label="Completed" value={stats.completed} />
+        </div>
+
+        {/* Session List */}
+        <div>
+          <div className="flex items-baseline justify-between mb-6">
+            <h2 className="font-serif text-xl font-semibold text-verdict-text-primary">
+              Interview Sessions
+            </h2>
+            <p className="text-sm text-verdict-text-tertiary">
+              {sessions.length} {sessions.length === 1 ? 'session' : 'sessions'}
+            </p>
+          </div>
+
+          <div className="space-y-px bg-verdict-border">
+            {sessions.length === 0 ? (
+              <div className="bg-verdict-surface p-12 text-center">
+                <p className="text-verdict-text-secondary mb-4">No sessions scheduled</p>
+                <button
+                  onClick={() => navigate('/sessions/create')}
+                  className="inline-block px-6 py-2 border border-verdict-line text-verdict-text-secondary hover:bg-verdict-bg hover:text-verdict-text-primary transition-colors text-sm"
+                >
+                  Schedule First Interview
+                </button>
+              </div>
+            ) : (
+              sessions.map((session) => (
+                <SessionRow key={session.id} session={session} onClick={() => navigate(`/sessions/${session.id}`)} />
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ label, value, status }: { label: string; value: number; status?: 'live' }) {
+  return (
+    <div className="bg-verdict-surface p-6">
+      <div className="flex items-baseline justify-between mb-2">
+        <span className="text-xs font-medium text-verdict-text-tertiary uppercase tracking-wide">
+          {label}
+        </span>
+        {status === 'live' && value > 0 && (
+          <span className="w-1.5 h-1.5 bg-semantic-success rounded-full"></span>
+        )}
+      </div>
+      <p className="font-serif text-3xl font-semibold text-verdict-text-primary">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function SessionRow({ session, onClick }: { session: any; onClick: () => void }) {
+  const statusColor = {
+    SCHEDULED: 'text-verdict-text-tertiary',
+    LIVE: 'text-semantic-success',
+    COMPLETED: 'text-verdict-text-secondary',
+  }[session.status] || 'text-verdict-text-tertiary';
+
+  const statusLabel = {
+    SCHEDULED: 'Scheduled',
+    LIVE: 'Live',
+    COMPLETED: 'Completed',
+  }[session.status] || session.status;
+
+  return (
+    <button
+      onClick={onClick}
+      className="w-full bg-verdict-surface hover:bg-verdict-bg transition-colors text-left p-6 group"
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-serif text-lg font-medium text-verdict-text-primary mb-2 group-hover:text-semantic-emphasis transition-colors">
+            {session.title}
+          </h3>
+          {session.description && (
+            <p className="text-sm text-verdict-text-tertiary line-clamp-1 mb-3">
+              {session.description}
+            </p>
+          )}
+          <div className="flex items-center gap-6 text-xs text-verdict-text-tertiary">
+            <span>Code: {session.session_code}</span>
+            <span>·</span>
+            <span>{new Date(session.created_at).toLocaleDateString()}</span>
+          </div>
+        </div>
+        <div className="ml-6 text-right">
+          <span className={`text-sm font-medium ${statusColor}`}>
+            {statusLabel}
+          </span>
+        </div>
+      </div>
+    </button>
+  );
+}
+
 
     const handleLogout = async () => {
         await logout();

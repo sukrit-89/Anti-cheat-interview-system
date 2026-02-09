@@ -327,50 +327,6 @@ async def start_session(
     return session
 
 
-@router.post("/{session_id}/end", response_model=SessionResponse)
-async def end_session(
-    session_id: int,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_recruiter)
-) -> Session:
-    """End a session (Recruiter only)."""
-    
-    result = await db.execute(select(Session).where(Session.id == session_id))
-    session = result.scalar_one_or_none()
-    
-    if not session:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Session not found"
-        )
-    
-    if session.recruiter_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to end this session"
-        )
-    
-    if session.status == SessionStatus.COMPLETED:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Session is already completed"
-        )
-    
-    session.status = SessionStatus.COMPLETED
-    session.ended_at = datetime.utcnow()
-    
-    await db.commit()
-    await db.refresh(session)
-    
-    logger.info(f"Session {session_id} ended by recruiter {current_user.id}")
-    
-    # Trigger evaluation
-    from app.core.events import publish_evaluation_requested
-    await publish_evaluation_requested(session_id)
-    
-    return session
-
-
 @router.get("/{session_id}/candidates", response_model=List[CandidateResponse])
 async def get_session_candidates(
     session_id: int,
@@ -400,3 +356,11 @@ async def get_session_candidates(
     candidates = result.scalars().all()
     
     return candidates
+Publish event
+    from app.core.events import publish_session_ended
+    await publish_session_ended(
+        session_id=session_id,
+        data={"ended_at": session.ended_at.isoformat()}
+    )
+    
+    # 

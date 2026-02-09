@@ -100,6 +100,40 @@ class CandidateResponse(BaseModel):
     email: str
     full_name: str
     joined_at: Optional[datetime]
+    is_present: bool
+    created_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ============================================================================
+# Coding Event Schemas
+# ============================================================================
+
+class CodingEventCreate(BaseModel):
+    session_id: int
+    event_type: str = Field(..., max_length=50)  # keystroke, execute, submit
+    code_snapshot: Optional[str] = None
+    language: Optional[str] = Field(None, max_length=50)
+    execution_output: Optional[str] = None
+    execution_error: Optional[str] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class CodingEventResponse(BaseModel):
+    id: int
+    session_id: int
+    timestamp: datetime
+    event_type: str
+    code_snapshot: Optional[str]
+    language: Optional[str]
+    execution_output: Optional[str]
+    execution_error: Optional[str]
+    metadata: dict[str, Any] = Field(default_factory=dict, validation_alias="meta_data")
+    
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    full_name: str
+    joined_at: Optional[datetime]
     left_at: Optional[datetime]
     is_present: bool
     

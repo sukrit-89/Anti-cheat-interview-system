@@ -12,7 +12,7 @@ from app.core.config import settings
 from app.core.database import init_db, close_db
 from app.core.redis import redis_client
 from app.core.logging import logger
-from app.api import auth, sessions, websocket
+from app.api import auth, sessions, websocket, coding_events, speech
 
 
 @asynccontextmanager
@@ -67,6 +67,11 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.include_router(auth.router, prefix="/api")
 app.include_router(sessions.router, prefix="/api")
 app.include_router(websocket.router, prefix="/api")
+
+# Import and include coding events router
+from app.api import coding_events
+app.include_router(coding_events.router, prefix="/api")
+app.include_router(speech.router, prefix="/api")
 
 
 @app.get("/")

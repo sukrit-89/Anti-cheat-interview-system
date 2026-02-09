@@ -133,6 +133,16 @@ async def publish_session_started(session_id: int, data: dict[str, Any]) -> None
     await EventPublisher.publish(event)
 
 
+async def publish_session_ended(session_id: int, data: dict[str, Any]) -> None:
+    """Publish session ended event."""
+    event = Event(
+        event_type=EventType.SESSION_ENDED,
+        session_id=session_id,
+        data=data
+    )
+    await EventPublisher.publish(event)
+
+
 async def publish_recording_started(session_id: int, recording_url: str) -> None:
     """Publish recording started event."""
     event = Event(

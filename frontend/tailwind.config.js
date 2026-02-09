@@ -7,47 +7,65 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Neural Precision Color System
-                'neural': {
-                    bg: '#0A0E1A',          // Deep charcoal background
-                    surface: '#12171F',     // Card/panel surface
-                    border: '#1E2736',      // Subtle borders
+                // Serious, restrained palette - semantic only
+                verdict: {
+                    bg: '#0D0D0D',           // Near black
+                    surface: '#1A1A1A',      // Elevated surface
+                    border: '#2A2A2A',       // Subtle borders
+                    line: '#3A3A3A',         // Dividers
                     text: {
-                        primary: '#FFFFFF',   // Pure white for high contrast
-                        secondary: '#A8B2C1', // Muted blue-gray
-                        tertiary: '#6B7A91',  // Even more muted
+                        primary: '#F5F5F5',   // Off-white for readability
+                        secondary: '#A0A0A0', // Muted gray
+                        tertiary: '#707070',  // Deemphasized
                     }
                 },
-                'accent': {
-                    cyan: '#00D9FF',        // Electric cyan - active states
-                    amber: '#FFB84D',       // Warm amber - alerts
-                    violet: '#B794F6',      // Soft violet - AI insights
-                    success: '#00FF88',     // Bright green - success
-                    error: '#FF4D6D',       // Soft red - errors
+                // Semantic colors only
+                semantic: {
+                    critical: '#C41E3A',     // Dark red - integrity violations
+                    warning: '#C17817',      // Muted gold - flags
+                    success: '#1F7A1F',      // Forest green - pass
+                    neutral: '#5A5A5A',      // Neutral gray
+                    emphasis: '#8B7355',     // Muted bronze - authority
                 }
             },
             fontFamily: {
-                mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
-                sans: ['"Work Sans"', 'system-ui', 'sans-serif'],
+                // Editorial serif-sans combination
+                serif: ['"Crimson Pro"', 'Georgia', 'serif'],
+                sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
+                mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
             },
             fontSize: {
-                // Precise type scale
-                'xs': ['0.75rem', { lineHeight: '1rem' }],
-                'sm': ['0.875rem', { lineHeight: '1.25rem' }],
-                'base': ['1rem', { lineHeight: '1.5rem' }],
-                'lg': ['1.125rem', { lineHeight: '1.75rem' }],
-                'xl': ['1.25rem', { lineHeight: '1.75rem' }],
-                '2xl': ['1.5rem', { lineHeight: '2rem' }],
-                '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
-                '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+                // Editorial type scale
+                'xs': ['0.75rem', { lineHeight: '1.125rem', letterSpacing: '0.01em' }],
+                'sm': ['0.875rem', { lineHeight: '1.375rem', letterSpacing: '0' }],
+                'base': ['1rem', { lineHeight: '1.625rem', letterSpacing: '0' }],
+                'lg': ['1.125rem', { lineHeight: '1.75rem', letterSpacing: '-0.01em' }],
+                'xl': ['1.25rem', { lineHeight: '1.875rem', letterSpacing: '-0.01em' }],
+                '2xl': ['1.5rem', { lineHeight: '2.125rem', letterSpacing: '-0.02em' }],
+                '3xl': ['1.875rem', { lineHeight: '2.375rem', letterSpacing: '-0.02em' }],
+                '4xl': ['2.25rem', { lineHeight: '2.75rem', letterSpacing: '-0.03em' }],
+                '5xl': ['3rem', { lineHeight: '3.5rem', letterSpacing: '-0.03em' }],
+            },
+            borderRadius: {
+                'none': '0',
+                'sm': '2px',      // Sharp, deliberate
+                DEFAULT: '3px',
+                'md': '4px',
+                'lg': '6px',
             },
             animation: {
-                'pulse-soft': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                'fade-in': 'fadeIn 0.3s ease-in-out',
-                'slide-up': 'slideUp 0.4s ease-out',
+                'reveal': 'reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
             },
             keyframes: {
-                fadeIn: {
+                reveal: {
+                    '0%': { opacity: '0', transform: 'translateY(8px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+            },
+        },
+    },
+    plugins: [],
+}
                     '0%': { opacity: '0' },
                     '100%': { opacity: '1' },
                 },
