@@ -68,14 +68,65 @@ LIVEKIT_API_KEY=API[your-actual-api-key]
 LIVEKIT_API_SECRET=your-actual-api-secret
 LIVEKIT_WS_URL=wss://your-project-id.livekit.cloud
 
-# Keep these defaults
-ENVIRONMENT=production
-DEBUG=False
-USE_OLLAMA=True
-OLLAMA_MODEL=llama2
-USE_LOCAL_WHISPER=True
-WHISPER_MODEL=tiny
+# Code Execution - Choose one option:
+
+# Option A: RapidAPI Judge0 (Paid - $0.004/request, easiest setup)
+# JUDGE0_API_URL=https://judge0-ce.p.rapidapi.com
+# JUDGE0_API_KEY=your-rapidapi-key-from-rapidapi.com
+
+# Option B: Self-hosted Judge0 (FREE & Unlimited - Recommended, requires Docker)
+JUDGE0_API_URL=http://localhost:2358
+JUDGE0_API_KEY=
+
+# Option C: No code execution (rule-based analysis only)
+# USE_RULE_BASED_CODE_ANALYSIS=True
 ```
+
+### **2.3 Judge0 Setup (Optional - For Code Execution)**
+
+⚠️ **Important: RapidAPI Judge0 is now PAID only** (~$0.004/request, $20/month minimum)
+
+**Option A: Self-Hosted Judge0 (FREE - Recommended) ✅**
+1. Clone Judge0 repository:
+   ```bash
+   cd ..
+   git clone https://github.com/judge0/judge0.git
+   cd judge0
+   ```
+
+2. Start Judge0 services:
+   ```bash
+   docker-compose up -d db redis
+   docker-compose up -d
+   ```
+
+3. Verify it's running:
+   ```bash
+   curl http://localhost:2358/about
+   ```
+
+4. In your Integrity-AI `.env` file:
+   ```bash
+   JUDGE0_API_URL=http://localhost:2358
+   JUDGE0_API_KEY=  # Leave empty for self-hosted
+   ```
+
+**Option B: RapidAPI (Paid - Only if you need managed service)**
+1. Go to https://rapidapi.com/judge0-official/api/judge0-ce
+2. Subscribe to a paid plan (starts at ~$20/month)
+3. Get your API key
+4. Update `.env`:
+   ```bash
+   JUDGE0_API_URL=https://judge0-ce.p.rapidapi.com
+   JUDGE0_API_KEY=your_rapidapi_key
+   ```
+
+**Option C: Skip Code Execution**
+```bash
+# In your .env file:
+USE_RULE_BASED_CODE_ANALYSIS=True
+```
+This will analyze code patterns without actually executing it.
 
 ---
 
@@ -160,15 +211,16 @@ docker-compose logs redis
 
 ## 🌐 Step 5: Access Your Application (1 minute)
 
-### MinIO Console** | http://localhost:9001 | Storage Management (minioadmin/minioadmin) |
-| **Supabase Dashboard** | https://supabase.com/dashboard | Database Management |
-| **Frontend** | http://localhost:5173 | React Application (after npm run dev)
+### **5.1 Service URLs**
+| Service | URL | Purpose |
 |---------|-----|---------|
 | **Main App** | http://localhost:8000 | FastAPI Backend |
 | **API Docs** | http://localhost:8000/docs | Swagger Documentation |
 | **Health Check** | http://localhost:8000/health | Service Status |
-| **Judge0 API** | http://localhost:2358 | Code Execution |
+| **MinIO Console** | http://localhost:9001 | Storage Management (minioadmin/minioadmin) |
 | **Supabase Dashboard** | https://supabase.com/dashboard | Database Management |
+| **Judge0 API** | http://localhost:2358 | Code Execution (if self-hosted) |
+| **Frontend** | http://localhost:5173 | React Application (after npm run dev) |
 
 ### **5.2 Verify Everything Works**
 ```bash
@@ -193,7 +245,8 @@ curl http://localhost:8000/health
 2. Try **POST /api/auth/register**
 3. Try **POST /api/auth/login**
 4. Verify tokens are returned
-Storage Service**
+
+### **6.2 Test Storage Service**
 ```bash
 # Check MinIO is running
 curl http://localhost:9000/minio/health/live
@@ -203,7 +256,29 @@ curl http://localhost:9000/minio/health/live
 # Login: minioadmin / minioadmin
 ```
 
-### **6.3 Test Database Connection**
+### **6.3 Test Code Execution (If Judge0 is set up)**
+```bash
+# If self-hosted: Test Judge0 directly
+curl http://localhost:2358/about
+
+# Or test through your API
+curl -X POST "http://localhost:8000/api/code/execute" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{
+    "code": "print(\"Hello World\")",
+    "language": "python"
+  }'
+
+# Expected response:
+{
+  "stdout": "Hello World\n",
+  "stderr": "",
+  "status": "Accepted"
+}
+```
+
+### **6.4 Test Database Connection**
 ```bash
 # Test Supabase connection via the API
 curl http://localhost:8000/api/auth/health
@@ -212,8 +287,7 @@ curl http://localhost:8000/api/auth/health
 {
   "database": "connected",
   "supabase": "ok"
-}"max_tokens": 100
-  }'
+}
 ```
 
 ---
@@ -274,6 +348,19 @@ cat .env | grep SUPABASE
 curl -H "apikey: YOUR_ANON_KEY" https://your-project.supabase.co/rest/v1/
 ```
 
+**Issue: "Judge0 not working"**
+```bash
+# If self-hosted: Check Judge0 is running
+cd ../judge0
+docker-compose ps
+
+# If using RapidAPI: Check your API key and quota
+# Visit https://rapidapi.com/judge0-official/api/judge0-ce/pricing
+
+# Alternatively, disable code execution
+# Add to .env: USE_RULE_BASED_CODE_ANALYSIS=True
+```
+
 **Issue: "Frontend can't reach backend"**
 ```bash
 # Check if API is accessible
@@ -309,8 +396,7 @@ docker-compose up -d --build api
 ### **9.1 Final Checklist**Supabase health check passes)
 - [ ] **Storage accessible** (MinIO console at http://localhost:9001)
 - [ ] **Redis working** (container healthy)
-- [ ] **Authentication working** (can register/login via Supabase
-- [ ] **Database connected** (health check passes)
+- [ ] **Authentication working** (can register/login via Supabase- [ ] **Code execution** (Judge0 responding - optional if configured)- [ ] **Database connected** (health check passes)
 - [ ] **Code execution working** (Judge0 responds)
 - [ ] **AI integration functional** (Ollama responds)
 - [ ] **Authentication working** (can register/login)
