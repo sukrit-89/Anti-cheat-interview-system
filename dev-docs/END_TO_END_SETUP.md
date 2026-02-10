@@ -86,7 +86,17 @@ JUDGE0_API_KEY=
 
 ⚠️ **Important: RapidAPI Judge0 is now PAID only** (~$0.004/request, $20/month minimum)
 
-**Option A: Self-Hosted Judge0 (FREE - Recommended) ✅**
+**Option A: RapidAPI Judge0 (Paid - Only if you need managed service)**
+1. Go to https://rapidapi.com/judge0-official/api/judge0-ce
+2. Subscribe to a paid plan (starts at ~$20/month)
+3. Get your API key
+4. Update `.env`:
+   ```bash
+   JUDGE0_API_URL=https://judge0-ce.p.rapidapi.com
+   JUDGE0_API_KEY=your_rapidapi_key
+   ```
+
+**Option B: Self-Hosted Judge0 (FREE & Unlimited - Recommended) ✅**
 1. Clone Judge0 repository:
    ```bash
    cd ..
@@ -111,17 +121,7 @@ JUDGE0_API_KEY=
    JUDGE0_API_KEY=  # Leave empty for self-hosted
    ```
 
-**Option B: RapidAPI (Paid - Only if you need managed service)**
-1. Go to https://rapidapi.com/judge0-official/api/judge0-ce
-2. Subscribe to a paid plan (starts at ~$20/month)
-3. Get your API key
-4. Update `.env`:
-   ```bash
-   JUDGE0_API_URL=https://judge0-ce.p.rapidapi.com
-   JUDGE0_API_KEY=your_rapidapi_key
-   ```
-
-**Option C: Skip Code Execution**
+**Option C: No Code Execution (Rule-Based Analysis Only)**
 ```bash
 # In your .env file:
 USE_RULE_BASED_CODE_ANALYSIS=True
