@@ -79,68 +79,90 @@ WHISPER_MODEL=tiny
 
 ---
 
-## 🔧 Step 3: Run Setup Script (2 minutes)
+## 🔧 Step 3: Start Services with Docker (2 minutes)
 
-### **3.1 Windows (PowerShell)**
+### **3.1 Verify Docker is Running**
 ```powershell
-# Make sure Docker Desktop is running
-# Then run:
-.\setup-production.ps1
+# Check Docker status
+docker --version
+docker-compose --version
+
+# Expected output:
+# Docker version 24.x.x
+# Docker Compose version v2.x.x
 ```
 
-### **3.2 Linux/Mac (Bash)**
+### **3.2 Start All Services**
 ```bash
-# Make script executable
-chmod +x setup-production.sh
+# Start all services in detached mode
+docker-compose up -d
 
-# Run setup
-./setup-production.sh
+# This will:
+# - Pull all required Docker images (PostgreSQL, Redis, MinIO)
+# - Build the FastAPI application container
+# - Start all services in the background
+# - Set up networking between containers
 ```
 
-### **What the Script Does:**
-- ✅ Checks Docker is running
-- ✅ Creates necessary directories
-- ✅ Clones Judge0 for code execution
-- ✅ Pulls all Docker images
-- ✅ Builds application
-- ✅ Starts all services
-- ✅ Runs database migrations
-- ✅ Tests all services
+### **3.3 Initialize the Database**
+```bash
+# Run database initialization script
+docker-compose exec api python init_db.py
+
+# Or if containers aren't running yet:
+python init_db.py
+```
+
+### **What This Does:**
+- ✅ Starts PostgreSQL database
+- ✅ Starts Redis cache
+- ✅ Starts MinIO storage (S3-compatible)
+- ✅ Builds and starts FastAPI application
+- ✅ Starts Celery worker for background tasks
+- ✅ Creates database tables
+- ✅ Sets up networking between services
 
 ---
 
 ## ⏳ Step 4: Wait for Services (3 minutes)
 
 ### **4.1 Monitor Startup**
-```powershell
+```bash
 # Watch all services start
-docker-compose -f docker-compose.production.yml logs -f
+docker-compose logs -f
 ```
 
-### **4.2 Expected Output:**
+### **4.2 Check Service Status**
+```bash
+# View all running containers
+docker-compose ps
+
+# Expected output showing all services "Up" and "healthy":
+NAME              STATUS          PORTS
+interview_api     Up (healthy)    0.0.0.0:8000->8000/tcp
+interview_db      Up (healthy)    0.0.0.0:5432->5432/tcp
+interview_redis   Up (healthy)    0.0.0.0:6379->6379/tcp
+interview_minio   Up              0.0.0.0:9000-9001->9000-9001/tcp
+interview_worker  Up              
 ```
-🚀 Setting up Integrity AI Production Environment...
-📁 Creating directories...
-⚖️ Setting up Judge0...
-📦 Pulling Docker images...
-🔨 Building application...
-🚀 Starting services...
-⏳ Waiting for services to start...
-🔍 Checking service status...
-🗄️ Running database migrations...
-🧪 Testing services...
-✅ Main application is running
-✅ Judge0 is running
-✅ Redis is running
-🎉 Setup Complete!
+
+### **4.3 Wait for Health Checks**
+```bash
+# All services should show "healthy" status
+# This may take 30-60 seconds
+# You can check individual service logs:
+docker-compose logs api
+docker-compose logs postgres
+docker-compose logs redis
 ```
 
 ---
 
 ## 🌐 Step 5: Access Your Application (1 minute)
 
-### **5.1 Service URLs**
-| Service | URL | Purpose |
+### MinIO Console** | http://localhost:9001 | Storage Management (minioadmin/minioadmin) |
+| **Supabase Dashboard** | https://supabase.com/dashboard | Database Management |
+| **Frontend** | http://localhost:5173 | React Application (after npm run dev)
 |---------|-----|---------|
 | **Main App** | http://localhost:8000 | FastAPI Backend |
 | **API Docs** | http://localhost:8000/docs | Swagger Documentation |
@@ -171,27 +193,26 @@ curl http://localhost:8000/health
 2. Try **POST /api/auth/register**
 3. Try **POST /api/auth/login**
 4. Verify tokens are returned
-
-### **6.2 Test Code Execution**
+Storage Service**
 ```bash
-# Test Judge0 integration
-curl -X POST "http://localhost:2358/submissions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "source_code": "print(\"Hello World\")",
-    "language_id": 71,
-    "stdin": ""
-  }'
+# Check MinIO is running
+curl http://localhost:9000/minio/health/live
+
+# Access MinIO Console
+# Browser: http://localhost:9001
+# Login: minioadmin / minioadmin
 ```
 
-### **6.3 Test AI Integration**
+### **6.3 Test Database Connection**
 ```bash
-# Test Ollama (local AI)
-curl -X POST "http://localhost:8000/api/ai/complete" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prompt": "What is Python?",
-    "max_tokens": 100
+# Test Supabase connection via the API
+curl http://localhost:8000/api/auth/health
+
+# Expected response:
+{
+  "database": "connected",
+  "supabase": "ok"
+}"max_tokens": 100
   }'
 ```
 
@@ -255,35 +276,40 @@ curl -H "apikey: YOUR_ANON_KEY" https://your-project.supabase.co/rest/v1/
 
 **Issue: "Frontend can't reach backend"**
 ```bash
-# Check CORS settings
-cat .env | grep CORS
+# Check if API is accessible
+curl http://localhost:8000/health
 
-# Should include frontend URL:
-CORS_ORIGINS=http://localhost:5173,http://localhost:8000
+# Check CORS in .env (should allow frontend)
+# Backend automatically allows localhost:5173 in development
 ```
 
 ### **8.2 Health Check Commands**
 ```bash
 # Check all containers
-docker-compose -f docker-compose.production.yml ps
+docker-compose ps
 
 # Check specific service logs
-docker-compose -f docker-compose.production.yml logs app
-docker-compose -f docker-compose.production.yml logs judge0-server
-docker-compose -f docker-compose.production.yml logs redis
+docker-compose logs api
+docker-compose logs postgres
+docker-compose logs redis
+docker-compose logs worker
 
 # Restart specific service
-docker-compose -f docker-compose.production.yml restart app
+docker-compose restart api
+docker-compose restart worker
+
+# Rebuild and restart a service
+docker-compose up -d --build api
 ```
 
 ---
 
 ## 📊 Step 9: Production Verification (1 minute)
 
-### **9.1 Final Checklist**
-- [ ] **All services running** (`docker-compose ps` shows all containers healthy)
-- [ ] **Backend accessible** at http://localhost:8000
-- [ ] **Frontend running** at http://localhost:5173
+### **9.1 Final Checklist**Supabase health check passes)
+- [ ] **Storage accessible** (MinIO console at http://localhost:9001)
+- [ ] **Redis working** (container healthy)
+- [ ] **Authentication working** (can register/login via Supabase
 - [ ] **Database connected** (health check passes)
 - [ ] **Code execution working** (Judge0 responds)
 - [ ] **AI integration functional** (Ollama responds)
@@ -291,10 +317,11 @@ docker-compose -f docker-compose.production.yml restart app
 
 ### **9.2 Performance Check**
 ```bash
-# Check resource usage
-docker stats
-
-# Should show reasonable memory/CPU usage:
+# interview_api:    < 500MB memory
+# interview_db:     < 200MB memory
+# interview_redis:  < 100MB memory
+# interview_worker: < 300MB memory
+# interview_minio:  < 200MB memoryPU usage:
 # app: < 500MB memory
 # redis: < 100MB memory  
 # judge0: < 1GB memory
@@ -302,10 +329,11 @@ docker stats
 ```
 
 ---
-
-## 🎉 Success! Your Platform is Running
-
-### **What You Have Now:**
+MinIO storage** for recordings and uploads (S3-compatible)
+- ✅ **Redis cache** for fast data access and pub/sub
+- ✅ **Celery workers** for background tasks
+- ✅ **Real-time video** ready (LiveKit integration)
+- ✅ **Docker containerization** for easy deployment
 - ✅ **Production-ready** interview platform
 - ✅ **Supabase integration** for database and auth
 - ✅ **Local AI processing** with Ollama
@@ -331,36 +359,48 @@ docker stats
 ## 📞 Quick Reference
 
 ### **Essential Commands**
-```bash
-# Start everything
-docker-compose -f docker-compose.production.yml up -d
+```bashup -d
 
 # Stop everything  
-docker-compose -f docker-compose.production.yml down
+docker-compose down
 
-# View logs
-docker-compose -f docker-compose.production.yml logs -f
+# View logs (all services)
+docker-compose logs -f
+
+# View logs (specific service)
+docker-compose logs -f api
 
 # Restart services
-docker-compose -f docker-compose.production.yml restart
+docker-compose restart api
+docker-compose restart worker
 
-# Run migrations
-docker-compose -f docker-compose.production.yml exec app alembic upgrade head
+# Rebuild after code changes
+docker-compose up -d --build api
+
+# Initialize/migrate database
+docker-compose exec api python init_db.py
 
 # Access application shell
-docker-compose -f docker-compose.production.yml exec app bash
+docker-compose exec api bash
+
+# Access database
+docker-compose exec postgres psql -U interview_user -d interview_platform
 ```
 
 ### **Service URLs**
-- **Main App**: http://localhost:8000
-- **API Docs**: http://localhost:8000/docs
-- **Frontend**: http://localhost:5173
-- **Supabase**: https://supabase.com/dashboard
-- **Judge0**: http://localhost:2358
+- **Main App**: http://localhost:8000with:
+- 🗄️ **Supabase** managed database and authentication
+- 📦 **MinIO** S3-compatible storage for recordings
+- 🔄 **Redis** caching and real-time pub/sub
+- 👷 **Celery** background task processing
+- 📹 **LiveKit** ready for video streaming
+- 🐳 **Docker** containerized deployment
 
----
+**Ready for development and testing!** 🎯
 
-## 🏆 Congratulations!
+Your platform is now set up for conducting technical interviews with AI-powered evaluation, real-time collaboration, and comprehensive reporting.
+
+**Next:** Configure your LiveKit credentials in `.env` to enable video functionality
 
 You now have a **fully functional Integrity AI platform** running in production mode with:
 - 🗄️ **Supabase** database and authentication
