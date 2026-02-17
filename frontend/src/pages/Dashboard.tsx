@@ -6,10 +6,10 @@ import { useSessionStore } from '../store/useSessionStore';
 import { Button } from '../components/Button';
 import { Card, MetricCard } from '../components/Card';
 
-function StatCard({ label, value, status }: { 
-  label: string; 
-  value: number; 
-  status?: 'live' | 'scheduled' | 'completed' | 'total' 
+function StatCard({ label, value, status }: {
+  label: string;
+  value: number;
+  status?: 'live' | 'scheduled' | 'completed' | 'total'
 }) {
   const statusConfig = {
     live: { color: 'text-semantic-critical', bg: 'bg-semantic-critical/10' },
@@ -50,9 +50,9 @@ export function Dashboard() {
 
   const stats = {
     total: sessions.length,
-    live: sessions.filter(s => s.status === 'LIVE').length,
-    scheduled: sessions.filter(s => s.status === 'SCHEDULED').length,
-    completed: sessions.filter(s => s.status === 'COMPLETED').length,
+    live: sessions.filter(s => s.status === 'live').length,
+    scheduled: sessions.filter(s => s.status === 'scheduled').length,
+    completed: sessions.filter(s => s.status === 'completed').length,
   };
 
   const recentSessions = sessions.slice(0, 5);
@@ -70,8 +70,8 @@ export function Dashboard() {
               {user?.full_name} · {user?.role?.toUpperCase()}
             </p>
           </div>
-          <Button 
-            variant="primary" 
+          <Button
+            variant="primary"
             onClick={() => navigate('/sessions/create')}
             icon={<Plus className="w-4 h-4" />}
           >
@@ -104,14 +104,14 @@ export function Dashboard() {
         <section className="editorial-section">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-subheadline">Recent Sessions</h2>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => navigate('/dashboard')}
             >
               View All
             </Button>
           </div>
-          
+
           <div className="space-paragraph">
             {recentSessions.length === 0 ? (
               <Card variant="evidence" className="text-center py-12">
@@ -125,7 +125,7 @@ export function Dashboard() {
                       Begin by scheduling your first technical interview session.
                     </p>
                   </div>
-                  <Button 
+                  <Button
                     variant="primary"
                     onClick={() => navigate('/sessions/create')}
                     icon={<Plus className="w-4 h-4" />}
@@ -136,9 +136,9 @@ export function Dashboard() {
               </Card>
             ) : (
               recentSessions.map((session) => (
-                <Card 
-                  key={session.id} 
-                  variant="evidence" 
+                <Card
+                  key={session.id}
+                  variant="evidence"
                   className="interactive-authority cursor-pointer"
                   onClick={() => navigate(`/sessions/${session.id}`)}
                 >
@@ -156,18 +156,17 @@ export function Dashboard() {
                         <span>{new Date(session.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-col items-end space-y-2">
-                      <span className={`verdict-badge ${
-                        session.status === 'LIVE' ? 'verdict-badge-critical' :
-                        session.status === 'COMPLETED' ? 'verdict-badge-success' :
-                        'verdict-badge-neutral'
-                      }`}>
+                      <span className={`verdict-badge ${session.status === 'live' ? 'verdict-badge-critical' :
+                        session.status === 'completed' ? 'verdict-badge-success' :
+                          'verdict-badge-neutral'
+                        }`}>
                         {session.status}
                       </span>
-                      {session.status === 'LIVE' && (
-                        <Button 
-                          variant="primary" 
+                      {session.status === 'live' && (
+                        <Button
+                          variant="primary"
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -201,7 +200,7 @@ export function Dashboard() {
             <div className="grid-control-4">
               <MetricCard
                 title="Pending Reviews"
-                value={sessions.filter(s => s.status === 'COMPLETED' && !s.evaluation_completed).length}
+                value={sessions.filter(s => s.status === 'completed' && !s.evaluation_completed).length}
                 unit="sessions"
                 status="warning"
                 description="Awaiting final review"

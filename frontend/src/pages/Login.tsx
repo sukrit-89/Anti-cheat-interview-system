@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Shield, User, Lock } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
+import { extractErrorMessage } from '../lib/errorUtils';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 
@@ -23,9 +24,11 @@ export function Login() {
     setError('');
 
     try {
-      await login({ email, password });
+      await login(email, password);
+      // Explicitly navigate after successful login
+      navigate('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Authentication failed');
+      setError(extractErrorMessage(err, 'Authentication failed'));
     }
   };
 
@@ -60,7 +63,7 @@ export function Login() {
                 required
                 variant="evidence"
               />
-              
+
               <Input
                 label="Password"
                 type="password"
@@ -112,12 +115,12 @@ export function Login() {
             <h2 className="text-headline font-display text-verdict-text-primary mb-6">
               Evidence-Based Assessment
             </h2>
-            
+
             <div className="space-paragraph">
               <div className="evidence-block">
                 <h3 className="text-subheadline font-semibold mb-3">Objective Evaluation</h3>
                 <p className="text-body text-verdict-text-secondary leading-relaxed">
-                  Multi-agent AI analysis provides standardized, bias-free technical assessments 
+                  Multi-agent AI analysis provides standardized, bias-free technical assessments
                   based on quantifiable metrics rather than subjective judgment.
                 </p>
               </div>
@@ -125,7 +128,7 @@ export function Login() {
               <div className="evidence-block">
                 <h3 className="text-subheadline font-semibold mb-3">Real-Time Monitoring</h3>
                 <p className="text-body text-verdict-text-secondary leading-relaxed">
-                  Continuous evaluation of coding ability, communication clarity, and engagement 
+                  Continuous evaluation of coding ability, communication clarity, and engagement
                   levels throughout the interview process.
                 </p>
               </div>
@@ -133,7 +136,7 @@ export function Login() {
               <div className="evidence-block">
                 <h3 className="text-subheadline font-semibold mb-3">Defensible Decisions</h3>
                 <p className="text-body text-verdict-text-secondary leading-relaxed">
-                  Comprehensive evidence trails and AI-powered insights create 
+                  Comprehensive evidence trails and AI-powered insights create
                   documented, justifiable hiring recommendations.
                 </p>
               </div>
@@ -143,7 +146,7 @@ export function Login() {
           <div className="mt-12 pt-12 border-t border-verdict-border">
             <div className="space-section">
               <h3 className="text-subheadline font-semibold mb-4">System Capabilities</h3>
-              
+
               <div className="grid-control">
                 <div className="grid-control-6">
                   <div className="metric-display">
@@ -151,21 +154,21 @@ export function Login() {
                     <div className="text-lg font-mono text-verdict-text-primary">Autonomous</div>
                   </div>
                 </div>
-                
+
                 <div className="grid-control-6">
                   <div className="metric-display">
                     <div className="text-micro text-verdict-text-tertiary mb-2">ANALYSIS</div>
                     <div className="text-lg font-mono text-verdict-text-primary">Multi-Dimensional</div>
                   </div>
                 </div>
-                
+
                 <div className="grid-control-6">
                   <div className="metric-display">
                     <div className="text-micro text-verdict-text-tertiary mb-2">EVALUATION</div>
                     <div className="text-lg font-mono text-verdict-text-primary">Real-Time</div>
                   </div>
                 </div>
-                
+
                 <div className="grid-control-6">
                   <div className="metric-display">
                     <div className="text-micro text-verdict-text-tertiary mb-2">REPORTING</div>
@@ -182,8 +185,8 @@ export function Login() {
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 lg:hidden">
         <div className="text-center text-micro text-verdict-text-tertiary">
           Don't have an account?{' '}
-          <Link 
-            to="/register" 
+          <Link
+            to="/register"
             className="text-accent-bronze hover:text-accent-bronze-light font-medium"
           >
             Request Access

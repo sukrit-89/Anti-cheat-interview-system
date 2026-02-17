@@ -37,7 +37,7 @@ def generate_session_code() -> str:
 async def create_session(
     session_data: SessionCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_recruiter)
+    current_user: dict = Depends(get_current_recruiter)
 ) -> Session:
     """Create a new interview session (Recruiter only)."""
     
@@ -56,12 +56,12 @@ async def create_session(
     # Create LiveKit room
     room_name = f"session-{session_code}-{int(datetime.utcnow().timestamp())}"
     
-    # Create session
+    # Create session - recruiter_id is now the Supabase UUID
     new_session = Session(
         session_code=session_code,
         title=session_data.title,
         description=session_data.description,
-        recruiter_id=current_user.id,
+        recruiter_id=current_user["id"],  # Supabase UUID string
         status=SessionStatus.SCHEDULED,
         scheduled_at=session_data.scheduled_at,
         room_name=room_name,
@@ -72,14 +72,14 @@ async def create_session(
     await db.commit()
     await db.refresh(new_session)
     
-    logger.info(f"Session created: {new_session.id} by recruiter {current_user.id}")
+    logger.info(f"Session created: {new_session.id} by recruiter {current_user['id']}")
     
     # Publish event
     await publish_session_created(
         session_id=new_session.id,
         data={
             "session_code": session_code,
-            "recruiter_id": current_user.id,
+            "recruiter_id": current_user["id"],
             "room_name": room_name
         }
     )
@@ -134,7 +134,7 @@ async def join_session(
         # Create new candidate entry
         candidate = Candidate(
             session_id=session.id,
-            user_id=current_user.id,
+            user_id=current_user["id"],
             email=join_data.email,
             full_name=join_data.full_name,
             joined_at=datetime.utcnow(),
@@ -169,22 +169,22 @@ async def join_session(
 @router.get("", response_model=List[SessionResponse])
 async def list_sessions(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: dict = Depends(get_current_user),
     status_filter: SessionStatus = None
 ) -> List[Session]:
     """List sessions for current user."""
     
     from app.models.models import UserRole
     
-    if current_user.role == UserRole.RECRUITER:
+    if current_user.get("role") == UserRole.RECRUITER:
         # Recruiters see their created sessions
-        query = select(Session).where(Session.recruiter_id == current_user.id)
+        query = select(Session).where(Session.recruiter_id == current_user["id"])
     else:
         # Candidates see sessions they've joined
         query = (
             select(Session)
             .join(Candidate)
-            .where(Candidate.user_id == current_user.id)
+            .where(Candidate.user_id == current_user["id"])
         )
     
     if status_filter:
@@ -218,8 +218,8 @@ async def get_session(
     # Authorization check
     from app.models.models import UserRole
     
-    if current_user.role == UserRole.RECRUITER:
-        if session.recruiter_id != current_user.id:
+    if current_user.get("role") == UserRole.RECRUITER:
+        if session.recruiter_id != current_user["id"]:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to view this session"
@@ -230,7 +230,7 @@ async def get_session(
             select(Candidate).where(
                 and_(
                     Candidate.session_id == session_id,
-                    Candidate.user_id == current_user.id
+                    Candidate.user_id == current_user["id"]
                 )
             )
         )
@@ -248,7 +248,7 @@ async def update_session(
     session_id: int,
     update_data: SessionUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_recruiter)
+    current_user: dict = Depends(get_current_recruiter)
 ) -> Session:
     """Update session (Recruiter only)."""
     
@@ -261,7 +261,7 @@ async def update_session(
             detail="Session not found"
         )
     
-    if session.recruiter_id != current_user.id:
+    if session.recruiter_id != current_user["id"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to update this session"
@@ -276,7 +276,7 @@ async def update_session(
     await db.commit()
     await db.refresh(session)
     
-    logger.info(f"Session {session_id} updated by recruiter {current_user.id}")
+    logger.info(f"Session {session_id} updated by recruiter {current_user['id']}")
     
     return session
 
@@ -298,7 +298,7 @@ async def start_session(
             detail="Session not found"
         )
     
-    if session.recruiter_id != current_user.id:
+    if session.recruiter_id != current_user["id"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to start this session"
@@ -316,7 +316,7 @@ async def start_session(
     await db.commit()
     await db.refresh(session)
     
-    logger.info(f"Session {session_id} started by recruiter {current_user.id}")
+    logger.info(f"Session {session_id} started by recruiter {current_user['id']}")
     
     # Publish event
     await publish_session_started(
@@ -344,7 +344,7 @@ async def get_session_candidates(
             detail="Session not found"
         )
     
-    if session.recruiter_id != current_user.id:
+    if session.recruiter_id != current_user["id"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to view session candidates"
@@ -356,7 +356,11 @@ async def get_session_candidates(
     candidates = result.scalars().all()
     
     return candidates
-Publish event
+
+
+# Publish session ended event
+async def publish_session_end_event(session_id: int, session):
+    """Publish event when session ends."""
     from app.core.events import publish_session_ended
     await publish_session_ended(
         session_id=session_id,

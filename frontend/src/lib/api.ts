@@ -4,6 +4,7 @@
  */
 import axios from 'axios';
 import type { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { supabase } from './supabase';
 
 // API Base URL - from environment or default
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -17,12 +18,12 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
-// Request interceptor - add auth token
+// Request interceptor - add Supabase auth token
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('access_token');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config: InternalAxiosRequestConfig) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token && config.headers) {
+      config.headers.Authorization = `Bearer ${session.access_token}`;
     }
     return config;
   },
@@ -35,32 +36,30 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // If 401 and not already retried, try to refresh token
+    // If 401, try to refresh Supabase session
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem('refresh_token');
-        if (refreshToken) {
-          const response = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {
-            refresh_token: refreshToken,
-          });
+        const { data: { session }, error: refreshError } = await supabase.auth.refreshSession();
 
-          const { access_token } = response.data;
-          localStorage.setItem('access_token', access_token);
-
-          // Retry original request
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${access_token}`;
-          }
-          return apiClient(originalRequest);
+        if (refreshError || !session) {
+          // Refresh failed - sign out
+          await supabase.auth.signOut();
+          window.location.href = '/login';
+          return Promise.reject(error);
         }
+
+        // Retry original request with new token
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${session.access_token}`;
+        }
+        return apiClient(originalRequest);
       } catch (refreshError) {
-        // Refresh failed - clear tokens and redirect to login
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+        // Refresh failed - sign out
+        await supabase.auth.signOut();
         window.location.href = '/login';
-        return Promise.reject(refreshError);
+        return Promise.reject(error);
       }
     }
 
@@ -136,6 +135,7 @@ export interface SessionCreateRequest {
 export interface Session {
   id: number;
   session_code: string;
+  join_code?: string; // Optional: alias for session_code or UI display
   title: string;
   description?: string;
   recruiter_id: number;
@@ -146,6 +146,7 @@ export interface Session {
   room_name: string;
   created_at: string;
   updated_at?: string;
+  evaluation_completed?: boolean; // Track if evaluation is complete
 }
 
 export interface SessionJoinRequest {

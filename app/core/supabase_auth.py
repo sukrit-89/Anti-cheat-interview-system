@@ -2,7 +2,7 @@
 Supabase Authentication Service.
 Production-ready auth using Supabase only.
 """
-from typing import Optional
+from typing import Optional, Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -22,19 +22,61 @@ except ImportError:
 class SupabaseAuthService:
     """Supabase-only authentication service."""
     
+    @staticmethod
+    def _serialize_user(user: Any) -> dict:
+        """Convert Supabase user object to serializable dict."""
+        if not user:
+            return {}
+        
+        user_dict = {
+            'id': getattr(user, 'id', None),
+            'email': getattr(user, 'email', None),
+        }
+        
+        # Handle created_at datetime
+        created_at = getattr(user, 'created_at', None)
+        if created_at:
+            user_dict['created_at'] = created_at.isoformat() if hasattr(created_at, 'isoformat') else str(created_at)
+        
+        # Handle updated_at datetime
+        updated_at = getattr(user, 'updated_at', None)
+        if updated_at:
+            user_dict['updated_at'] = updated_at.isoformat() if hasattr(updated_at, 'isoformat') else str(updated_at)
+        
+        return user_dict
+    
     def __init__(self):
+        self.supabase_client = None
+        
         if not SUPABASE_AUTH_AVAILABLE:
-            raise Exception("Supabase not installed. Install with: pip install supabase")
-            
-        self.supabase_client = create_client(
-            supabase_url=settings.SUPABASE_URL,
-            supabase_key=settings.SUPABASE_ANON_KEY
-        )
-        logger.info("Supabase Auth initialized")
+            logger.warning("Supabase not installed. Skipping Supabase auth.")
+            return
+        
+        # Check if Supabase credentials are configured
+        if not settings.SUPABASE_URL or settings.SUPABASE_URL == "" or not settings.SUPABASE_ANON_KEY or settings.SUPABASE_ANON_KEY == "":
+            logger.info("Supabase credentials not configured. Skipping Supabase auth.")
+            return
+        
+        try:
+            self.supabase_client = create_client(
+                supabase_url=settings.SUPABASE_URL,
+                supabase_key=settings.SUPABASE_ANON_KEY
+            )
+            logger.info("Supabase Auth initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize Supabase Auth: {e}. Auth will be disabled.")
+            self.supabase_client = None
     
     async def sign_up(self, email: str, password: str, full_name: str, role: str) -> dict:
         """Register user with Supabase."""
+        if not self.supabase_client:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY."
+            )
+        
         try:
+            # Disable email confirmation for development to avoid rate limits
             result = self.supabase_client.auth.sign_up({
                 'email': email,
                 'password': password,
@@ -42,33 +84,68 @@ class SupabaseAuthService:
                     'data': {
                         'full_name': full_name,
                         'role': role
-                    }
+                    },
+                    'email_redirect_to': None  # Disable email confirmation for dev
                 }
             })
             
             if result.user:
-                # Create user record in database
-                user_data = {
-                    'id': result.user.id,
-                    'email': email,
-                    'full_name': full_name,
-                    'role': role,
-                    'is_active': True,
-                    'created_at': result.user.created_at
-                }
-                
-                await supabase_service.create_user(user_data)
-                logger.info(f"Supabase user registered: {email}")
+                # Try to create user record in database
+                # If it already exists, that's okay - they might have registered before
+                try:
+                    user_data = {
+                        'id': result.user.id,
+                        'email': email,
+                        'full_name': full_name,
+                        'role': role,
+                        'is_active': True,
+                        'created_at': result.user.created_at
+                    }
+                    
+                    await supabase_service.create_user(user_data)
+                    logger.info(f"Supabase user registered: {email}")
+                except Exception as db_error:
+                    # If user already exists in database, that's fine
+                    logger.warning(f"User record might already exist in database: {db_error}")
                 
                 return {
-                    'user': result.user,
+                    'user': self._serialize_user(result.user),
                     'session': result.session
                 }
             else:
                 raise Exception("Registration failed")
                 
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error(f"Supabase registration error: {e}")
+            
+            # Provide more specific error message based on error type
+            error_msg = str(e).lower()
+            
+            # Check for rate limit errors
+            if 'rate limit' in error_msg or 'too many' in error_msg:
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Email rate limit exceeded. Supabase limits email sending. Please wait a few minutes or disable email confirmation in Supabase dashboard (Authentication > Settings > Email Auth > Confirm email = OFF)."
+                )
+            
+            # Check for duplicate user errors (multiple variations)
+            elif any(phrase in error_msg for phrase in [
+                'already registered',
+                'already exists', 
+                'already been registered',
+                'user already exists',
+                'email already',
+                'duplicate',
+                'unique constraint'
+            ]):
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="This email is already registered. If you registered recently, please try logging in instead. If you forgot your password, use the password reset option."
+                )
+            
+            # Generic error
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Registration failed: {str(e)}"
@@ -76,6 +153,12 @@ class SupabaseAuthService:
     
     async def sign_in(self, email: str, password: str) -> dict:
         """Sign in with Supabase."""
+        if not self.supabase_client:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY."
+            )
+        
         try:
             result = self.supabase_client.auth.sign_in_with_password({
                 'email': email,
@@ -86,7 +169,7 @@ class SupabaseAuthService:
                 logger.info(f"Supabase user signed in: {email}")
                 
                 return {
-                    'user': result.user,
+                    'user': self._serialize_user(result.user),
                     'session': result.session,
                     'access_token': result.session.access_token,
                     'refresh_token': result.session.refresh_token
@@ -103,6 +186,10 @@ class SupabaseAuthService:
     
     async def sign_out(self, access_token: str) -> None:
         """Sign out from Supabase."""
+        if not self.supabase_client:
+            logger.warning("Supabase not configured, sign out skipped")
+            return
+        
         try:
             self.supabase_client.auth.sign_out()
             logger.info("Supabase user signed out")
@@ -111,17 +198,28 @@ class SupabaseAuthService:
     
     async def get_user(self, access_token: str) -> Optional[dict]:
         """Get user from Supabase."""
+        if not self.supabase_client:
+            logger.warning("Supabase not configured, cannot get user")
+            return None
+        
         try:
-            self.supabase_client.auth.set_session(access_token)
-            user = self.supabase_client.auth.get_user()
+            # Get user directly with the JWT token
+            response = self.supabase_client.auth.get_user(access_token)
             
-            if user:
-                # Get additional user data from database
-                user_data = await supabase_service.get_user_by_email(user.email)
-                if user_data:
-                    user.update(user_data)
+            if response and response.user:
+                # Extract user metadata for role and full_name
+                user_metadata = response.user.user_metadata or {}
                 
-                return user
+                user_dict = {
+                    'id': response.user.id,
+                    'email': response.user.email,
+                    'full_name': user_metadata.get('full_name', response.user.email.split('@')[0]),
+                    'role': user_metadata.get('role', 'candidate'),
+                    'is_active': True,
+                    'created_at': response.user.created_at,
+                }
+                
+                return user_dict
             return None
             
         except Exception as e:
@@ -130,6 +228,12 @@ class SupabaseAuthService:
     
     async def refresh_token(self, refresh_token: str) -> dict:
         """Refresh Supabase token."""
+        if not self.supabase_client:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY."
+            )
+        
         try:
             result = self.supabase_client.auth.refresh_session(refresh_token)
             

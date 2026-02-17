@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AlertTriangle, Activity, Eye, Brain, Scale, Clock } from 'lucide-react';
+import { AlertTriangle, Activity, Scale, Clock } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { useLiveMonitoring } from '../lib/websocket';
 import { Button } from '../components/Button';
@@ -17,7 +17,7 @@ export default function SessionMonitor() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
   const { currentSession, fetchSession, endSession } = useSessionStore();
-  const { metrics, flags, isConnected } = useLiveMonitoring(
+  const { metrics, flags = [], isConnected } = useLiveMonitoring(
     sessionId ? parseInt(sessionId) : null
   );
 
@@ -98,26 +98,25 @@ export default function SessionMonitor() {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2 text-micro text-verdict-text-secondary">
-              <div className={`w-2 h-2 rounded-full ${
-                isConnected ? 'bg-semantic-success' : 'bg-semantic-critical'
-              }`} />
+              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-semantic-success' : 'bg-semantic-critical'
+                }`} />
               <span>{isConnected ? 'MONITORING' : 'CONNECTING'}</span>
             </div>
           </div>
 
           <div className="flex items-center space-x-3">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={() => navigate(`/sessions/${sessionId}/results`)}
             >
               View Results
             </Button>
-            
-            <Button 
-              variant="critical" 
+
+            <Button
+              variant="critical"
               size="sm"
               onClick={handleEndSession}
             >
@@ -136,7 +135,7 @@ export default function SessionMonitor() {
               <Activity className="w-5 h-5 text-accent-bronze" />
               Live Metrics
             </h2>
-            
+
             <div className="grid-control">
               <div className="grid-control-3">
                 <MetricCard
@@ -147,7 +146,7 @@ export default function SessionMonitor() {
                   description="Algorithm efficiency"
                 />
               </div>
-              
+
               <div className="grid-control-3">
                 <MetricCard
                   title="Communication"
@@ -157,7 +156,7 @@ export default function SessionMonitor() {
                   description="Speech clarity"
                 />
               </div>
-              
+
               <div className="grid-control-3">
                 <MetricCard
                   title="Engagement"
@@ -167,7 +166,7 @@ export default function SessionMonitor() {
                   description="Visual attention"
                 />
               </div>
-              
+
               <div className="grid-control-3">
                 <MetricCard
                   title="Problem Solving"
@@ -187,11 +186,11 @@ export default function SessionMonitor() {
                 <Clock className="w-5 h-5 text-accent-bronze" />
                 Activity Timeline
               </h2>
-              
+
               <div className="flex items-center space-x-4 text-micro text-verdict-text-secondary">
                 <span>{activityLog.length} events</span>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => setActivityLog([])}
                 >
@@ -212,28 +211,26 @@ export default function SessionMonitor() {
                 </Card>
               ) : (
                 activityLog.map((event, index) => (
-                  <div 
+                  <div
                     key={`${event.timestamp}-${index}`}
-                    className={`flex items-start space-x-4 p-4 rounded-sm border-l-4 ${
-                      event.severity === 'critical' ? 'border-semantic-critical bg-semantic-critical/5' :
-                      event.severity === 'warning' ? 'border-semantic-warning bg-semantic-warning/5' :
-                      'border-verdict-border bg-verdict-surface'
-                    }`}
+                    className={`flex items-start space-x-4 p-4 rounded-sm border-l-4 ${event.severity === 'critical' ? 'border-semantic-critical bg-semantic-critical/5' :
+                        event.severity === 'warning' ? 'border-semantic-warning bg-semantic-warning/5' :
+                          'border-verdict-border bg-verdict-surface'
+                      }`}
                   >
                     <div className="flex-shrink-0 w-20">
                       <div className="text-micro text-verdict-text-tertiary">
                         {new Date(event.timestamp).toLocaleTimeString()}
                       </div>
                     </div>
-                    
+
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center space-x-2">
-                        <span className={`w-2 h-2 rounded-full ${
-                          event.type === 'coding' ? 'bg-blue-500' :
-                          event.type === 'speech' ? 'bg-green-500' :
-                          event.type === 'vision' ? 'bg-purple-500' :
-                          'bg-red-500'
-                        }`} />
+                        <span className={`w-2 h-2 rounded-full ${event.type === 'coding' ? 'bg-blue-500' :
+                            event.type === 'speech' ? 'bg-green-500' :
+                              event.type === 'vision' ? 'bg-purple-500' :
+                                'bg-red-500'
+                          }`} />
                         <span className="text-micro font-medium text-verdict-text-secondary uppercase">
                           {event.type}
                         </span>
@@ -257,7 +254,7 @@ export default function SessionMonitor() {
               Active Flags
             </h3>
           </div>
-          
+
           <div className="p-4 space-paragraph overflow-y-auto h-[calc(100%-4rem)]">
             {flags && flags.length > 0 ? (
               flags.map((flag, index) => (

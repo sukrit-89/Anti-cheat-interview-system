@@ -19,14 +19,14 @@ export const Card: React.FC<CardProps> = ({
   ...props
 }) => {
   const baseClasses = 'relative';
-  
+
   const variantClasses = {
     default: 'verdict-card',
     evidence: 'evidence-block',
     control: 'control-panel',
     elevated: 'verdict-card-elevated'
   };
-  
+
   const paddingClasses = {
     none: '',
     sm: 'p-3',
@@ -45,7 +45,7 @@ export const Card: React.FC<CardProps> = ({
     baseClasses,
     variantClasses[variant],
     paddingClasses[padding],
-    statusClasses[status],
+    status ? statusClasses[status] : '',
     {
       'border-0': !border
     },
@@ -102,7 +102,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             </span>
           )}
         </div>
-        
+
         <div className="flex items-baseline space-x-1">
           <span className={`text-2xl font-mono font-semibold ${statusColors[status]}`}>
             {value}
@@ -113,7 +113,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             </span>
           )}
         </div>
-        
+
         {description && (
           <p className="text-micro text-verdict-text-tertiary">
             {description}
@@ -162,11 +162,11 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
             {severity.toUpperCase()}
           </span>
         </div>
-        
+
         <p className="text-body text-verdict-text-secondary leading-relaxed">
           {evidence}
         </p>
-        
+
         {timestamp && (
           <p className="text-micro text-verdict-text-tertiary">
             {timestamp}

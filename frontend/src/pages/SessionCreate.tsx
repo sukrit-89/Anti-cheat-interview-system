@@ -54,7 +54,7 @@ export const SessionCreate: React.FC = () => {
         <div className="bg-verdict-surface border border-verdict-border p-8">
           {error && (
             <div className="mb-8 p-4 border border-semantic-critical bg-semantic-critical/5 text-semantic-critical text-sm">
-              {error}
+              {typeof error === 'string' ? error : 'An error occurred. Please try again.'}
             </div>
           )}
 

@@ -15,7 +15,7 @@ export function useWebSocket(sessionId: number | null) {
     const [isConnected, setIsConnected] = useState(false);
     const [lastMessage, setLastMessage] = useState<WebSocketMessage | null>(null);
     const wsRef = useRef<WebSocket | null>(null);
-    const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+    const reconnectTimeoutRef = useRef<number | null>(null);
 
     const connect = useCallback(() => {
         if (!sessionId) return;
@@ -90,7 +90,7 @@ export function useLiveMonitoring(sessionId: number | null) {
     const [isConnected, setIsConnected] = useState(false);
     const [metrics, setMetrics] = useState<any>(null);
     const wsRef = useRef<WebSocket | null>(null);
-    const pingIntervalRef = useRef<NodeJS.Timeout>();
+    const pingIntervalRef = useRef<number | null>(null);
 
     const connect = useCallback(() => {
         if (!sessionId) return;
@@ -157,5 +157,6 @@ export function useLiveMonitoring(sessionId: number | null) {
         isConnected,
         metrics,
         requestMetrics,
+        flags: [] as any[], // Add flags for compatibility - will be populated when backend implements it
     };
 }

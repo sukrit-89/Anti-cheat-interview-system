@@ -18,9 +18,27 @@ from app.core.logging import logger
 # Base class for all models
 Base = declarative_base()
 
+# Build database URL from environment or use Supabase
+def get_database_url() -> str:
+    """Get the database connection URL."""
+    # Try to get from environment
+    import os
+    db_url = os.getenv("DATABASE_URL")
+    if db_url:
+        return db_url
+    
+    # Build from PostgreSQL components (for local development)
+    postgres_user = os.getenv("POSTGRES_USER", "interview_user")
+    postgres_password = os.getenv("POSTGRES_PASSWORD", "changeme")
+    postgres_host = os.getenv("POSTGRES_HOST", "postgres")
+    postgres_port = os.getenv("POSTGRES_PORT", "5432")
+    postgres_db = os.getenv("POSTGRES_DB", "interview_platform")
+    
+    return f"postgresql+asyncpg://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_db}"
+
 # Create async engine
 engine = create_async_engine(
-    str(settings.DATABASE_URL),
+    get_database_url(),
     echo=settings.DEBUG,
     future=True,
     poolclass=NullPool if settings.ENVIRONMENT == "test" else None,

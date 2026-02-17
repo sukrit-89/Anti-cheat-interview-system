@@ -1,11 +1,18 @@
 /**
- * Authentication State Management
+ * Authentication State Management with Supabase
  * Using Zustand for simple, performant state management
  */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { authApi } from '@/lib/api';
-import type { User, LoginRequest, RegisterRequest } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
+import { extractErrorMessage } from '@/lib/errorUtils';
+
+interface User {
+  id: string;
+  email: string;
+  full_name?: string;
+  role?: string;
+}
 
 interface AuthState {
   user: User | null;
@@ -14,8 +21,8 @@ interface AuthState {
   error: string | null;
 
   // Actions
-  login: (credentials: LoginRequest) => Promise<void>;
-  register: (data: RegisterRequest) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, fullName: string, role: string) => Promise<void>;
   logout: () => Promise<void>;
   fetchCurrentUser: () => Promise<void>;
   clearError: () => void;
@@ -29,27 +36,31 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
 
-      login: async (credentials) => {
+      login: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await authApi.login(credentials);
-          
-          // Store tokens
-          localStorage.setItem('access_token', response.access_token);
-          localStorage.setItem('refresh_token', response.refresh_token);
-
-          // Fetch user data
-          const user = await authApi.getCurrentUser();
-          
-          set({
-            user,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
           });
+
+          if (error) throw error;
+
+          if (data.user) {
+            set({
+              user: {
+                id: data.user.id,
+                email: data.user.email!,
+                full_name: data.user.user_metadata?.full_name,
+                role: data.user.user_metadata?.role,
+              },
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+          }
         } catch (error: unknown) {
-          const axiosError = error as { response?: { data?: { detail?: string } } };
-          const message = axiosError.response?.data?.detail || 'Login failed';
+          const message = extractErrorMessage(error, 'Login failed');
           set({
             user: null,
             isAuthenticated: false,
@@ -60,34 +71,43 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      register: async (data) => {
+      register: async (email: string, password: string, fullName: string, role: string) => {
         set({ isLoading: true, error: null });
         try {
-          const user = await authApi.register(data);
-          
-          // Auto-login after registration
-          await authApi.login({
-            email: data.email,
-            password: data.password,
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                full_name: fullName,
+                role: role,
+              },
+            },
           });
 
-          const response = await authApi.login({
-            email: data.email,
-            password: data.password,
-          });
-          
-          localStorage.setItem('access_token', response.access_token);
-          localStorage.setItem('refresh_token', response.refresh_token);
+          if (error) throw error;
 
-          set({
-            user,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-          });
+          if (data.user) {
+            // Auto-login after registration
+            await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
+
+            set({
+              user: {
+                id: data.user.id,
+                email: data.user.email!,
+                full_name: fullName,
+                role: role,
+              },
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+          }
         } catch (error: unknown) {
-          const axiosError = error as { response?: { data?: { detail?: string } } };
-          const message = axiosError.response?.data?.detail || 'Registration failed';
+          const message = extractErrorMessage(error, 'Registration failed');
           set({
             user: null,
             isAuthenticated: false,
@@ -99,7 +119,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: async () => {
-        await authApi.logout();
+        await supabase.auth.signOut();
         set({
           user: null,
           isAuthenticated: false,
@@ -109,25 +129,33 @@ export const useAuthStore = create<AuthState>()(
       },
 
       fetchCurrentUser: async () => {
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-          set({ user: null, isAuthenticated: false });
-          return;
-        }
-
         set({ isLoading: true });
         try {
-          const user = await authApi.getCurrentUser();
-          set({
-            user,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-          });
+          const { data: { session }, error } = await supabase.auth.getSession();
+
+          if (error) throw error;
+
+          if (session?.user) {
+            set({
+              user: {
+                id: session.user.id,
+                email: session.user.email!,
+                full_name: session.user.user_metadata?.full_name,
+                role: session.user.user_metadata?.role,
+              },
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+          } else {
+            set({
+              user: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: null,
+            });
+          }
         } catch {
-          // Token invalid or expired
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
           set({
             user: null,
             isAuthenticated: false,

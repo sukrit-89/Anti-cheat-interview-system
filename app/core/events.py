@@ -178,3 +178,23 @@ async def publish_evaluation_requested(session_id: int) -> None:
         data={}
     )
     await EventPublisher.publish(event)
+
+
+async def publish_code_changed(session_id: int, code: str, language: str) -> None:
+    """Publish code changed event."""
+    event = Event(
+        event_type=EventType.CODE_CHANGED,
+        session_id=session_id,
+        data={"code": code, "language": language}
+    )
+    await EventPublisher.publish(event)
+
+
+async def publish_code_executed(session_id: int, result: dict[str, Any]) -> None:
+    """Publish code executed event."""
+    event = Event(
+        event_type=EventType.CODE_EXECUTED,
+        session_id=session_id,
+        data=result
+    )
+    await EventPublisher.publish(event)

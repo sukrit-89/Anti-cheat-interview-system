@@ -14,10 +14,12 @@ sqlalchemy==2.0.23
 asyncpg==0.29.0
 alembic==1.12.1
 psycopg2-binary==2.9.9
-supabase==2.3.0
+supabase==2.9.0
+httpx==0.27.0
 
 # Authentication & Security
 # Supabase handles authentication - no JWT needed
+python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 bcrypt==4.0.1
 python-multipart==0.0.6
@@ -40,7 +42,7 @@ anthropic==0.7.7
 setuptools>=65.5.0
 
 # Code Execution
-httpx==0.25.2
+httpx==0.27.0
 
 # Audio Processing
 librosa==0.10.1

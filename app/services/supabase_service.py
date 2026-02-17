@@ -20,22 +20,41 @@ class SupabaseService:
     """Service for Supabase operations."""
     
     def __init__(self):
+        self.client = None
+        
         if not SUPABASE_AVAILABLE:
-            logger.error("Supabase not installed. Install with: pip install supabase")
-            self.client = None
+            logger.warning("Supabase not installed. Install with: pip install supabase")
+            return
+        
+        # Check if Supabase credentials are properly configured
+        # Handle None, empty string, and whitespace-only values
+        supabase_url = getattr(settings, 'SUPABASE_URL', None)
+        supabase_anon_key = getattr(settings, 'SUPABASE_ANON_KEY', None)
+        
+        if not supabase_url or not str(supabase_url).strip():
+            logger.info("Supabase URL not configured. Using local database only.")
             return
             
-        # Initialize Supabase client
-        self.client: Optional[Client] = create_client(
-            supabase_url=settings.SUPABASE_URL,
-            supabase_key=settings.SUPABASE_ANON_KEY
-        )
-        
-        # Set auth header for admin operations
-        if hasattr(settings, 'SUPABASE_SERVICE_ROLE_KEY'):
-            self.client.postgrest.auth(settings.SUPABASE_SERVICE_ROLE_KEY)
-        
-        logger.info("Supabase client initialized")
+        if not supabase_anon_key or not str(supabase_anon_key).strip():
+            logger.info("Supabase anon key not configured. Using local database only.")
+            return
+            
+        try:
+            # Initialize Supabase client
+            self.client: Optional[Client] = create_client(
+                supabase_url=supabase_url.strip(),
+                supabase_key=supabase_anon_key.strip()
+            )
+            
+            # Set auth header for admin operations
+            service_role_key = getattr(settings, 'SUPABASE_SERVICE_ROLE_KEY', None)
+            if service_role_key and str(service_role_key).strip():
+                self.client.postgrest.auth(service_role_key)
+            
+            logger.info("Supabase client initialized successfully")
+        except Exception as e:
+            logger.warning(f"Failed to initialize Supabase client: {e}. Using local database only.")
+            self.client = None
     
     async def get_client(self) -> Optional[Client]:
         """Get authenticated Supabase client."""

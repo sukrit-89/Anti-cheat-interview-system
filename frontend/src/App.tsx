@@ -10,6 +10,7 @@ import { SessionJoin } from './pages/SessionJoin';
 import { InterviewRoom } from './pages/InterviewRoom';
 import SessionMonitor from './pages/SessionMonitor';
 import SessionResults from './pages/SessionResults';
+import { EvaluationReport } from './pages/EvaluationReport';
 import { useAuthStore } from './store/useAuthStore';
 import './index.css';
 
@@ -48,6 +49,10 @@ function App() {
         <Route
           path="/sessions/:sessionId/results"
           element={isAuthenticated ? <SessionResults /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/evaluation/:id"
+          element={isAuthenticated ? <EvaluationReport /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>

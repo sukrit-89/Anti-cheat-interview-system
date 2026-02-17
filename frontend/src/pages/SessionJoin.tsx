@@ -78,7 +78,7 @@ export const SessionJoin: React.FC = () => {
 
           {error && (
             <div className="mb-6 p-4 border border-semantic-critical bg-semantic-critical/5 text-semantic-critical text-sm">
-              {error}
+              {typeof error === 'string' ? error : 'An error occurred. Please try again.'}
             </div>
           )}
 

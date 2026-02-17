@@ -4,6 +4,7 @@
  */
 import { create } from 'zustand';
 import { sessionsApi } from '../lib/api';
+import { extractErrorMessage } from '../lib/errorUtils';
 import type { Session, SessionCreateRequest, SessionJoinRequest } from '../lib/api';
 
 interface SessionState {
@@ -25,7 +26,7 @@ interface SessionState {
   clearError: () => void;
 }
 
-export const useSessionStore = create<SessionState>((set, get) => ({
+export const useSessionStore = create<SessionState>((set) => ({
   sessions: [],
   currentSession: null,
   roomToken: null,
@@ -38,9 +39,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     try {
       const sessions = await sessionsApi.listSessions(status);
       set({ sessions, isLoading: false });
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error.response?.data?.detail || 'Failed to fetch sessions',
+        error: extractErrorMessage(error, 'Failed to fetch sessions'),
         isLoading: false,
       });
     }
@@ -51,9 +52,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     try {
       const session = await sessionsApi.getSession(sessionId);
       set({ currentSession: session, isLoading: false });
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error.response?.data?.detail || 'Failed to fetch session',
+        error: extractErrorMessage(error, 'Failed to fetch session'),
         isLoading: false,
       });
     }
@@ -69,9 +70,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         isLoading: false,
       }));
       return session;
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error.response?.data?.detail || 'Failed to create session',
+        error: extractErrorMessage(error, 'Failed to create session'),
         isLoading: false,
       });
       throw error;
@@ -88,9 +89,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         candidateId: response.candidate_id,
         isLoading: false,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error.response?.data?.detail || 'Failed to join session',
+        error: extractErrorMessage(error, 'Failed to join session'),
         isLoading: false,
       });
       throw error;
@@ -110,9 +111,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         sessions: state.sessions.map((s) => (s.id === sessionId ? session : s)),
         isLoading: false,
       }));
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error.response?.data?.detail || 'Failed to start session',
+        error: extractErrorMessage(error, 'Failed to start session'),
         isLoading: false,
       });
       throw error;
@@ -128,9 +129,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         sessions: state.sessions.map((s) => (s.id === sessionId ? session : s)),
         isLoading: false,
       }));
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error.response?.data?.detail || 'Failed to end session',
+        error: extractErrorMessage(error, 'Failed to end session'),
         isLoading: false,
       });
       throw error;

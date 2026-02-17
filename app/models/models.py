@@ -59,7 +59,10 @@ class SeverityLevel(str, PyEnum):
 
 
 class User(Base):
-    """User model - recruiters and candidates."""
+    """
+    User model - DEPRECATED: Users are managed by Supabase.
+    This table is kept for backward compatibility but should not be used.
+    """
     __tablename__ = "users"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -71,9 +74,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relationships
-    created_sessions = relationship("Session", back_populates="recruiter", foreign_keys="Session.recruiter_id")
-    candidate_sessions = relationship("Candidate", back_populates="user")
+    # Relationships removed - users are in Supabase
     
     __table_args__ = (
         Index("idx_user_email_active", "email", "is_active"),
@@ -89,7 +90,8 @@ class Session(Base):
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     
-    recruiter_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    # recruiter_id now stores Supabase UUID (string)
+    recruiter_id = Column(String(255), nullable=False, index=True)
     status = Column(Enum(SessionStatus), default=SessionStatus.SCHEDULED, index=True)
     
     # Timing
@@ -110,8 +112,7 @@ class Session(Base):
     # Metadata
     meta_data = Column(JSON, default=dict)
     
-    # Relationships
-    recruiter = relationship("User", back_populates="created_sessions", foreign_keys=[recruiter_id])
+    # Relationships - removed recruiter relationship (user is in Supabase)
     candidates = relationship("Candidate", back_populates="session", cascade="all, delete-orphan")
     coding_events = relationship("CodingEvent", back_populates="session", cascade="all, delete-orphan")
     speech_segments = relationship("SpeechSegment", back_populates="session", cascade="all, delete-orphan")
@@ -125,13 +126,14 @@ class Session(Base):
     )
 
 
+
 class Candidate(Base):
     """Candidate participation in sessions."""
     __tablename__ = "candidates"
     
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(Integer, ForeignKey("sessions.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    user_id = Column(String(255), nullable=True)  # Supabase UUID (optional - may be guest)
     
     # Candidate info (may be guest)
     email = Column(String(255), nullable=False)
@@ -147,9 +149,8 @@ class Candidate(Base):
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
-    # Relationships
+    # Relationships - removed user relationship (Supabase)
     session = relationship("Session", back_populates="candidates")
-    user = relationship("User", back_populates="candidate_sessions")
     
     __table_args__ = (
         Index("idx_candidate_session", "session_id", "email"),

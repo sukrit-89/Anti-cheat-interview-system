@@ -142,7 +142,7 @@ async def get_me_supabase(
         return UserResponse(
             id=current_user.get('id'),
             email=current_user.get('email'),
-            full_name=current_user.get('full_name', ''),
+            full_name=current_user.get('full_name') or current_user.get('email', '').split('@')[0] or 'User',
             role=current_user.get('role', 'candidate'),
             is_active=current_user.get('is_active', True),
             created_at=current_user.get('created_at')

@@ -33,18 +33,15 @@ class Settings(BaseSettings):
     # No JWT needed - Supabase manages tokens
     
     # Database - Supabase Only
-    SUPABASE_URL: str
-    SUPABASE_ANON_KEY: str
-    SUPABASE_SERVICE_ROLE_KEY: str
+    SUPABASE_URL: Optional[str] = None
+    SUPABASE_ANON_KEY: Optional[str] = None
+    SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
     
-    @field_validator("DATABASE_URL", mode="before")
-    @classmethod
-    def assemble_db_url(cls, v: Optional[str], info) -> str:
-        if isinstance(v, str):
-            return v
-        
-        # Always use Supabase URL
-        return info.data.get("SUPABASE_URL")
+    # JWT Configuration (fallback for local development)
+    JWT_SECRET_KEY: str = "your-secret-key-change-in-production-min-32-chars-long"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # Redis
     REDIS_HOST: str = "localhost"
@@ -67,14 +64,30 @@ class Settings(BaseSettings):
     def set_celery_broker(cls, v: Optional[str], info) -> str:
         if v:
             return v
-        return info.data.get("redis_url", "redis://localhost:6379/0")
+        # Build redis URL from components
+        redis_host = info.data.get("REDIS_HOST", "localhost")
+        redis_port = info.data.get("REDIS_PORT", 6379)
+        redis_db = info.data.get("REDIS_DB", 0)
+        redis_password = info.data.get("REDIS_PASSWORD")
+        
+        if redis_password:
+            return f"redis://:{redis_password}@{redis_host}:{redis_port}/{redis_db}"
+        return f"redis://{redis_host}:{redis_port}/{redis_db}"
     
     @field_validator("CELERY_RESULT_BACKEND", mode="before")
     @classmethod
     def set_celery_backend(cls, v: Optional[str], info) -> str:
         if v:
             return v
-        return info.data.get("redis_url", "redis://localhost:6379/0")
+        # Build redis URL from components
+        redis_host = info.data.get("REDIS_HOST", "localhost")
+        redis_port = info.data.get("REDIS_PORT", 6379)
+        redis_db = info.data.get("REDIS_DB", 0)
+        redis_password = info.data.get("REDIS_PASSWORD")
+        
+        if redis_password:
+            return f"redis://:{redis_password}@{redis_host}:{redis_port}/{redis_db}"
+        return f"redis://{redis_host}:{redis_port}/{redis_db}"
     
     # S3-Compatible Storage (Optional - falls back to local storage)
     S3_ENDPOINT_URL: Optional[str] = None  # For MinIO or other S3-compatible

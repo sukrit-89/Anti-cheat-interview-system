@@ -227,3 +227,6 @@ celerybeat.pid
 *.orig
 todo.txt
 notes.txt
+
+UI-code
+UI

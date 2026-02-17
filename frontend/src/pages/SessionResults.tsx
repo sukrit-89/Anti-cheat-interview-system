@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Download, FileText, Scale, TrendingUp, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { Button } from '../components/Button';
-import { Card, EvidenceCard, MetricCard } from '../components/Card';
+import { Card, MetricCard } from '../components/Card';
 
 interface EvaluationScore {
   category: string;
@@ -45,7 +45,7 @@ export default function SessionResults() {
   const loadMockEvaluation = () => {
     setOverallScore(78);
     setRecommendation('HIRE');
-    
+
     setEvaluationScores([
       {
         category: 'Problem Solving',
@@ -170,16 +170,16 @@ export default function SessionResults() {
           </div>
 
           <div className="flex items-center space-x-3">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={() => navigate(`/sessions/${sessionId}/monitor`)}
             >
               Back to Monitor
             </Button>
-            
-            <Button 
-              variant="primary" 
+
+            <Button
+              variant="primary"
               size="sm"
               onClick={handleDownloadReport}
               icon={<Download className="w-4 h-4" />}
@@ -194,7 +194,7 @@ export default function SessionResults() {
         {/* Final Verdict */}
         <section className="editorial-section">
           <h2 className="text-subheadline mb-6">Final Verdict</h2>
-          
+
           <div className="grid-control">
             <div className="grid-control-8">
               <MetricCard
@@ -205,7 +205,7 @@ export default function SessionResults() {
                 description="Comprehensive evaluation"
               />
             </div>
-            
+
             <div className="grid-control-4">
               <Card variant="evidence" className={`text-center ${getRecommendationBg(recommendation)}`}>
                 <div className="space-y-3">
@@ -227,7 +227,7 @@ export default function SessionResults() {
         {/* Category Breakdown */}
         <section className="editorial-section">
           <h2 className="text-subheadline mb-6">Performance Analysis</h2>
-          
+
           <div className="grid-control">
             {evaluationScores.map((score, index) => (
               <div key={index} className="grid-control-6">
@@ -237,33 +237,31 @@ export default function SessionResults() {
                       <h3 className="text-subheadline font-semibold text-verdict-text-primary">
                         {score.category}
                       </h3>
-                      <span className={`text-micro px-2 py-1 rounded-sm ${
-                        score.score >= 80 ? 'bg-semantic-success/10 text-semantic-success' :
-                        score.score >= 60 ? 'bg-semantic-warning/10 text-semantic-warning' :
-                        'bg-semantic-critical/10 text-semantic-critical'
-                      }`}>
+                      <span className={`text-micro px-2 py-1 rounded-sm ${score.score >= 80 ? 'bg-semantic-success/10 text-semantic-success' :
+                          score.score >= 60 ? 'bg-semantic-warning/10 text-semantic-warning' :
+                            'bg-semantic-critical/10 text-semantic-critical'
+                        }`}>
                         {score.score}/100
                       </span>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-micro">
                         <span className="text-verdict-text-tertiary">Agent:</span>
                         <span className="font-mono text-verdict-text-secondary">{score.agent}</span>
                       </div>
-                      
+
                       <div className="w-full bg-verdict-border rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full ${
-                            score.score >= 80 ? 'bg-semantic-success' :
-                            score.score >= 60 ? 'bg-semantic-warning' :
-                            'bg-semantic-critical'
-                          }`}
+                        <div
+                          className={`h-2 rounded-full ${score.score >= 80 ? 'bg-semantic-success' :
+                              score.score >= 60 ? 'bg-semantic-warning' :
+                                'bg-semantic-critical'
+                            }`}
                           style={{ width: `${score.score}%` }}
                         />
                       </div>
                     </div>
-                    
+
                     <p className="text-body text-verdict-text-secondary">
                       {score.feedback}
                     </p>
@@ -277,7 +275,7 @@ export default function SessionResults() {
         {/* AI Agent Reports */}
         <section className="editorial-section">
           <h2 className="text-subheadline mb-6">Agent Analysis</h2>
-          
+
           <div className="grid-control">
             {agentReports.map((agent, index) => (
               <div key={index} className="grid-control-6">
@@ -288,25 +286,23 @@ export default function SessionResults() {
                         {agent.name}
                       </h3>
                       <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${
-                          agent.status === 'completed' ? 'bg-semantic-success' :
-                          agent.status === 'processing' ? 'bg-semantic-warning' :
-                          'bg-semantic-critical'
-                        }`} />
+                        <div className={`w-2 h-2 rounded-full ${agent.status === 'completed' ? 'bg-semantic-success' :
+                            agent.status === 'processing' ? 'bg-semantic-warning' :
+                              'bg-semantic-critical'
+                          }`} />
                         <span className="text-micro text-verdict-text-secondary">
                           {agent.confidence}% confidence
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="space-paragraph">
                       {agent.findings.map((finding, findingIndex) => (
                         <div key={findingIndex} className="flex items-start space-x-3">
-                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                            finding.severity === 'positive' ? 'bg-semantic-success' :
-                            finding.severity === 'negative' ? 'bg-semantic-critical' :
-                            'bg-semantic-warning'
-                          }`} />
+                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${finding.severity === 'positive' ? 'bg-semantic-success' :
+                              finding.severity === 'negative' ? 'bg-semantic-critical' :
+                                'bg-semantic-warning'
+                            }`} />
                           <div className="flex-1">
                             <p className="text-body text-verdict-text-primary">
                               {finding.content}
@@ -328,7 +324,7 @@ export default function SessionResults() {
         {/* Session Metadata */}
         <section className="editorial-section">
           <h2 className="text-subheadline mb-6">Session Information</h2>
-          
+
           <div className="grid-control">
             <div className="grid-control-6">
               <Card variant="control">
@@ -343,7 +339,7 @@ export default function SessionResults() {
                 </div>
               </Card>
             </div>
-            
+
             <div className="grid-control-6">
               <Card variant="control">
                 <div className="space-y-3">
@@ -357,7 +353,7 @@ export default function SessionResults() {
                 </div>
               </Card>
             </div>
-            
+
             <div className="grid-control-6">
               <Card variant="control">
                 <div className="space-y-3">
@@ -371,7 +367,7 @@ export default function SessionResults() {
                 </div>
               </Card>
             </div>
-            
+
             <div className="grid-control-6">
               <Card variant="control">
                 <div className="space-y-3">

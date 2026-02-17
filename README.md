@@ -105,6 +105,7 @@ Five specialized autonomous agents working in parallel to provide comprehensive 
 - **Analytics**: Historical data, candidate comparison, hiring trends
 - **Reporting**: Exportable reports in PDF, JSON, and CSV formats
 - **Collaboration**: Multi-recruiter observation and note-taking
+- **Forensic Reports**: Evidence-based evaluation with detailed technical blueprints
 
 ### 🔐 Enterprise Security Features
 
@@ -112,7 +113,8 @@ Five specialized autonomous agents working in parallel to provide comprehensive 
 ✅ **Authorization**: Role-based access control (Recruiter, Candidate, Admin)  
 ✅ **Data Protection**: Encrypted storage, secure transmission, GDPR compliant  
 ✅ **API Security**: Rate limiting, CORS, input validation, SQL injection prevention  
-✅ **Audit Logging**: Complete activity tracking for compliance
+✅ **Audit Logging**: Complete activity tracking for compliance  
+✅ **Direct Supabase Client**: Enhanced frontend integration for real-time auth state
 
 ---
 
@@ -171,6 +173,8 @@ Before you begin, ensure you have the following installed:
 - **Node.js** - v18.0 or higher
 - **Python** - v3.11 or higher
 - **Supabase Account** - [Sign up for free](https://supabase.com)
+
+> 💡 **Need to get started quickly?** Check out our [⚡ QUICKSTART.md](QUICKSTART.md) for a streamlined Docker-based setup in under 5 minutes!
 
 ### Installation
 
@@ -296,6 +300,7 @@ Once everything is running, access the platform at:
 
 | Document | Description |
 |----------|-------------|
+| [⚡ Quick Start](QUICKSTART.md) | **5-minute setup guide** - Get started fast with Docker |
 | [📊 Executive Summary](dev-docs/EXECUTIVE_SUMMARY.md) | High-level project overview for stakeholders |
 | [🏗️ Architecture](dev-docs/ARCHITECTURE.md) | System design and technical architecture |
 | [🔌 API Reference](dev-docs/API_REFERENCE.md) | Complete API endpoint documentation |
@@ -617,17 +622,24 @@ Integrity-AI/
 │   │   │   ├── InterviewRoom.tsx    # Live interview interface
 │   │   │   ├── SessionMonitor.tsx   # Recruiter monitoring
 │   │   │   ├── SessionDetail.tsx    # Session details view
-│   │   │   └── SessionResults.tsx   # Evaluation results
+│   │   │   ├── SessionResults.tsx   # Evaluation results
+│   │   │   └── EvaluationReport.tsx # Forensic-style assessment report
 │   │   │
 │   │   ├── components/              # 🧩 Reusable Components
 │   │   │   ├── Button.tsx           # Button component
 │   │   │   ├── Card.tsx             # Card container
 │   │   │   ├── Input.tsx            # Input field
-│   │   │   └── CodeEditor.tsx       # Monaco editor wrapper
+│   │   │   ├── CodeEditor.tsx       # Monaco editor wrapper
+│   │   │   ├── EvidenceBlock.tsx    # Evaluation evidence display
+│   │   │   ├── MetricCard.tsx       # Performance metric card
+│   │   │   ├── StatusIndicator.tsx  # Visual status indicator
+│   │   │   └── TechnicalBlueprint.tsx # Technical skills blueprint
 │   │   │
 │   │   ├── lib/                     # 🛠️ Utilities & Helpers
 │   │   │   ├── api.ts               # API client (axios)
 │   │   │   ├── websocket.ts         # WebSocket client
+│   │   │   ├── supabase.ts          # Supabase client setup
+│   │   │   ├── errorUtils.ts        # Error handling utilities
 │   │   │   └── utils.ts             # Shared utilities
 │   │   │
 │   │   └── store/                   # 🗃️ State Management (Zustand)
@@ -646,6 +658,8 @@ Integrity-AI/
 │   ├── END_TO_END_SETUP.md          # Setup walkthrough
 │   ├── PRODUCTION_SETUP.md          # Deployment guide
 │   └── SUPABASE_DEPLOYMENT.md       # Supabase setup
+│
+├── QUICKSTART.md                     # ⚡ 5-minute quick start guide
 │
 ├── tests/                            # 🧪 Test Suite
 │   ├── conftest.py                  # Pytest fixtures

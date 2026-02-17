@@ -74,7 +74,7 @@ export const InterviewRoom: React.FC = () => {
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-2 text-micro text-verdict-text-secondary">
                             <Clock className="w-4 h-4" />
                             <span className="font-mono">{formatTime(elapsedTime)}</span>
@@ -83,16 +83,15 @@ export const InterviewRoom: React.FC = () => {
 
                     <div className="flex items-center space-x-3">
                         <div className="flex items-center space-x-2">
-                            <div className={`w-2 h-2 rounded-full ${
-                                isConnected ? 'bg-semantic-success' : 'bg-semantic-critical'
-                            }`} />
+                            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-semantic-success' : 'bg-semantic-critical'
+                                }`} />
                             <span className="text-micro text-verdict-text-secondary">
                                 {isConnected ? 'CONNECTED' : 'CONNECTING'}
                             </span>
                         </div>
-                        
-                        <Button 
-                            variant="ghost" 
+
+                        <Button
+                            variant="ghost"
                             size="sm"
                             onClick={() => setIsCodeExpanded(!isCodeExpanded)}
                             icon={isCodeExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -100,8 +99,8 @@ export const InterviewRoom: React.FC = () => {
                             {isCodeExpanded ? 'Minimize' : 'Expand'} Editor
                         </Button>
 
-                        <Button 
-                            variant="critical" 
+                        <Button
+                            variant="critical"
                             size="sm"
                             onClick={handleLeave}
                             icon={<LogOut className="w-4 h-4" />}
@@ -126,19 +125,18 @@ export const InterviewRoom: React.FC = () => {
                             <RoomAudioRenderer />
                         </LiveKitRoom>
                     </div>
-                    
+
                     {/* Session Status Bar */}
                     <div className="verdict-card border-t border-verdict-border-strong px-4 py-3">
                         <div className="flex items-center justify-between text-micro">
                             <div className="flex items-center space-x-4">
                                 <span className="text-verdict-text-tertiary">Status:</span>
-                                <span className={`verdict-badge ${
-                                    currentSession.status === 'LIVE' ? 'verdict-badge-critical' : 'verdict-badge-neutral'
-                                }`}>
+                                <span className={`verdict-badge ${currentSession.status === 'live' ? 'verdict-badge-critical' : 'verdict-badge-neutral'
+                                    }`}>
                                     {currentSession.status}
                                 </span>
                             </div>
-                            
+
                             <div className="flex items-center space-x-4">
                                 <span className="text-verdict-text-tertiary">Language:</span>
                                 <span className="font-mono text-verdict-text-secondary">{language.toUpperCase()}</span>
@@ -157,8 +155,8 @@ export const InterviewRoom: React.FC = () => {
                                     <Code className="w-4 h-4 text-accent-bronze" />
                                     <span className="text-subheadline font-semibold">Code Editor</span>
                                 </div>
-                                
-                                <select 
+
+                                <select
                                     value={language}
                                     onChange={(e) => setLanguage(e.target.value)}
                                     className="input-authority text-sm px-2 py-1 w-24"
@@ -178,15 +176,7 @@ export const InterviewRoom: React.FC = () => {
                                 value={currentCode}
                                 onChange={setCurrentCode}
                                 language={language}
-                                height="100%"
-                                theme="vs-dark"
-                                options={{
-                                    minimap: { enabled: false },
-                                    fontSize: 14,
-                                    lineNumbers: 'on',
-                                    renderLineHighlight: 'gutter',
-                                    scrollBeyondLastLine: false,
-                                }}
+                                sessionId={currentSession?.id || 0}
                             />
                         </div>
 
@@ -199,9 +189,9 @@ export const InterviewRoom: React.FC = () => {
                                         {currentCode.split('\n').length}
                                     </span>
                                 </div>
-                                
-                                <Button 
-                                    variant="primary" 
+
+                                <Button
+                                    variant="primary"
                                     size="sm"
                                     onClick={() => {
                                         console.log('Executing code...');

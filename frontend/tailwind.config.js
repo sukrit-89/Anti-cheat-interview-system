@@ -7,6 +7,9 @@ export default {
     theme: {
         extend: {
             colors: {
+                // Primary bronze accent
+                primary: '#90400e',
+                'primary-dark': '#78350f',
                 // Editorial, authority-driven palette
                 verdict: {
                     bg: '#0A0A0A',           // Deep black - seriousness
@@ -22,6 +25,12 @@ export default {
                         quaternary: '#666666', // Very muted
                     }
                 },
+                // Simplified color tokens for direct use
+                'background-dark': '#0A0A0A',
+                'surface-dark': '#111111',
+                'border-dark': '#2A2A2A',
+                'border-strong': '#333333',
+                'text-muted': '#888888',
                 // Semantic colors only - meaning-driven
                 semantic: {
                     critical: '#B91C1C',     // Critical red - integrity violations
@@ -46,6 +55,7 @@ export default {
                 sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
                 mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
                 display: ['"Crimson Pro"', 'Georgia', 'serif'], // For headings
+                body: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'], // For body text
             },
             fontSize: {
                 // Editorial type scale - deliberate hierarchy
@@ -59,14 +69,16 @@ export default {
                 '4xl': ['2.25rem', { lineHeight: '2.5rem', letterSpacing: '-0.025em' }],
                 '5xl': ['3rem', { lineHeight: '3.25rem', letterSpacing: '-0.03em' }],
                 '6xl': ['3.75rem', { lineHeight: '4rem', letterSpacing: '-0.035em' }],
+                '7xl': ['4.5rem', { lineHeight: '1.1', letterSpacing: '-0.04em' }],
             },
             borderRadius: {
                 'none': '0',
-                'sm': '1px',      // Sharp, deliberate
+                'sm': '2px',      // Sharp, deliberate
                 DEFAULT: '2px',
                 'md': '3px',
                 'lg': '4px',
                 'xl': '6px',
+                'sharp': '2px',   // Alias for institutional look
             },
             spacing: {
                 '18': '4.5rem',
@@ -86,6 +98,9 @@ export default {
                 'fade-in': 'fadeIn 0.6s ease-out',
                 'slide-up': 'slideUp 0.5s ease-out',
                 'pulse-subtle': 'pulseSubtle 3s ease-in-out infinite',
+                'pulse-border': 'pulseBorder 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'pulse-dot': 'pulseDot 2s ease-in-out infinite',
+                'scan': 'scan 4s linear infinite',
             },
             keyframes: {
                 reveal: {
@@ -104,14 +119,39 @@ export default {
                     '0%, 100%': { opacity: '1' },
                     '50%': { opacity: '0.7' },
                 },
+                pulseBorder: {
+                    '0%, 100%': { borderLeftColor: 'rgba(74, 222, 128, 0.4)' },
+                    '50%': { borderLeftColor: 'rgba(74, 222, 128, 1)' },
+                },
+                pulseDot: {
+                    '0%, 100%': { opacity: '1' },
+                    '50%': { opacity: '0.5' },
+                },
+                scan: {
+                    '0%': { top: '0%', opacity: '0' },
+                    '10%': { opacity: '1' },
+                    '90%': { opacity: '1' },
+                    '100%': { top: '100%', opacity: '0' },
+                },
             },
             boxShadow: {
                 'subtle': '0 1px 3px 0 rgba(0, 0, 0, 0.3)',
                 'medium': '0 4px 6px -1px rgba(0, 0, 0, 0.4)',
                 'strong': '0 10px 15px -3px rgba(0, 0, 0, 0.5)',
+                'bronze': '0 0 15px -5px rgba(144, 64, 14, 0.5)',
+                'bronze-strong': '0 0 20px rgba(144, 64, 14, 0.4)',
             },
             backdropBlur: {
                 'xs': '2px',
+            },
+            backgroundImage: {
+                'gradient-radial': 'radial-gradient(circle, var(--tw-gradient-stops))',
+                'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+                'grid-pattern': 'linear-gradient(to right, #2a2a2a 1px, transparent 1px), linear-gradient(to bottom, #2a2a2a 1px, transparent 1px)',
+            },
+            backgroundSize: {
+                'grid-40': '40px 40px',
+                'grid-20': '20px 20px',
             },
         },
     },

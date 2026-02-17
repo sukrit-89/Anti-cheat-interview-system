@@ -3,7 +3,7 @@ Pydantic schemas for request/response validation.
 Using Pydantic v2 with production-ready patterns.
 """
 from datetime import datetime
-from typing import Optional, Any
+from typing import Optional, Any, Union
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 from app.models.models import UserRole, SessionStatus, AgentType
@@ -28,8 +28,11 @@ class UserLogin(BaseModel):
     password: str
 
 
-class UserResponse(UserBase):
-    id: int
+class UserResponse(BaseModel):
+    id: Union[int, str]  # Support both integer IDs (local) and UUID strings (Supabase)
+    email: EmailStr
+    full_name: str = Field(default="User", min_length=1, max_length=255)
+    role: UserRole
     is_active: bool
     created_at: datetime
     
@@ -66,7 +69,7 @@ class SessionResponse(BaseModel):
     session_code: str
     title: str
     description: Optional[str]
-    recruiter_id: int
+    recruiter_id: str  # Supabase UUID
     status: SessionStatus
     scheduled_at: Optional[datetime]
     started_at: Optional[datetime]
