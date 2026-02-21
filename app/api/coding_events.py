@@ -21,7 +21,7 @@ router = APIRouter(prefix="/coding-events", tags=["Coding"])
 async def create_coding_event(
     event_data: CodingEventCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ) -> dict:
     """Create a coding event (keystroke, execution, etc.)"""
     
@@ -84,7 +84,7 @@ async def create_coding_event(
 async def execute_code(
     event_data: CodingEventCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ) -> dict:
     """
     Execute code in a sandbox using Judge0.
@@ -160,7 +160,7 @@ async def execute_code(
 async def get_coding_events(
     session_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ) -> List[CodingEventResponse]:
     """Get all coding events for a session."""
     

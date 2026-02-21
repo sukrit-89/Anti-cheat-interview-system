@@ -105,7 +105,7 @@ async def create_session(
 async def join_session(
     join_data: SessionJoinRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ) -> SessionJoinResponse:
     """Join a session using session code."""
     
@@ -291,7 +291,7 @@ async def list_sessions(
 async def get_session(
     session_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ) -> Session:
     """Get session details."""
     
@@ -374,7 +374,7 @@ async def update_session(
 async def start_session(
     session_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_recruiter)
+    current_user: dict = Depends(get_current_recruiter)
 ) -> Session:
     """Start a session (Recruiter only)."""
     
@@ -420,7 +420,7 @@ async def start_session(
 async def end_session(
     session_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_recruiter)
+    current_user: dict = Depends(get_current_recruiter)
 ) -> Session:
     """End a session (Recruiter only)."""
     
@@ -463,7 +463,7 @@ async def end_session(
 async def get_session_candidates(
     session_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_recruiter)
+    current_user: dict = Depends(get_current_recruiter)
 ) -> List[Candidate]:
     """Get all candidates for a session (Recruiter only)."""
     

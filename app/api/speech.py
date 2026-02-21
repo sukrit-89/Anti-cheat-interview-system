@@ -23,7 +23,7 @@ async def transcribe_audio(
     audio: UploadFile = File(...),
     language: Optional[str] = Form(None),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ) -> dict:
     """
     Transcribe audio from interview.
@@ -93,7 +93,7 @@ async def analyze_speech(
     transcription: str = Form(...),
     duration: float = Form(...),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ) -> dict:
     """
     Analyze speech quality metrics.
