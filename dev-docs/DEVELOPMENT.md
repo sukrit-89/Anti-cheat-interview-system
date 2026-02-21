@@ -28,8 +28,8 @@
 
 ### **Step 1: Clone Repository**
 ```bash
-git clone https://github.com/your-username/neeti-ai.git
-cd neeti-ai
+git clone https://github.com/sukrit-89/Anti-cheat-interview-system.git
+cd Anti-cheat-interview-system
 ```
 
 ### **Step 2: Backend Setup**
@@ -109,7 +109,10 @@ neeti-ai/
 ├── init_db.py              # Database initialization (create_all)
 ├── reset_all.py            # Full database reset
 ├── cleanup_database.py     # Database cleanup utility
-└── docker-compose.yml       # Development services
+├── docker-compose.yml       # Development services
+├── Dockerfile              # Backend Docker image
+├── Dockerfile.worker       # Celery worker Docker image
+└── frontend/Dockerfile     # Frontend Docker image (multi-stage: Node build → Nginx)
 ```
 
 ## 🧪 Testing
@@ -200,7 +203,7 @@ curl http://localhost:8000/health/redis
 ### **Development Logs**
 ```bash
 # Backend logs
-uvicorn app.main:app --log-config logging.conf
+uvicorn app.main:app --log-level debug
 
 # Frontend logs
 # Check browser console
@@ -290,7 +293,7 @@ python init_db.py
 ### **Environment Variables**
 ```bash
 # Never commit secrets
-# Use .env.example as template
+# Create a .env file — see QUICKSTART.md for the required variables
 # Add .env to .gitignore
 ```
 

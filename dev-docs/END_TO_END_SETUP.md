@@ -50,10 +50,7 @@
 
 ### **2.1 Create Environment File**
 ```bash
-# Copy template
-cp .env.example .env
-
-# Edit in VS Code
+# Create a .env file manually (see QUICKSTART.md for template)
 code .env
 ```
 
@@ -220,7 +217,7 @@ docker-compose logs redis
 | **MinIO Console** | http://localhost:9001 | Storage Management (minioadmin/minioadmin) |
 | **Supabase Dashboard** | https://supabase.com/dashboard | Database Management |
 | **Judge0 API** | http://localhost:2358 | Code Execution (if self-hosted) |
-| **Frontend** | http://localhost:5173 | React Application (after npm run dev) |
+| **Frontend** | http://localhost:3000 | React Application (containerized via `frontend/Dockerfile`, multi-stage nginx build) |
 
 ### **5.2 Verify Everything Works**
 ```bash
@@ -393,39 +390,36 @@ docker-compose up -d --build api
 
 ## 📊 Step 9: Production Verification (1 minute)
 
-### **9.1 Final Checklist**Supabase health check passes)
+### **9.1 Final Checklist**
+- [ ] **Database connected** (health check passes)
 - [ ] **Storage accessible** (MinIO console at http://localhost:9001)
 - [ ] **Redis working** (container healthy)
-- [ ] **Authentication working** (can register/login via Supabase- [ ] **Code execution** (Judge0 responding - optional if configured)- [ ] **Database connected** (health check passes)
-- [ ] **Code execution working** (Judge0 responds)
+- [ ] **Authentication working** (can register/login via Supabase)
+- [ ] **Code execution** (Judge0 responding — optional if configured)
 - [ ] **AI integration functional** (Ollama responds)
-- [ ] **Authentication working** (can register/login)
 
 ### **9.2 Performance Check**
 ```bash
-# interview_api:    < 500MB memory
-# interview_db:     < 200MB memory
-# interview_redis:  < 100MB memory
-# interview_worker: < 300MB memory
-# interview_minio:  < 200MB memoryPU usage:
-# app: < 500MB memory
-# redis: < 100MB memory  
-# judge0: < 1GB memory
-# ollama: < 2GB memory (if using)
+# Expected resource usage:
+# app:     < 500MB memory
+# redis:   < 100MB memory
+# judge0:  < 1GB memory
+# ollama:  < 2GB memory (if using)
 ```
 
 ---
-MinIO storage** for recordings and uploads (S3-compatible)
-- ✅ **Redis cache** for fast data access and pub/sub
+
+## 🎉 Conclusion
+
+You now have a **fully functional Neeti AI platform** running with:
+- ✅ **Supabase** for database and authentication
+- ✅ **Judge0** for secure code execution
+- ✅ **Ollama** for local AI processing
+- ✅ **LiveKit** for real-time video streaming
+- ✅ **Redis** for caching and pub/sub
 - ✅ **Celery workers** for background tasks
-- ✅ **Real-time video** ready (LiveKit integration)
 - ✅ **Docker containerization** for easy deployment
-- ✅ **Production-ready** interview platform
-- ✅ **Supabase integration** for database and auth
-- ✅ **Local AI processing** with Ollama
-- ✅ **Secure code execution** with Judge0
-- ✅ **Real-time video** with LiveKit
-- ✅ **Auto-scaling** with Docker Compose
+- ✅ **Frontend** containerized via `frontend/Dockerfile` (Node 20 build → nginx alpine, port 80 mapped to 3000)
 
 ### **Next Steps:**
 1. **Create interview sessions** via the dashboard
@@ -435,9 +429,9 @@ MinIO storage** for recordings and uploads (S3-compatible)
 5. **Deploy to cloud** when ready (see deployment guide)
 
 ### **Need Help?**
-- 📖 **Documentation**: `PRODUCTION_SETUP.md`
+- 📖 **Documentation**: See `PRODUCTION_SETUP.md`
 - 🐛 **Issues**: Check logs with `docker-compose logs -f`
-- 📧 **Configuration**: Edit `.env` file
+- 📧 **Contact**: neetiatsuuport@gmail.com
 - 🚀 **Deployment**: See `SUPABASE_DEPLOYMENT.md`
 
 ---
@@ -445,9 +439,11 @@ MinIO storage** for recordings and uploads (S3-compatible)
 ## 📞 Quick Reference
 
 ### **Essential Commands**
-```bashup -d
+```bash
+# Start everything
+docker-compose up -d
 
-# Stop everything  
+# Stop everything
 docker-compose down
 
 # View logs (all services)
@@ -474,28 +470,9 @@ docker-compose exec postgres psql -U interview_user -d interview_platform
 ```
 
 ### **Service URLs**
-- **Main App**: http://localhost:8000with:
-- 🗄️ **Supabase** managed database and authentication
-- 📦 **MinIO** S3-compatible storage for recordings
-- 🔄 **Redis** caching and real-time pub/sub
-- 👷 **Celery** background task processing
-- 📹 **LiveKit** ready for video streaming
-- 🐳 **Docker** containerized deployment
-
-**Ready for development and testing!** 🎯
-
-Your platform is now set up for conducting technical interviews with AI-powered evaluation, real-time collaboration, and comprehensive reporting.
-
-**Next:** Configure your LiveKit credentials in `.env` to enable video functionality
-
-You now have a **fully functional Neeti AI platform** running in production mode with:
-- 🗄️ **Supabase** database and authentication
-- ⚖️ **Judge0** secure code execution
-- 🤖 **Ollama** local AI processing
-- 📹 **LiveKit** video streaming
-- 🔄 **Redis** caching and pub/sub
-- 🐳 **Docker** containerization
+- **Main App**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+- **Frontend**: http://localhost:3000
+- **Judge0**: http://localhost:2358
 
 **Ready for interviews!** 🎯
-
-Your platform is now capable of conducting technical interviews with AI-powered evaluation, real-time collaboration, and comprehensive reporting.

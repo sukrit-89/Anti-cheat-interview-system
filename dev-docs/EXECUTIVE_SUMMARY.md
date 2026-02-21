@@ -512,13 +512,13 @@ The platform employs **5 specialized AI agents** that work in parallel to provid
 
 ### For Technical Support
 - **Documentation**: [dev-docs/](../dev-docs/)
-- **Issues**: [GitHub Issues](https://github.com/sukrit-89/Neeti-AI/issues)
+- **Issues**: [GitHub Issues](https://github.com/sukrit-89/Anti-cheat-interview-system/issues)
 - **API Docs**: http://localhost:8000/docs
 
 ### For Partnership Opportunities
-- **Enterprise Sales**: enterprise@neeti-ai.com (Coming Soon)
-- **API Access**: api@neeti-ai.com (Coming Soon)
-- **Integration Partners**: partnerships@neeti-ai.com (Coming Soon)
+- **Enterprise Sales**: neetiatsuuport@gmail.com
+- **API Access**: neetiatsuuport@gmail.com
+- **Integration Partners**: neetiatsuuport@gmail.com
 
 ---
 
@@ -536,7 +536,7 @@ The platform employs **5 specialized AI agents** that work in parallel to provid
 
 **Neeti AI (नीति) - Transforming Technical Hiring with Intelligence**
 
-*Version 2.0 | Last Updated: June 2025*
+*Version 2.1 | Last Updated: February 2026*
 
 ---
 

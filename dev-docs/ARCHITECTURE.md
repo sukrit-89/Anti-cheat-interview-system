@@ -339,6 +339,11 @@ server {
 
 ## 🚀 Deployment Architecture
 
+### **Frontend Container**
+The frontend is containerized via `frontend/Dockerfile` using a multi-stage build:
+1. **Build stage** — `node:20-alpine`: installs dependencies and runs `npm run build`
+2. **Runtime stage** — `nginx:alpine`: serves the built assets on port 80 (mapped to 3000), with reverse-proxy rules forwarding `/api/` and `/ws/` to the backend
+
 ### **Container Orchestration**
 ```yaml
 # Service dependencies

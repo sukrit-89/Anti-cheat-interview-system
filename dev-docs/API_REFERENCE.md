@@ -528,7 +528,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ```
 
 ### **Using Postman**
-1. Import collection from `docs/postman_collection.json`
+1. Set up a Postman collection for the API endpoints listed above
 2. Set environment variables
 3. Test endpoints with proper authentication
 
@@ -537,10 +537,8 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ## 📚 Additional Resources
 
 - **OpenAPI Spec**: `http://localhost:8000/openapi.json`
-- **Postman Collection**: Available in project root
-- **SDK Examples**: Check `examples/` directory
 - **Migration Guide**: See `DEVELOPMENT.md`
 
 ---
 
-*Last updated: 2024-01-10*
+*Last updated: February 2026*

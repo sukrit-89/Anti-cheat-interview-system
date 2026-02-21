@@ -78,8 +78,8 @@ Comprehensive documentation for developers, architects, and stakeholders working
 
 ## 📞 Support & Contribution
 
-- **Issues**: [GitHub Issues](https://github.com/sukrit-89/Neeti-AI/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/sukrit-89/Neeti-AI/discussions)
+- **Issues**: [GitHub Issues](https://github.com/sukrit-89/Anti-cheat-interview-system/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/sukrit-89/Anti-cheat-interview-system/discussions)
 - **Email**: sukrit.goswami.work@gmail.com
 
 ### Contributing Guidelines

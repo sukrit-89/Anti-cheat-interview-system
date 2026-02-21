@@ -69,7 +69,6 @@ python init_db.py
 ### Docker Compose (Recommended)
 ```yaml
 # docker-compose.prod.yml
-version: '3.8'
 services:
   app:
     build: .

@@ -6,16 +6,16 @@ Get the platform running in **under 5 minutes**.
 
 | Tool | Why | Get it |
 |------|-----|--------|
-| **Docker Desktop** | Runs API, Postgres, Redis | https://docker.com/products/docker-desktop |
-| **Node.js 18+** | Frontend dev server | https://nodejs.org |
+| **Docker Desktop** | Runs all services (API, DB, frontend) | https://docker.com/products/docker-desktop |
+| **Node.js 18+** | Frontend dev server (optional — Docker also works) | https://nodejs.org |
 | **Supabase project** | Auth + database | https://supabase.com (free) |
 | **LiveKit Cloud** | Video/audio (WebRTC) | https://cloud.livekit.io (free) |
 
 ## 1 — Clone & configure
 
 ```bash
-git clone https://github.com/sukrit-89/Neeti-AI.git
-cd Neeti-AI
+git clone https://github.com/sukrit-89/Anti-cheat-interview-system.git
+cd Anti-cheat-interview-system
 ```
 
 Create a `.env` in the project root:
@@ -43,7 +43,7 @@ JUDGE0_API_URL=http://localhost:2358  # code execution
 docker-compose up -d --build
 ```
 
-This launches **API** (`:8000`), **PostgreSQL**, **Redis**, **Celery workers**, and **MinIO**.
+This launches **API** (`:8000`), **Frontend** (`:3000`), **PostgreSQL**, **Redis**, **Celery workers**, **MinIO**, and **Ollama**.
 
 Verify:
 
@@ -54,13 +54,17 @@ curl http://localhost:8000/health
 
 ## 3 — Start frontend
 
+The frontend is already running via Docker at **http://localhost:3000**.
+
+For development with hot-reload instead:
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Open **http://localhost:5173** — done.
+Dev server runs at **http://localhost:5173**.
 
 ## 4 — Try it out
 
@@ -79,7 +83,8 @@ Open **http://localhost:5173** — done.
 
 | Service | URL |
 |---------|-----|
-| Frontend | http://localhost:5173 |
+| Frontend (Docker) | http://localhost:3000 |
+| Frontend (dev server) | http://localhost:5173 |
 | Backend API | http://localhost:8000 |
 | Swagger Docs | http://localhost:8000/docs |
 | MinIO Console | http://localhost:9001 (minioadmin / minioadmin) |

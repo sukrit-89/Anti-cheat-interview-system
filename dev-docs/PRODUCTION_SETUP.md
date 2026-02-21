@@ -1,21 +1,18 @@
-# 🚀 Production Setup Guide
+﻿# ðŸš€ Production Setup Guide
 # Complete Docker-based deployment for Neeti AI
 
-## 📋 Prerequisites
+## ðŸ“‹ Prerequisites
 
 1. **Docker Desktop** - Install from https://docker.com/products/docker-desktop
 2. **Git** - Already installed
 3. **Supabase Account** - Create at https://supabase.com
 4. **LiveKit Account** - Create at https://cloud.livekit.io (free tier)
 
-## ⚡ Quick Setup (5 minutes)
+## âš¡ Quick Setup (5 minutes)
 
 ### Step 1: Configure Environment
 ```bash
-# Copy environment template
-cp .env.example .env
-
-# Edit with your credentials
+# Create a .env file (see QUICKSTART.md for template)
 notepad .env  # Windows
 nano .env        # Linux/Mac
 ```
@@ -33,51 +30,44 @@ LIVEKIT_API_SECRET=your-api-secret
 LIVEKIT_WS_URL=wss://your-project.livekit.cloud
 ```
 
-### Step 2: Run Setup Script
+### Step 2: Start Services
 
-**Windows (PowerShell):**
-```powershell
-.\setup-production.ps1
-```
-
-**Linux/Mac (Bash):**
 ```bash
-chmod +x setup-production.sh
-./setup-production.sh
+docker-compose up -d --build
 ```
 
 ### Step 3: Verify Setup
 ```bash
 # Check all services
-docker-compose -f docker-compose.production.yml ps
+docker-compose ps
 
 # View logs
-docker-compose -f docker-compose.production.yml logs -f
+docker-compose logs -f
 ```
 
-## 🏗️ Architecture Overview
+## ðŸ—ï¸ Architecture Overview
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend    │    │    Backend     │    │   Supabase     │
-│   (React)     │    │   (FastAPI)    │    │  (Database)    │
-│   Port: 3000  │    │   Port: 8000   │    │  PostgreSQL     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│     Nginx     │    │     Redis       │    │     Judge0     │
-│  (Load Balancer)│    │    (Cache)      │    │ (Code Execute)  │
-│  Port: 80/443 │    │  Port: 6379    │    │  Port: 2358    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚   Frontend    â”‚    â”‚    Backend     â”‚    â”‚   Supabase     â”‚
+â”‚   (React)     â”‚    â”‚   (FastAPI)    â”‚    â”‚  (Database)    â”‚
+â”‚   Port: 3000  â”‚    â”‚   Port: 8000   â”‚    â”‚  PostgreSQL     â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+         â”‚                       â”‚                       â”‚
+         â”‚                       â”‚                       â”‚
+         â–¼                       â–¼                       â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚     Nginx     â”‚    â”‚     Redis       â”‚    â”‚     Judge0     â”‚
+â”‚  (Load Balancer)â”‚    â”‚    (Cache)      â”‚    â”‚ (Code Execute)  â”‚
+â”‚  Port: 80/443 â”‚    â”‚  Port: 6379    â”‚    â”‚  Port: 2358    â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
-## 🐳 Services Included
+## ðŸ³ Services Included
 
 ### **Core Application**
 - **FastAPI Backend** - API server with auto-reload
-- **React Frontend** - Built and served statically
+- **React Frontend** - Containerized via `frontend/Dockerfile` (multi-stage: Node 20 build â†’ nginx alpine), served on port 80 (mapped to 3000)
 - **Nginx Proxy** - SSL termination and load balancing
 
 ### **Database & Storage**
@@ -94,7 +84,7 @@ docker-compose -f docker-compose.production.yml logs -f
 - **Celery Workers** - AI agent processing
 - **LiveKit** - WebRTC video/audio streaming
 
-## 🔧 Configuration Options
+## ðŸ”§ Configuration Options
 
 ### **Development Mode**
 ```bash
@@ -137,7 +127,7 @@ JUDGE0_API_KEY=your-rapidapi-key
 USE_RULE_BASED_CODE_ANALYSIS=True
 ```
 
-## 📊 Service URLs
+## ðŸ“Š Service URLs
 
 After setup, access services at:
 
@@ -150,7 +140,7 @@ After setup, access services at:
 | Redis | localhost:6379 | Cache server |
 | Supabase | https://your-project.supabase.co | Database dashboard |
 
-## 🔍 Health Checks
+## ðŸ” Health Checks
 
 ### **Application Health**
 ```bash
@@ -170,24 +160,24 @@ curl http://localhost:8000/health
 ### **Service Status**
 ```bash
 # Check all containers
-docker-compose -f docker-compose.production.yml ps
+docker-compose ps
 
 # Check specific service logs
-docker-compose -f docker-compose.production.yml logs app
-docker-compose -f docker-compose.production.yml logs judge0-server
-docker-compose -f docker-compose.production.yml logs redis
+docker-compose logs app
+docker-compose logs judge0-server
+docker-compose logs redis
 ```
 
-## 🚀 Deployment Commands
+## ðŸš€ Deployment Commands
 
 ### **Start Services**
 ```bash
-docker-compose -f docker-compose.production.yml up -d
+docker-compose up -d
 ```
 
 ### **Stop Services**
 ```bash
-docker-compose -f docker-compose.production.yml down
+docker-compose down
 ```
 
 ### **Update Application**
@@ -196,26 +186,26 @@ docker-compose -f docker-compose.production.yml down
 git pull
 
 # Rebuild and restart
-docker-compose -f docker-compose.production.yml up -d --build
+docker-compose up -d --build
 ```
 
 ### **Database Initialization**
 ```bash
 # Initialize tables
-docker-compose -f docker-compose.production.yml exec app python init_db.py
+docker-compose exec app python init_db.py
 
 # Or reset everything
-docker-compose -f docker-compose.production.yml exec app python reset_all.py
+docker-compose exec app python reset_all.py
 ```
 
-## 🔒 Security Configuration
+## ðŸ”’ Security Configuration
 
 ### **SSL/HTTPS**
 ```bash
 # Place certificates in ssl/ directory
 ssl/
-├── cert.pem
-└── key.pem
+â”œâ”€â”€ cert.pem
+â””â”€â”€ key.pem
 
 # Update nginx.conf to use SSL
 # Automatically configured if certificates exist
@@ -233,7 +223,7 @@ CORS_ORIGINS=https://yourdomain.com
 RATE_LIMIT_PER_MINUTE=60
 ```
 
-## 📈 Monitoring & Scaling
+## ðŸ“ˆ Monitoring & Scaling
 
 ### **Resource Monitoring**
 ```bash
@@ -247,22 +237,22 @@ docker system df
 ### **Log Management**
 ```bash
 # View all logs
-docker-compose -f docker-compose.production.yml logs -f
+docker-compose logs -f
 
 # Export logs
-docker-compose -f docker-compose.production.yml logs --tail=1000 > app.log
+docker-compose logs --tail=1000 > app.log
 ```
 
 ### **Scaling Workers**
 ```bash
 # Scale Celery workers
-docker-compose -f docker-compose.production.yml up -d --scale worker=3
+docker-compose up -d --scale worker=3
 
 # Scale app instances
-docker-compose -f docker-compose.production.yml up -d --scale app=2
+docker-compose up -d --scale app=2
 ```
 
-## 🛠️ Troubleshooting
+## ðŸ› ï¸ Troubleshooting
 
 ### **Common Issues**
 
@@ -295,7 +285,7 @@ chmod 600 .env
 **4. Database connection failed**
 ```bash
 # Test Supabase connection
-docker-compose -f docker-compose.production.yml exec app python -c "
+docker-compose exec app python -c "
 from app.core.config import settings
 print(f'Database URL: {settings.DATABASE_URL}')
 "
@@ -313,7 +303,7 @@ CREATE INDEX idx_users_email ON users(email);
 **2. Redis Configuration**
 ```bash
 # Enable Redis persistence
-# In docker-compose.production.yml
+# In docker-compose.yml
 command: redis-server --appendonly yes --maxmemory 256mb
 ```
 
@@ -324,7 +314,7 @@ ENABLE_CACHE=true
 CACHE_TTL=300
 ```
 
-## 📞 Support
+## ðŸ“ž Support
 
 ### **Logs & Debugging**
 ```bash
@@ -333,28 +323,28 @@ DEBUG=True
 LOG_LEVEL=DEBUG
 
 # View error logs
-docker-compose -f docker-compose.production.yml logs app | grep ERROR
+docker-compose logs app | grep ERROR
 ```
 
 ### **Backup & Recovery**
 ```bash
 # Backup database
-docker-compose -f docker-compose.production.yml exec judge0-db pg_dump -U judge0 judge0 > backup.sql
+docker-compose exec judge0-db pg_dump -U judge0 judge0 > backup.sql
 
 # Restore database
-docker-compose -f docker-compose.production.yml exec -T judge0-db psql -U judge0 judge0 < backup.sql
+docker-compose exec -T judge0-db psql -U judge0 judge0 < backup.sql
 ```
 
 ---
 
-## 🎉 You're Ready!
+## ðŸŽ‰ You're Ready!
 
 Your Neeti AI platform is now running in production mode with:
-- ✅ **Supabase** for database and auth
-- ✅ **Judge0** for code execution  
-- ✅ **Ollama** for local AI
-- ✅ **Redis** for caching
-- ✅ **LiveKit** for video streaming
-- ✅ **Nginx** for load balancing
+- âœ… **Supabase** for database and auth
+- âœ… **Judge0** for code execution  
+- âœ… **Ollama** for local AI
+- âœ… **Redis** for caching
+- âœ… **LiveKit** for video streaming
+- âœ… **Nginx** for load balancing
 
-Access your application at **http://localhost:8000** 🚀
+Access your application at **http://localhost:8000** ðŸš€
