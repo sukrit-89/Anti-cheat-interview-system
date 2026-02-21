@@ -231,8 +231,9 @@ export const codingApi = {
   }> => {
     const response = await apiClient.post('/api/coding-events/execute', {
       session_id: sessionId,
-      code,
+      code_snapshot: code,
       language,
+      event_type: 'execute',
     });
     return response.data;
   },
