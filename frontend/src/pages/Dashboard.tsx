@@ -63,7 +63,7 @@ export function Dashboard() {
       <header className="sticky top-0 z-30 glass-header">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Logo size="sm" />
+            <Logo size="sm" linkTo="/" />
             <div>
               <h1 className="text-xl font-display font-semibold text-ink-primary tracking-tight">
                 Control Room

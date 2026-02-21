@@ -67,9 +67,7 @@ export const Register: React.FC = () => {
         />
 
         <div className="relative z-10">
-          <Link to="/" className="flex items-center gap-3 mb-10">
-            <Logo size="lg" showWordmark showTagline />
-          </Link>
+            <Logo size="lg" showWordmark showTagline linkTo="/" className="mb-10" />
 
           <div className="space-y-6 max-w-md">
             <p className="text-ink-secondary leading-relaxed">

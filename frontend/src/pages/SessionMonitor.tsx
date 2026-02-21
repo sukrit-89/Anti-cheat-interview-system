@@ -68,7 +68,7 @@ export default function SessionMonitor() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
             <div className="flex items-center gap-2.5">
-              <Logo size="sm" />
+              <Logo size="sm" linkTo="/" />
               <div>
                 <h1 className="text-sm font-display font-semibold text-ink-primary">Live Evaluation Monitor</h1>
                 <p className="text-[10px] text-ink-ghost">{currentSession.title} · {currentSession.join_code}</p>

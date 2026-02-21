@@ -31,7 +31,7 @@ const CAPABILITIES = [
     tag: 'EXEC_001',
   },
   {
-    icon: Scale,
+    icon: Shield,
     title: 'Multi-Agent Analysis',
     desc: 'Specialized agents evaluate code quality, reasoning, communication, and depth.',
     tag: 'EVAL_002',
@@ -91,9 +91,7 @@ export const Landing = () => {
         {/* ── Header ─────────────────────────────────────── */}
         <header className="glass-header sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-3">
-              <Logo size="md" showWordmark showTagline />
-            </Link>
+              <Logo size="md" showWordmark showTagline linkTo="/" />
 
             <Link
               to="/login"
@@ -257,7 +255,7 @@ export const Landing = () => {
         <footer className="border-t border-white/[0.06] bg-white/[0.02] backdrop-blur-md">
           <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-ink-ghost">
             <span className="inline-flex items-center gap-3 font-mono tracking-wider">
-              <Logo size="sm" />
+              <Logo size="sm" linkTo="/" />
               NEETI AI © {new Date().getFullYear()}
             </span>
             <span className="font-mono text-xs tracking-wider">

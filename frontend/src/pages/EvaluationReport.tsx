@@ -51,7 +51,7 @@ export const EvaluationReport = () => {
       {/* ── Header ────────────────────────────────── */}
       <header className="sticky top-0 z-30 glass-header px-6 lg:px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Logo size="md" />
+          <Logo size="md" linkTo="/" />
           <div>
             <h2 className="text-base font-display font-semibold text-ink-primary">
               Neeti AI <span className="text-ink-ghost font-normal">|</span> Forensic Report

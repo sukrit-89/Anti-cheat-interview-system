@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { clsx } from 'clsx';
 
 /**
@@ -21,6 +22,8 @@ interface LogoProps {
   showWordmark?: boolean;
   /** Add the Devanagari tagline */
   showTagline?: boolean;
+  /** Wrap logo in a Link to this path (e.g. '/') */
+  linkTo?: string;
   className?: string;
 }
 
@@ -31,13 +34,26 @@ export const Logo: React.FC<LogoProps> = ({
   color,
   showWordmark = false,
   showTagline = false,
+  linkTo,
   className,
 }) => {
   const s = SIZE_MAP[size];
   const fill = color || '#D4873F';
 
+  const Wrapper = linkTo
+    ? ({ children }: { children: React.ReactNode }) => (
+        <Link to={linkTo} className={clsx('inline-flex items-center gap-3 transition-opacity hover:opacity-80', className)}>
+          {children}
+        </Link>
+      )
+    : ({ children }: { children: React.ReactNode }) => (
+        <div className={clsx('inline-flex items-center gap-3', className)}>
+          {children}
+        </div>
+      );
+
   return (
-    <div className={clsx('inline-flex items-center gap-3', className)}>
+    <Wrapper>
       {/* ── Mark ───────────────────────────────────── */}
       <svg
         width={s}
@@ -173,7 +189,7 @@ export const Logo: React.FC<LogoProps> = ({
           )}
         </div>
       )}
-    </div>
+    </Wrapper>
   );
 };
 

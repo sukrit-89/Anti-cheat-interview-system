@@ -107,7 +107,7 @@ export default function SessionResults() {
               <MetricCard title="Overall Score" value={overall} unit="/100" status="success" description="Comprehensive evaluation" />
             </div>
             <Card className={`text-center flex flex-col items-center justify-center border ${r.bg} rounded-lg`}>
-              <Logo size="lg" />
+              <Logo size="lg" linkTo="/" />
               <div className={`text-2xl font-bold font-mono ${r.text} mt-2`}>{rec.replace('_', ' ')}</div>
               <p className="text-[10px] text-ink-ghost mt-1">Hiring Recommendation</p>
             </Card>

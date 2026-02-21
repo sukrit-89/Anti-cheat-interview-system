@@ -37,7 +37,7 @@ export function Login() {
           {/* Brand */}
           <div className="text-center">
             <div className="inline-flex items-center justify-center mb-5">
-              <Logo size="xl" showWordmark />
+              <Logo size="xl" showWordmark linkTo="/" />
             </div>
             <p className="text-sm text-ink-secondary">
               Enterprise technical interview evaluation

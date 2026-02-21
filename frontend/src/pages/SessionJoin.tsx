@@ -39,7 +39,7 @@ export const SessionJoin: React.FC = () => {
       <div className="hidden lg:flex lg:col-span-5 border-r border-white/[0.06] p-10 xl:p-14 flex-col justify-between">
         <div>
           <div className="flex items-center gap-2.5 mb-8">
-            <Logo size="md" showWordmark />
+            <Logo size="md" showWordmark linkTo="/" />
           </div>
 
           <div className="space-y-5 max-w-sm">
