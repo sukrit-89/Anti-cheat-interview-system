@@ -5,7 +5,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useSessionStore } from '../store/useSessionStore';
 import { Button } from '../components/Button';
 import { Card, MetricCard } from '../components/Card';
-import { StatusIndicator } from '../components/StatusIndicator';
+// StatusIndicator available if needed for future enhancements
 
 /* ── stat card config ─────────────────────────────────── */
 const STATUS_CFG = {

@@ -20,8 +20,8 @@
   }
 
   body {
-    background-color: #09090B;
-    color: #FAFAFA;
+    background-color: #0A0A0D;
+    color: #F5F5F7;
     font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -36,7 +36,7 @@
     inset: 0;
     pointer-events: none;
     z-index: 9999;
-    opacity: 0.015;
+    opacity: 0.025;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
@@ -44,7 +44,7 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Crimson Pro', Georgia, serif;
     font-weight: 600;
-    color: #FAFAFA;
+    color: #F5F5F7;
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
@@ -56,20 +56,20 @@
   h6 { font-size: 1rem; }
 
   /* Scrollbar — minimal, dark */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #27272A; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #3F3F46; }
+  ::-webkit-scrollbar-thumb { background: #484854; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #5A5A66; }
 
   /* Selection */
   ::selection {
-    background-color: rgba(194, 112, 42, 0.3);
-    color: #FAFAFA;
+    background-color: rgba(212, 135, 63, 0.35);
+    color: #F5F5F7;
   }
 
   /* Focus — WCAG-compliant bronze ring */
   :focus-visible {
-    outline: 2px solid #C2702A;
+    outline: 2px solid #D4873F;
     outline-offset: 2px;
   }
 }
@@ -81,12 +81,13 @@
   .verdict-card {
     @apply bg-neeti-surface border border-neeti-border rounded-lg;
     @apply shadow-card;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 1px 3px rgba(0,0,0,0.3);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 8px rgba(0,0,0,0.4);
   }
 
   .verdict-card-elevated {
     @apply bg-neeti-elevated border border-neeti-border-strong rounded-lg;
     @apply shadow-medium;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.5);
   }
 
   /* ── Buttons ─────────────────────────────────────────── */
@@ -158,10 +159,10 @@
 
   /* ── Glass panels — layered depth ───────────────────── */
   .glass-panel {
-    @apply bg-neeti-surface/70 backdrop-blur-xl border border-neeti-border/50;
+    @apply bg-neeti-surface/80 backdrop-blur-xl border border-neeti-border/60;
     @apply rounded-xl;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03),
-                0 4px 20px rgba(0,0,0,0.4);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06),
+                0 4px 24px rgba(0,0,0,0.5);
   }
 
   /* ── Status indicators ──────────────────────────────── */
@@ -220,7 +221,7 @@
   /* ── Loading skeleton ────────────────────────────────── */
   .loading-skeleton {
     @apply bg-neeti-border rounded-md;
-    background: linear-gradient(90deg, #27272A 25%, #3F3F46 50%, #27272A 75%);
+    background: linear-gradient(90deg, #30303A 25%, #484854 50%, #30303A 75%);
     background-size: 200% 100%;
     animation: shimmer 2s linear infinite;
   }
@@ -285,15 +286,15 @@
   .technical-grid {
     background-size: 40px 40px;
     background-image:
-      linear-gradient(to right, rgba(194,112,42,0.04) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(194,112,42,0.04) 1px, transparent 1px);
+      linear-gradient(to right, rgba(212,135,63,0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(212,135,63,0.06) 1px, transparent 1px);
   }
 
   .bronze-grid {
     background-size: 60px 60px;
     background-image:
-      linear-gradient(to right, rgba(194,112,42,0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(194,112,42,0.05) 1px, transparent 1px);
+      linear-gradient(to right, rgba(212,135,63,0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(212,135,63,0.07) 1px, transparent 1px);
   }
 
   /* ── Corner brackets — forensic schematic motif ──────── */
@@ -305,7 +306,7 @@
     position: absolute;
     width: 12px;
     height: 12px;
-    border-color: #C2702A;
+    border-color: #D4873F;
     border-style: solid;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -328,8 +329,8 @@
     position: absolute;
     left: 0; right: 0;
     height: 1px;
-    background: #C2702A;
-    box-shadow: 0 0 6px #C2702A;
+    background: #D4873F;
+    box-shadow: 0 0 8px #D4873F;
     animation: scan 4s linear infinite;
   }
 
@@ -343,7 +344,7 @@
 
   /* ── Gradient text ───────────────────────────────────── */
   .text-gradient-bronze {
-    background: linear-gradient(135deg, #D4873F, #C2702A, #A35D22);
+    background: linear-gradient(135deg, #E09848, #D4873F, #B06A28);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

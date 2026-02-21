@@ -6,6 +6,8 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   hint?: string;
+  /** @deprecated use `hint` instead */
+  helperText?: string;
   icon?: React.ReactNode;
   variant?: 'default' | 'evidence' | 'control';
 }
@@ -14,12 +16,14 @@ export const Input: React.FC<InputProps> = ({
   label,
   error,
   hint,
+  helperText,
   icon,
   variant = 'default',
   className,
   id,
   ...props
 }) => {
+  const resolvedHint = hint || helperText;
   const autoId = useId();
   const inputId = id || autoId;
 
@@ -58,7 +62,7 @@ export const Input: React.FC<InputProps> = ({
       </div>
 
       {error && <p className="text-xs text-status-critical font-medium">{error}</p>}
-      {hint && !error && <p className="text-xs text-ink-tertiary">{hint}</p>}
+      {resolvedHint && !error && <p className="text-xs text-ink-tertiary">{resolvedHint}</p>}
     </div>
   );
 };
