@@ -55,7 +55,7 @@ apiClient.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${session.access_token}`;
         }
         return apiClient(originalRequest);
-      } catch (refreshError) {
+      } catch {
         // Refresh failed - sign out
         await supabase.auth.signOut();
         window.location.href = '/login';
@@ -161,6 +161,12 @@ export interface SessionJoinResponse {
   candidate_id: number;
 }
 
+export interface RoomTokenResponse {
+  room_token: string;
+  room_name: string;
+  participant_identity: string;
+}
+
 export const sessionsApi = {
   createSession: async (data: SessionCreateRequest): Promise<Session> => {
     const response = await apiClient.post('/api/sessions', data);
@@ -180,6 +186,11 @@ export const sessionsApi = {
 
   joinSession: async (data: SessionJoinRequest): Promise<SessionJoinResponse> => {
     const response = await apiClient.post('/api/sessions/join', data);
+    return response.data;
+  },
+
+  getRoomToken: async (sessionId: number): Promise<RoomTokenResponse> => {
+    const response = await apiClient.get(`/api/sessions/${sessionId}/token`);
     return response.data;
   },
 

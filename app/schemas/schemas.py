@@ -93,6 +93,12 @@ class SessionJoinResponse(BaseModel):
     candidate_id: int
 
 
+class RoomTokenResponse(BaseModel):
+    room_token: str
+    room_name: str
+    participant_identity: str
+
+
 # ============================================================================
 # Candidate Schemas
 # ============================================================================

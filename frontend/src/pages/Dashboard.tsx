@@ -70,13 +70,15 @@ export function Dashboard() {
               {user?.full_name} · {user?.role?.toUpperCase()}
             </p>
           </div>
-          <Button
-            variant="primary"
-            onClick={() => navigate('/sessions/create')}
-            icon={<Plus className="w-4 h-4" />}
-          >
-            Schedule Interview
-          </Button>
+          {user?.role === 'recruiter' && (
+            <Button
+              variant="primary"
+              onClick={() => navigate('/sessions/create')}
+              icon={<Plus className="w-4 h-4" />}
+            >
+              Schedule Interview
+            </Button>
+          )}
         </div>
       </header>
 

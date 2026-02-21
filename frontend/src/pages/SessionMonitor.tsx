@@ -31,6 +31,19 @@ export default function SessionMonitor() {
 
   useEffect(() => {
     if (metrics) {
+      const getMetricMessage = (metric: { type: string; success?: boolean; language?: string; duration?: number; engagement?: number }) => {
+        switch (metric.type) {
+          case 'coding':
+            return `Code execution: ${metric.success ? 'Success' : 'Error'} (${metric.language || 'Unknown'})`;
+          case 'speech':
+            return `Speech detected: ${metric.duration || 0}s of communication`;
+          case 'vision':
+            return `Engagement level: ${metric.engagement || 'Unknown'}%`;
+          default:
+            return 'Activity detected';
+        }
+      };
+
       const event: ActivityEvent = {
         timestamp: new Date().toISOString(),
         type: metrics.type as 'coding' | 'speech' | 'vision',
@@ -52,19 +65,6 @@ export default function SessionMonitor() {
       setActivityLog((prev) => [...newEvents, ...prev].slice(0, 50));
     }
   }, [flags]);
-
-  const getMetricMessage = (metric: any) => {
-    switch (metric.type) {
-      case 'coding':
-        return `Code execution: ${metric.success ? 'Success' : 'Error'} (${metric.language || 'Unknown'})`;
-      case 'speech':
-        return `Speech detected: ${metric.duration || 0}s of communication`;
-      case 'vision':
-        return `Engagement level: ${metric.engagement || 'Unknown'}%`;
-      default:
-        return 'Activity detected';
-    }
-  };
 
   const handleEndSession = () => {
     if (confirm('Are you sure you want to end this session?')) {

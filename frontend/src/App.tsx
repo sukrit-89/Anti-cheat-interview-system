@@ -30,13 +30,22 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/join" element={<SessionJoin />} />
         <Route path="/interview" element={<InterviewRoom />} />
+        <Route path="/sessions/:id/interview" element={<InterviewRoom />} />
         <Route
           path="/dashboard"
           element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
         />
         <Route
           path="/sessions/create"
-          element={isAuthenticated ? <SessionCreate /> : <Navigate to="/login" />}
+          element={
+            isAuthenticated && useAuthStore.getState().user?.role === 'recruiter' ? (
+              <SessionCreate />
+            ) : isAuthenticated ? (
+              <Navigate to="/dashboard" />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
         />
         <Route
           path="/sessions/:id"

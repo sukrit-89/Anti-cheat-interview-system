@@ -19,7 +19,8 @@ from app.schemas.schemas import (
     SessionResponse,
     SessionJoinRequest,
     SessionJoinResponse,
-    CandidateResponse
+    CandidateResponse,
+    RoomTokenResponse
 )
 from app.core.events import publish_session_created, publish_session_started
 from app.services.livekit_service import LiveKitService
@@ -55,6 +56,19 @@ async def create_session(
     
     # Create LiveKit room
     room_name = f"session-{session_code}-{int(datetime.utcnow().timestamp())}"
+    
+    # Initialize LiveKit service and create room
+    livekit_service = LiveKitService()
+    try:
+        await livekit_service.create_room(
+            room_name=room_name,
+            max_participants=10,
+            empty_timeout_seconds=300
+        )
+        logger.info(f"LiveKit room created: {room_name}")
+    except Exception as e:
+        logger.error(f"Failed to create LiveKit room {room_name}: {e}")
+        # Continue anyway - room will be created on first join if needed
     
     # Create session - recruiter_id is now the Supabase UUID
     new_session = Session(
@@ -163,6 +177,81 @@ async def join_session(
         session=session,
         room_token=room_token,
         candidate_id=candidate.id
+    )
+
+
+@router.get("/{session_id}/token", response_model=RoomTokenResponse)
+async def get_room_token(
+    session_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+) -> RoomTokenResponse:
+    """Get LiveKit room token for a session (for both recruiters and candidates)."""
+    
+    # Find session
+    result = await db.execute(
+        select(Session).where(Session.id == session_id)
+    )
+    session = result.scalar_one_or_none()
+    
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Session not found"
+        )
+    
+    # Check authorization - user must be recruiter of session or participant
+    from app.models.models import UserRole
+    
+    is_recruiter = (
+        current_user.get("role") == UserRole.RECRUITER and 
+        session.recruiter_id == current_user["id"]
+    )
+    
+    # Check if user is a candidate in this session
+    is_candidate = False
+    if not is_recruiter:
+        result = await db.execute(
+            select(Candidate).where(
+                and_(
+                    Candidate.session_id == session_id,
+                    Candidate.user_id == current_user["id"]
+                )
+            )
+        )
+        is_candidate = result.scalar_one_or_none() is not None
+    
+    if not is_recruiter and not is_candidate:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to access this session"
+        )
+    
+    # Generate LiveKit token
+    livekit_service = LiveKitService()
+    
+    # Determine participant name and identity
+    if is_recruiter:
+        participant_name = f"Recruiter - {current_user.get('email', 'Unknown')}"
+        participant_identity = f"recruiter-{current_user['id']}"
+    else:
+        participant_name = current_user.get("full_name", current_user.get("email", "Candidate"))
+        participant_identity = f"candidate-{current_user['id']}"
+    
+    room_token = livekit_service.generate_token(
+        room_name=session.room_name,
+        participant_identity=participant_identity,
+        participant_name=participant_name
+    )
+    
+    logger.info(
+        f"Generated room token for {participant_identity} in session {session_id}"
+    )
+    
+    return RoomTokenResponse(
+        room_token=room_token,
+        room_name=session.room_name,
+        participant_identity=participant_identity
     )
 
 
@@ -323,6 +412,49 @@ async def start_session(
         session_id=session.id,
         data={"started_at": session.started_at.isoformat()}
     )
+    
+    return session
+
+
+@router.post("/{session_id}/end", response_model=SessionResponse)
+async def end_session(
+    session_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_recruiter)
+) -> Session:
+    """End a session (Recruiter only)."""
+    
+    result = await db.execute(select(Session).where(Session.id == session_id))
+    session = result.scalar_one_or_none()
+    
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Session not found"
+        )
+    
+    if session.recruiter_id != current_user["id"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to end this session"
+        )
+    
+    if session.status == SessionStatus.COMPLETED:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Session is already completed"
+        )
+    
+    session.status = SessionStatus.COMPLETED
+    session.ended_at = datetime.utcnow()
+    
+    await db.commit()
+    await db.refresh(session)
+    
+    logger.info(f"Session {session_id} ended by recruiter {current_user['id']}")
+    
+    # Publish end event
+    await publish_session_end_event(session_id, session)
     
     return session
 

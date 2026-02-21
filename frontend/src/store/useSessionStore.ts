@@ -19,6 +19,7 @@ interface SessionState {
   fetchSessions: (status?: string) => Promise<void>;
   createSession: (data: SessionCreateRequest) => Promise<Session>;
   joinSession: (data: SessionJoinRequest) => Promise<void>;
+  fetchRoomToken: (sessionId: number) => Promise<void>;
   setCurrentSession: (session: Session | null) => void;
   startSession: (sessionId: number) => Promise<void>;
   endSession: (sessionId: number) => Promise<void>;
@@ -92,6 +93,23 @@ export const useSessionStore = create<SessionState>((set) => ({
     } catch (error: unknown) {
       set({
         error: extractErrorMessage(error, 'Failed to join session'),
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  fetchRoomToken: async (sessionId: number) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await sessionsApi.getRoomToken(sessionId);
+      set({
+        roomToken: response.room_token,
+        isLoading: false,
+      });
+    } catch (error: unknown) {
+      set({
+        error: extractErrorMessage(error, 'Failed to fetch room token'),
         isLoading: false,
       });
       throw error;

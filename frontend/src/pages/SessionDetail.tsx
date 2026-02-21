@@ -5,14 +5,14 @@ import { useSessionStore } from '../store/useSessionStore';
 export const SessionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentSession, startSession, endSession, isLoading } = useSessionStore();
+  const { currentSession, fetchSession, startSession, endSession, isLoading } = useSessionStore();
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (!currentSession || currentSession.id !== Number(id)) {
-      // navigate('/dashboard');
+    if (id) {
+      fetchSession(Number(id));
     }
-  }, [id, currentSession, navigate]);
+  }, [id, fetchSession]);
 
   const copySessionCode = () => {
     if (currentSession) {

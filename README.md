@@ -45,6 +45,7 @@
 
 #### Real-Time Collaboration
 - WebRTC video/audio streaming via **LiveKit**
+- Automatic room creation and token management
 - Multi-participant support with screen sharing
 - Sub-second latency for natural conversation
 - Automatic recording and cloud storage
@@ -81,6 +82,8 @@
 - Custom interview questions and templates
 - Session history and replay
 - Multi-timezone support
+- Automatic room lifecycle management
+- Enhanced session start/end controls
 
 </td>
 </tr>
@@ -106,6 +109,7 @@ Five specialized autonomous agents working in parallel to provide comprehensive 
 - **Reporting**: Exportable reports in PDF, JSON, and CSV formats
 - **Collaboration**: Multi-recruiter observation and note-taking
 - **Forensic Reports**: Evidence-based evaluation with detailed technical blueprints
+- **Enhanced Metrics**: Detailed coding, speech, and engagement tracking
 
 ### 🔐 Enterprise Security Features
 
@@ -301,6 +305,7 @@ Once everything is running, access the platform at:
 | Document | Description |
 |----------|-------------|
 | [⚡ Quick Start](QUICKSTART.md) | **5-minute setup guide** - Get started fast with Docker |
+| [🧹 Cleanup Scripts](CLEANUP_SCRIPTS.md) | **Database maintenance** - Reset and cleanup utilities |
 | [📊 Executive Summary](dev-docs/EXECUTIVE_SUMMARY.md) | High-level project overview for stakeholders |
 | [🏗️ Architecture](dev-docs/ARCHITECTURE.md) | System design and technical architecture |
 | [🔌 API Reference](dev-docs/API_REFERENCE.md) | Complete API endpoint documentation |
@@ -660,6 +665,9 @@ Integrity-AI/
 │   └── SUPABASE_DEPLOYMENT.md       # Supabase setup
 │
 ├── QUICKSTART.md                     # ⚡ 5-minute quick start guide
+├── CLEANUP_SCRIPTS.md                # 🧹 Database cleanup utilities
+├── cleanup_database.py               # Script to clean database data
+├── reset_all.py                      # Script for complete system reset
 │
 ├── tests/                            # 🧪 Test Suite
 │   ├── conftest.py                  # Pytest fixtures
@@ -705,6 +713,7 @@ Integrity-AI/
 | `POST` | `/api/sessions/join` | Join with code | Candidate |
 | `POST` | `/api/sessions/{id}/start` | Start interview | Recruiter |
 | `POST` | `/api/sessions/{id}/end` | End interview | Recruiter |
+| `GET` | `/api/sessions/{id}/token` | Get LiveKit room token | All |
 | `GET` | `/api/sessions/{id}/candidates` | List participants | Recruiter |
 | `GET` | `/api/sessions/{id}/evaluation` | Get AI evaluation | Recruiter |
 

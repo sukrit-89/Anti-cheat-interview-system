@@ -15,7 +15,7 @@ const LIVEKIT_WS_URL = import.meta.env.VITE_LIVEKIT_WS_URL;
 
 export const InterviewRoom: React.FC = () => {
     const navigate = useNavigate();
-    const { currentSession, roomToken } = useSessionStore();
+    const { currentSession, roomToken, fetchRoomToken } = useSessionStore();
     const { isConnected } = useWebSocket(currentSession?.id || null);
 
     const [isCodeExpanded, setIsCodeExpanded] = useState(false);
@@ -24,10 +24,19 @@ export const InterviewRoom: React.FC = () => {
     const [elapsedTime, setElapsedTime] = useState(0);
 
     useEffect(() => {
-        if (!currentSession || !roomToken) {
+        if (!currentSession) {
             navigate('/join');
+            return;
         }
-    }, [currentSession, roomToken, navigate]);
+
+        // Fetch room token if we don't have one (e.g., recruiter entering)
+        if (!roomToken) {
+            fetchRoomToken(currentSession.id).catch((error) => {
+                console.error('Failed to fetch room token:', error);
+                navigate('/dashboard');
+            });
+        }
+    }, [currentSession, roomToken, navigate, fetchRoomToken]);
 
     useEffect(() => {
         const timer = setInterval(() => {
