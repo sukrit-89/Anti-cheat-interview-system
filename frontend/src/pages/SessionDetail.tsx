@@ -36,6 +36,7 @@ export const SessionDetail: React.FC = () => {
     if (currentSession && confirm('Terminate this session?')) {
       try {
         await endSession(currentSession.id);
+        navigate('/dashboard');
       } catch (err) {
         console.error('Failed to end session:', err);
       }

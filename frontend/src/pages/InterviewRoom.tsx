@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { LiveKitRoom, VideoConference, RoomAudioRenderer } from '@livekit/components-react';
 import '@livekit/components-styles';
 import { useSessionStore } from '../store/useSessionStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { useWebSocket } from '../lib/websocket';
 import { CodeEditor } from '../components/CodeEditor';
 import { Button } from '../components/Button';
@@ -16,6 +17,8 @@ const LIVEKIT_WS_URL = import.meta.env.VITE_LIVEKIT_WS_URL;
 export const InterviewRoom: React.FC = () => {
     const navigate = useNavigate();
     const { currentSession, roomToken, fetchRoomToken } = useSessionStore();
+    const { user } = useAuthStore();
+    const isRecruiter = user?.role === 'recruiter';
     const { isConnected } = useWebSocket(currentSession?.id || null);
 
     const [isCodeExpanded, setIsCodeExpanded] = useState(false);
@@ -25,7 +28,7 @@ export const InterviewRoom: React.FC = () => {
 
     useEffect(() => {
         if (!currentSession) {
-            navigate('/join');
+            navigate(isRecruiter ? '/dashboard' : '/join');
             return;
         }
 
@@ -48,7 +51,7 @@ export const InterviewRoom: React.FC = () => {
 
     const handleLeave = () => {
         if (confirm('Are you sure you want to leave the interview?')) {
-            navigate('/join');
+            navigate('/dashboard');
         }
     };
 
