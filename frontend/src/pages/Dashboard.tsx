@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Clock } from 'lucide-react';
+import { Plus, Clock, LogIn } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useSessionStore } from '../store/useSessionStore';
 import { Button } from '../components/Button';
@@ -124,16 +124,28 @@ export function Dashboard() {
                   <div>
                     <h3 className="text-subheadline mb-2">No Sessions Yet</h3>
                     <p className="text-body text-verdict-text-secondary">
-                      Begin by scheduling your first technical interview session.
+                      {user?.role === 'recruiter' 
+                        ? 'Begin by scheduling your first technical interview session.'
+                        : 'Join an interview session using the code provided by your recruiter.'}
                     </p>
                   </div>
-                  <Button
-                    variant="primary"
-                    onClick={() => navigate('/sessions/create')}
-                    icon={<Plus className="w-4 h-4" />}
-                  >
-                    Schedule First Interview
-                  </Button>
+                  {user?.role === 'recruiter' ? (
+                    <Button
+                      variant="primary"
+                      onClick={() => navigate('/sessions/create')}
+                      icon={<Plus className="w-4 h-4" />}
+                    >
+                      Schedule First Interview
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      onClick={() => navigate('/sessions/join')}
+                      icon={<LogIn className="w-4 h-4" />}
+                    >
+                      Join Session
+                    </Button>
+                  )}
                 </div>
               </Card>
             ) : (
