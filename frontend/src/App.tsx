@@ -11,6 +11,9 @@ import { InterviewRoom } from './pages/InterviewRoom';
 import SessionMonitor from './pages/SessionMonitor';
 import SessionResults from './pages/SessionResults';
 import { EvaluationReport } from './pages/EvaluationReport';
+import { About } from './pages/About';
+import { FAQ } from './pages/FAQ';
+import { Troubleshooting } from './pages/Troubleshooting';
 import { useAuthStore } from './store/useAuthStore';
 import './index.css';
 
@@ -99,6 +102,12 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/troubleshooting" element={<Troubleshooting />} />
+          <Route path="/privacy" element={<About />} />
+          <Route path="/terms" element={<About />} />
+          <Route path="/cookies" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/join" element={<SessionJoin />} />

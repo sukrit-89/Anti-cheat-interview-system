@@ -22,11 +22,20 @@ export const Card: React.FC<CardProps> = ({
   ...props
 }) => {
   const variants = {
-    default:  'bg-neeti-surface/80 backdrop-blur-sm border border-white/[0.06] rounded-lg shadow-card',
-    evidence: 'bg-neeti-surface/80 backdrop-blur-sm border border-white/[0.06] border-l-4 border-l-bronze rounded-r-md',
-    control:  'bg-neeti-surface/70 backdrop-blur-md border border-white/[0.06] rounded-lg shadow-card',
-    elevated: 'bg-neeti-elevated/80 backdrop-blur-lg border border-white/[0.08] rounded-lg shadow-medium',
+    default:  'rounded-lg shadow-card',
+    evidence: 'rounded-r-md border-l-4 border-l-bronze',
+    control:  'rounded-lg shadow-card',
+    elevated: 'rounded-lg shadow-medium',
     glass:    'glass-strong',
+  };
+
+  // Glass-aware backgrounds via inline styles applied in the element
+  const variantStyles: Record<string, React.CSSProperties> = {
+    default:  { background: 'linear-gradient(135deg, rgba(21,21,24,0.85) 0%, rgba(21,21,24,0.70) 100%)', backdropFilter: 'blur(12px) saturate(1.2)', WebkitBackdropFilter: 'blur(12px) saturate(1.2)', border: '1px solid rgba(255,255,255,0.08)' },
+    evidence: { background: 'linear-gradient(135deg, rgba(21,21,24,0.85) 0%, rgba(21,21,24,0.70) 100%)', backdropFilter: 'blur(12px) saturate(1.2)', WebkitBackdropFilter: 'blur(12px) saturate(1.2)', border: '1px solid rgba(255,255,255,0.08)' },
+    control:  { background: 'linear-gradient(135deg, rgba(21,21,24,0.80) 0%, rgba(21,21,24,0.65) 100%)', backdropFilter: 'blur(16px) saturate(1.3)', WebkitBackdropFilter: 'blur(16px) saturate(1.3)', border: '1px solid rgba(255,255,255,0.10)' },
+    elevated: { background: 'linear-gradient(135deg, rgba(30,30,35,0.90) 0%, rgba(30,30,35,0.75) 100%)', backdropFilter: 'blur(20px) saturate(1.4)', WebkitBackdropFilter: 'blur(20px) saturate(1.4)', border: '1px solid rgba(255,255,255,0.12)' },
+    glass:    {},  // handled by CSS class
   };
 
   const paddings = { none: '', sm: 'p-3', md: 'p-5', lg: 'p-7' };
@@ -49,6 +58,7 @@ export const Card: React.FC<CardProps> = ({
         interactive && 'interactive-authority cursor-pointer',
         className
       )}
+      style={{ ...variantStyles[variant], ...props.style }}
       {...props}
     >
       {children}

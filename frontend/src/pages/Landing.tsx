@@ -14,6 +14,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { Logo } from '../components/Logo';
+import { Footer } from '../components/Footer';
 
 const AGENTS = [
   { name: 'Coding Agent', status: 'active' as const },
@@ -252,19 +253,7 @@ export const Landing = () => {
         </section>
 
         {/* ── Footer ─────────────────────────────────────── */}
-        <footer className="border-t border-white/[0.06] bg-white/[0.02] backdrop-blur-md">
-          <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-ink-ghost">
-            <span className="inline-flex items-center gap-3 font-mono tracking-wider">
-              <Logo size="sm" linkTo="/" />
-              NEETI AI © {new Date().getFullYear()}
-            </span>
-            <span className="font-mono text-xs tracking-wider">
-              EVAL_SYSTEM_v2.1.0
-              <span className="text-bronze/30 mx-2">|</span>
-              SECURE_PROTOCOL_ACTIVE
-            </span>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </div>
   );
