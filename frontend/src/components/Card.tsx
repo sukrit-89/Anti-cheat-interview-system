@@ -22,11 +22,11 @@ export const Card: React.FC<CardProps> = ({
   ...props
 }) => {
   const variants = {
-    default:  'bg-neeti-surface border border-neeti-border rounded-lg shadow-card',
-    evidence: 'bg-neeti-surface border border-neeti-border border-l-4 border-l-bronze rounded-r-md',
-    control:  'bg-neeti-surface border border-neeti-border rounded-lg shadow-card',
-    elevated: 'bg-neeti-elevated border border-neeti-border-strong rounded-lg shadow-medium',
-    glass:    'glass-panel',
+    default:  'bg-neeti-surface/80 backdrop-blur-sm border border-white/[0.06] rounded-lg shadow-card',
+    evidence: 'bg-neeti-surface/80 backdrop-blur-sm border border-white/[0.06] border-l-4 border-l-bronze rounded-r-md',
+    control:  'bg-neeti-surface/70 backdrop-blur-md border border-white/[0.06] rounded-lg shadow-card',
+    elevated: 'bg-neeti-elevated/80 backdrop-blur-lg border border-white/[0.08] rounded-lg shadow-medium',
+    glass:    'glass-strong',
   };
 
   const paddings = { none: '', sm: 'p-3', md: 'p-5', lg: 'p-7' };

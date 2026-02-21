@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useSessionStore } from '../store/useSessionStore';
 import { Button } from '../components/Button';
 import { Card, MetricCard } from '../components/Card';
+import { Logo } from '../components/Logo';
 // StatusIndicator available if needed for future enhancements
 
 /* ── stat card config ─────────────────────────────────── */
@@ -21,10 +22,10 @@ function StatCard({ label, value, status = 'total' }: {
   const cfg = STATUS_CFG[status];
   const Icon = cfg.icon;
   return (
-    <div className="bg-neeti-surface border border-neeti-border rounded-lg p-6 hover:border-bronze-muted transition-colors">
+    <div className="glass-subtle p-6 hover:bg-white/[0.06] transition-all duration-300 group">
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs font-medium text-ink-tertiary uppercase tracking-wider">{label}</span>
-        <Icon className={`w-4 h-4 ${cfg.color} opacity-60`} />
+        <Icon className={`w-4 h-4 ${cfg.color} opacity-60 group-hover:opacity-100 transition-opacity`} />
       </div>
       <div className={`text-3xl font-mono font-bold ${cfg.color}`}>
         {value.toString().padStart(2, '0')}
@@ -59,15 +60,18 @@ export function Dashboard() {
   return (
     <div className="min-h-screen bg-neeti-bg">
       {/* ── Header ─────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 border-b border-neeti-border bg-neeti-surface/80 backdrop-blur-md">
+      <header className="sticky top-0 z-30 glass-header">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-display font-semibold text-ink-primary tracking-tight">
-              Control Room
-            </h1>
-            <p className="text-xs text-ink-ghost mt-0.5">
-              {user?.full_name} · <span className="uppercase">{user?.role}</span>
-            </p>
+          <div className="flex items-center gap-4">
+            <Logo size="sm" />
+            <div>
+              <h1 className="text-xl font-display font-semibold text-ink-primary tracking-tight">
+                Control Room
+              </h1>
+              <p className="text-xs text-ink-ghost mt-0.5">
+                {user?.full_name} · <span className="uppercase">{user?.role}</span>
+              </p>
+            </div>
           </div>
           {user?.role === 'recruiter' && (
             <Button variant="primary" onClick={() => navigate('/sessions/create')} icon={<Plus className="w-4 h-4" />}>

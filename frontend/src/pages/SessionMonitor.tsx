@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AlertTriangle, Activity, Scale, Clock } from 'lucide-react';
+import { AlertTriangle, Activity, Clock } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { useLiveMonitoring } from '../lib/websocket';
 import { Button } from '../components/Button';
 import { Card, MetricCard, EvidenceCard } from '../components/Card';
 import { StatusIndicator } from '../components/StatusIndicator';
+import { Logo } from '../components/Logo';
 
 interface ActivityEvent {
   timestamp: string;
@@ -63,11 +64,11 @@ export default function SessionMonitor() {
   return (
     <div className="min-h-screen bg-neeti-bg">
       {/* ── Header ──────────────────────────────────── */}
-      <header className="sticky top-0 z-30 border-b border-neeti-border bg-neeti-surface/80 backdrop-blur-md px-5 py-3">
+      <header className="sticky top-0 z-30 glass-header px-5 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
             <div className="flex items-center gap-2.5">
-              <Scale className="w-5 h-5 text-bronze" />
+              <Logo size="sm" />
               <div>
                 <h1 className="text-sm font-display font-semibold text-ink-primary">Live Evaluation Monitor</h1>
                 <p className="text-[10px] text-ink-ghost">{currentSession.title} · {currentSession.join_code}</p>
@@ -151,7 +152,7 @@ export default function SessionMonitor() {
         </div>
 
         {/* ── Flags sidebar ────────────────────────── */}
-        <div className="w-72 border-l border-neeti-border bg-neeti-surface flex flex-col">
+        <div className="w-72 border-l border-white/[0.06] bg-neeti-surface/60 backdrop-blur-md flex flex-col">
           <div className="px-4 py-3 border-b border-neeti-border">
             <h3 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider flex items-center gap-2">
               <AlertTriangle className="w-3.5 h-3.5 text-status-warning" /> Active Flags

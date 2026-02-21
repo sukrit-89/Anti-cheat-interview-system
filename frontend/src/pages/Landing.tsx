@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { TechnicalBlueprint } from '../components/TechnicalBlueprint';
 import { StatusIndicator } from '../components/StatusIndicator';
 import {
-  Scale,
   Terminal,
   FileCheck,
   Fingerprint,
@@ -14,6 +13,7 @@ import {
   CheckCircle2,
   Shield,
 } from 'lucide-react';
+import { Logo } from '../components/Logo';
 
 const AGENTS = [
   { name: 'Coding Agent', status: 'active' as const },
@@ -89,21 +89,10 @@ export const Landing = () => {
 
       <div className="relative z-10">
         {/* ── Header ─────────────────────────────────────── */}
-        <header className="border-b border-neeti-border bg-neeti-surface/40 backdrop-blur-md sticky top-0 z-50">
+        <header className="glass-header sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3">
-              <div className="relative">
-                <Scale className="w-6 h-6 text-bronze" strokeWidth={1.5} />
-                <div className="absolute -inset-1.5 bg-bronze/10 blur-md -z-10" />
-              </div>
-              <div className="leading-none">
-                <span className="text-xl font-display font-semibold text-ink-primary tracking-tight">
-                  Neeti AI
-                </span>
-                <p className="text-[10px] text-ink-ghost font-mono tracking-[0.2em] mt-0.5">
-                  नीति · EVALUATION AUTHORITY
-                </p>
-              </div>
+              <Logo size="md" showWordmark showTagline />
             </Link>
 
             <Link
@@ -120,7 +109,7 @@ export const Landing = () => {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left — Messaging */}
             <div className="space-y-8 animate-fadeUp">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-bronze/25 bg-bronze-muted rounded-full">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-bronze/25 bg-bronze/[0.08] backdrop-blur-md rounded-full">
                 <Shield className="w-3.5 h-3.5 text-bronze" />
                 <span className="text-xs font-mono text-bronze tracking-wider">
                   TECHNICAL ASSESSMENT v2.1
@@ -169,7 +158,7 @@ export const Landing = () => {
             <div className="hidden lg:block space-y-6 animate-fadeUp" style={{ animationDelay: '120ms' }}>
               <TechnicalBlueprint showScanLine />
 
-              <div className="border border-neeti-border bg-neeti-surface/70 rounded-lg p-5 space-y-3 backdrop-blur-sm">
+              <div className="glass-medium p-5 space-y-3">
                 <p className="text-[10px] font-mono text-ink-ghost tracking-[0.2em] uppercase mb-3">
                   Agent Status
                 </p>
@@ -189,7 +178,7 @@ export const Landing = () => {
         </section>
 
         {/* ── Capabilities ───────────────────────────────── */}
-        <section className="border-y border-neeti-border bg-neeti-surface/40 py-24">
+        <section className="border-y border-white/[0.06] bg-white/[0.02] backdrop-blur-sm py-24">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
               <h3 className="text-3xl font-display font-bold text-ink-primary mb-3">
@@ -201,11 +190,11 @@ export const Landing = () => {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-neeti-border rounded-lg overflow-hidden">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {CAPABILITIES.map((cap) => (
                 <div
                   key={cap.tag}
-                  className="bg-neeti-bg p-7 group hover:bg-neeti-surface transition-colors duration-300"
+                  className="glass-subtle p-7 group hover:bg-white/[0.06] transition-all duration-300"
                 >
                   <div className="mb-5 relative inline-flex items-center justify-center w-12 h-12 rounded-md bg-bronze/[0.07] group-hover:bg-bronze/[0.12] transition-colors">
                     <cap.icon className="w-6 h-6 text-bronze" strokeWidth={1.5} />
@@ -265,10 +254,10 @@ export const Landing = () => {
         </section>
 
         {/* ── Footer ─────────────────────────────────────── */}
-        <footer className="border-t border-neeti-border bg-neeti-surface/30">
+        <footer className="border-t border-white/[0.06] bg-white/[0.02] backdrop-blur-md">
           <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-ink-ghost">
-            <span className="inline-flex items-center gap-2 font-mono tracking-wider">
-              <Scale className="w-3.5 h-3.5 text-bronze/50" strokeWidth={1.5} />
+            <span className="inline-flex items-center gap-3 font-mono tracking-wider">
+              <Logo size="sm" />
               NEETI AI © {new Date().getFullYear()}
             </span>
             <span className="font-mono text-xs tracking-wider">

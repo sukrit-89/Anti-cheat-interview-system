@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Code2, Mic, Eye, Brain } from 'lucide-react';
+import { Code2, Mic, Eye, Brain } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { Logo } from '../components/Logo';
 
 const EXPECT_ITEMS = [
   { icon: Code2, text: 'Technical problem-solving assessment' },
@@ -35,11 +36,10 @@ export const SessionJoin: React.FC = () => {
   return (
     <div className="min-h-screen bg-neeti-bg grid grid-cols-1 lg:grid-cols-12">
       {/* ── Left panel ─────────────────────────────── */}
-      <div className="hidden lg:flex lg:col-span-5 border-r border-neeti-border p-10 xl:p-14 flex-col justify-between">
+      <div className="hidden lg:flex lg:col-span-5 border-r border-white/[0.06] p-10 xl:p-14 flex-col justify-between">
         <div>
           <div className="flex items-center gap-2.5 mb-8">
-            <Shield className="w-6 h-6 text-bronze" />
-            <span className="text-lg font-display font-semibold text-ink-primary tracking-tight">Neeti AI</span>
+            <Logo size="md" showWordmark />
           </div>
 
           <div className="space-y-5 max-w-sm">
@@ -122,7 +122,7 @@ export const SessionJoin: React.FC = () => {
             </Button>
           </form>
 
-          <p className="mt-8 pt-6 border-t border-neeti-border text-[11px] text-ink-ghost text-center">
+          <p className="mt-8 pt-6 border-t border-white/[0.06] text-[11px] text-ink-ghost text-center">
             By joining, you consent to AI-assisted evaluation and recording
           </p>
         </div>

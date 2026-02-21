@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Shield, User, Lock } from 'lucide-react';
+import { User, Lock, Shield } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { extractErrorMessage } from '../lib/errorUtils';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { Logo } from '../components/Logo';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -31,15 +32,12 @@ export function Login() {
   return (
     <div className="min-h-screen bg-neeti-bg flex">
       {/* ── Auth panel ────────────────────────────────── */}
-      <div className="w-full lg:w-[44%] border-r border-neeti-border flex flex-col justify-center px-8 py-12 lg:px-14">
+      <div className="w-full lg:w-[44%] border-r border-white/[0.06] flex flex-col justify-center px-8 py-12 lg:px-14">
         <div className="max-w-md mx-auto w-full space-y-10">
           {/* Brand */}
           <div className="text-center">
-            <div className="inline-flex items-center gap-3 mb-5">
-              <Shield className="w-7 h-7 text-bronze" />
-              <h1 className="text-3xl font-display font-bold text-ink-primary tracking-tight">
-                Neeti AI
-              </h1>
+            <div className="inline-flex items-center justify-center mb-5">
+              <Logo size="xl" showWordmark />
             </div>
             <p className="text-sm text-ink-secondary">
               Enterprise technical interview evaluation
@@ -80,7 +78,7 @@ export function Login() {
           </form>
 
           {/* Footer */}
-          <div className="pt-6 border-t border-neeti-border space-y-3">
+          <div className="pt-6 border-t border-white/[0.06] space-y-3">
             <div className="flex items-center gap-2 text-xs text-ink-ghost">
               <Shield className="w-3.5 h-3.5" />
               <span className="font-medium">Secure Authentication</span>
@@ -94,7 +92,7 @@ export function Login() {
       </div>
 
       {/* ── Evidence panel ────────────────────────────── */}
-      <div className="hidden lg:flex lg:flex-1 bg-neeti-surface/40 items-center justify-center p-12">
+      <div className="hidden lg:flex lg:flex-1 bg-white/[0.02] backdrop-blur-sm items-center justify-center p-12">
         <div className="max-w-lg space-y-10">
           <h2 className="text-2xl font-display font-bold text-ink-primary">
             Evidence-Based Assessment
@@ -117,7 +115,7 @@ export function Login() {
             ].map((block) => (
               <div
                 key={block.title}
-                className="border border-neeti-border border-l-4 border-l-bronze/30 rounded-r-md bg-neeti-surface/60 p-5"
+                className="glass-subtle border-l-4 border-l-bronze/30 rounded-r-md p-5"
               >
                 <h3 className="text-sm font-semibold text-ink-primary mb-2">{block.title}</h3>
                 <p className="text-sm text-ink-secondary leading-relaxed">{block.text}</p>
@@ -125,7 +123,7 @@ export function Login() {
             ))}
           </div>
 
-          <div className="pt-8 border-t border-neeti-border">
+            <div className="pt-8 border-t border-white/[0.06]">
             <h3 className="text-sm font-semibold text-ink-primary mb-4">System Capabilities</h3>
             <div className="grid grid-cols-2 gap-3">
               {[
@@ -134,7 +132,7 @@ export function Login() {
                 { label: 'EVALUATION', value: 'Real-Time' },
                 { label: 'REPORTING', value: 'Comprehensive' },
               ].map((m) => (
-                <div key={m.label} className="border border-neeti-border rounded-md bg-neeti-bg p-4">
+                <div key={m.label} className="glass-subtle p-4">
                   <p className="text-[10px] font-mono text-ink-ghost tracking-wider mb-1">{m.label}</p>
                   <p className="text-sm font-mono text-ink-primary">{m.value}</p>
                 </div>

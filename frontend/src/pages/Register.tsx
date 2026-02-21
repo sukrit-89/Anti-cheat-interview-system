@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { Scale, UserPlus, Briefcase, User } from 'lucide-react';
+import { UserPlus, Briefcase, User } from 'lucide-react';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { Logo } from '../components/Logo';
 
 export const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -55,7 +56,7 @@ export const Register: React.FC = () => {
   return (
     <div className="min-h-screen bg-neeti-bg grid lg:grid-cols-12">
       {/* ── Left branding panel ──────────────────────── */}
-      <div className="hidden lg:flex lg:col-span-5 border-r border-neeti-border p-12 flex-col justify-between relative overflow-hidden">
+      <div className="hidden lg:flex lg:col-span-5 border-r border-white/[0.06] p-12 flex-col justify-between relative overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.015]"
           style={{
@@ -67,18 +68,7 @@ export const Register: React.FC = () => {
 
         <div className="relative z-10">
           <Link to="/" className="flex items-center gap-3 mb-10">
-            <div className="relative">
-              <Scale className="w-7 h-7 text-bronze" strokeWidth={1.5} />
-              <div className="absolute -inset-1.5 bg-bronze/10 blur-md -z-10" />
-            </div>
-            <div className="leading-none">
-              <h1 className="text-2xl font-display font-bold text-ink-primary tracking-tight">
-                Neeti AI
-              </h1>
-              <p className="text-[10px] text-ink-ghost font-mono tracking-[0.2em] mt-0.5">
-                नीति · EVALUATION AUTHORITY
-              </p>
-            </div>
+            <Logo size="lg" showWordmark showTagline />
           </Link>
 
           <div className="space-y-6 max-w-md">
@@ -206,7 +196,7 @@ export const Register: React.FC = () => {
             </Button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-neeti-border text-center">
+          <div className="mt-8 pt-6 border-t border-white/[0.06] text-center">
             <p className="text-sm text-ink-secondary">
               Already have an account?{' '}
               <Link

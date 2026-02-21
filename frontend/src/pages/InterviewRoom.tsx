@@ -53,7 +53,7 @@ export const InterviewRoom: React.FC = () => {
   return (
     <div className="h-screen flex flex-col bg-neeti-bg overflow-hidden">
       {/* ── Header ──────────────────────────────────── */}
-      <header className="border-b border-neeti-border bg-neeti-surface/90 backdrop-blur-md px-5 py-3 shrink-0">
+      <header className="glass-header px-5 py-3 shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
             <div className="flex items-center gap-2.5">

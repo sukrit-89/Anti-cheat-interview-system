@@ -37,7 +37,7 @@ export const SessionCreate: React.FC = () => {
   return (
     <div className="min-h-screen bg-neeti-bg">
       {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-neeti-border bg-neeti-surface/80 backdrop-blur-md">
+      <header className="sticky top-0 z-30 glass-header">
         <div className="max-w-3xl mx-auto px-6 lg:px-8 py-5">
           <button onClick={() => navigate('/dashboard')} className="flex items-center gap-1.5 text-xs text-ink-ghost hover:text-ink-secondary transition-colors mb-3">
             <ArrowLeft className="w-3.5 h-3.5" /> Dashboard
@@ -51,7 +51,7 @@ export const SessionCreate: React.FC = () => {
 
       {/* Content */}
       <main className="max-w-3xl mx-auto px-6 lg:px-8 py-10">
-        <div className="bg-neeti-surface border border-neeti-border rounded-lg p-6 lg:p-8">
+        <div className="glass-medium p-6 lg:p-8">
           {error && (
             <div className="mb-6 p-4 rounded-lg border border-status-critical/30 bg-status-critical/5 text-status-critical text-sm">
               {typeof error === 'string' ? error : 'An error occurred. Please try again.'}

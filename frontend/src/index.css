@@ -79,15 +79,13 @@
 
   /* ── Cards ───────────────────────────────────────────── */
   .verdict-card {
-    @apply bg-neeti-surface border border-neeti-border rounded-lg;
-    @apply shadow-card;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 8px rgba(0,0,0,0.4);
+    @apply bg-neeti-surface/70 backdrop-blur-md border border-white/[0.06] rounded-lg;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.4);
   }
 
   .verdict-card-elevated {
-    @apply bg-neeti-elevated border border-neeti-border-strong rounded-lg;
-    @apply shadow-medium;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.5);
+    @apply bg-neeti-elevated/80 backdrop-blur-lg border border-white/[0.08] rounded-lg;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 16px rgba(0,0,0,0.5);
   }
 
   /* ── Buttons ─────────────────────────────────────────── */
@@ -148,8 +146,8 @@
 
   /* ── Panels ──────────────────────────────────────────── */
   .control-panel {
-    @apply bg-neeti-surface border border-neeti-border rounded-lg;
-    @apply shadow-card;
+    @apply bg-neeti-surface/70 backdrop-blur-md border border-white/[0.06] rounded-lg;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 2px 8px rgba(0,0,0,0.3);
   }
 
   .metric-display {
@@ -159,10 +157,46 @@
 
   /* ── Glass panels — layered depth ───────────────────── */
   .glass-panel {
-    @apply bg-neeti-surface/80 backdrop-blur-xl border border-neeti-border/60;
+    @apply bg-neeti-surface/60 backdrop-blur-2xl border border-white/[0.08];
     @apply rounded-xl;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06),
-                0 4px 24px rgba(0,0,0,0.5);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 -1px 0 rgba(0,0,0,0.2),
+                0 4px 24px rgba(0,0,0,0.5),
+                0 0 0 1px rgba(255,255,255,0.03);
+  }
+
+  /* Glassmorphism tiers */
+  .glass-subtle {
+    @apply bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-lg;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .glass-medium {
+    @apply bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-xl;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08),
+                0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .glass-strong {
+    @apply bg-white/[0.09] backdrop-blur-2xl border border-white/[0.12] rounded-2xl;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12),
+                inset 0 -1px 0 rgba(0,0,0,0.15),
+                0 12px 40px rgba(0,0,0,0.5),
+                0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  .glass-bronze {
+    @apply bg-bronze/[0.06] backdrop-blur-xl border border-bronze/[0.15] rounded-xl;
+    box-shadow: inset 0 1px 0 rgba(212,135,63,0.12),
+                0 8px 32px rgba(0,0,0,0.4),
+                0 0 60px rgba(212,135,63,0.06);
+  }
+
+  /* Glassmorphic header bar */
+  .glass-header {
+    @apply bg-neeti-surface/50 backdrop-blur-2xl border-b border-white/[0.06];
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04),
+                0 4px 20px rgba(0,0,0,0.3);
   }
 
   /* ── Status indicators ──────────────────────────────── */
@@ -228,14 +262,19 @@
 
   /* ── Dialog overlay ──────────────────────────────────── */
   .dialog-overlay {
-    @apply fixed inset-0 z-50 bg-black/70 backdrop-blur-sm;
+    @apply fixed inset-0 z-50 bg-black/60 backdrop-blur-md;
     @apply flex items-center justify-center p-4;
     animation: fadeIn 0.2s ease-out;
   }
 
   .dialog-panel {
-    @apply bg-neeti-elevated border border-neeti-border-strong rounded-xl;
-    @apply p-6 max-w-md w-full shadow-dialog;
+    @apply rounded-2xl p-6 max-w-md w-full;
+    background: rgba(30, 30, 35, 0.85);
+    backdrop-filter: blur(40px) saturate(1.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1),
+                0 25px 60px -12px rgba(0,0,0,0.8),
+                0 0 0 1px rgba(255,255,255,0.03);
     animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 }

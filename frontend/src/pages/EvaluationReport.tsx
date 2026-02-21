@@ -6,7 +6,8 @@ import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { EvidenceBlock } from '../components/EvidenceBlock';
 import { Card } from '../components/Card';
-import { Scale, FileText, Download, Gavel } from 'lucide-react';
+import { FileText, Download, Gavel } from 'lucide-react';
+import { Logo } from '../components/Logo';
 
 /* ── mock data (replace with API fetch) ─────────────── */
 const MOCK = {
@@ -48,9 +49,9 @@ export const EvaluationReport = () => {
   return (
     <div className="min-h-screen bg-neeti-bg">
       {/* ── Header ────────────────────────────────── */}
-      <header className="sticky top-0 z-30 border-b border-neeti-border bg-neeti-surface/80 backdrop-blur-md px-6 lg:px-8 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-30 glass-header px-6 lg:px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Scale className="w-7 h-7 text-bronze" strokeWidth={1.5} />
+          <Logo size="md" />
           <div>
             <h2 className="text-base font-display font-semibold text-ink-primary">
               Neeti AI <span className="text-ink-ghost font-normal">|</span> Forensic Report

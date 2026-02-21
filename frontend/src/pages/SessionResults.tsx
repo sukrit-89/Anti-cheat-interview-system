@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Download, FileText, Scale, TrendingUp, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { Download, FileText, TrendingUp, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { Button } from '../components/Button';
 import { Card, MetricCard } from '../components/Card';
 import { StatusIndicator } from '../components/StatusIndicator';
+import { Logo } from '../components/Logo';
 
 /* ── types ──────────────────────────────────────────── */
 interface EvaluationScore { category: string; score: number; maxScore: number; feedback: string; agent: string; }
@@ -81,7 +82,7 @@ export default function SessionResults() {
   return (
     <div className="min-h-screen bg-neeti-bg">
       {/* ── Header ──────────────────────────────────── */}
-      <header className="sticky top-0 z-30 border-b border-neeti-border bg-neeti-surface/80 backdrop-blur-md px-6 lg:px-8 py-5">
+      <header className="sticky top-0 z-30 glass-header px-6 lg:px-8 py-5">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <FileText className="w-5 h-5 text-bronze" />
@@ -106,8 +107,8 @@ export default function SessionResults() {
               <MetricCard title="Overall Score" value={overall} unit="/100" status="success" description="Comprehensive evaluation" />
             </div>
             <Card className={`text-center flex flex-col items-center justify-center border ${r.bg} rounded-lg`}>
-              <Scale className="w-7 h-7 text-bronze mb-2" />
-              <div className={`text-2xl font-bold font-mono ${r.text}`}>{rec.replace('_', ' ')}</div>
+              <Logo size="lg" />
+              <div className={`text-2xl font-bold font-mono ${r.text} mt-2`}>{rec.replace('_', ' ')}</div>
               <p className="text-[10px] text-ink-ghost mt-1">Hiring Recommendation</p>
             </Card>
           </div>
