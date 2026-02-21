@@ -90,6 +90,7 @@ credentials/
 *.sqlite3
 postgres_data/
 *.sql
+!migrations/*.sql
 *.dump
 
 # -----------------------------------------------------------------------------
