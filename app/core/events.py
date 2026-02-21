@@ -180,21 +180,23 @@ async def publish_evaluation_requested(session_id: int) -> None:
     await EventPublisher.publish(event)
 
 
-async def publish_code_changed(session_id: int, code: str, language: str) -> None:
+async def publish_code_changed(session_id: int, code: str = "", language: str = "", data: dict = None) -> None:
     """Publish code changed event."""
+    event_data = data if data else {"code": code, "language": language}
     event = Event(
         event_type=EventType.CODE_CHANGED,
         session_id=session_id,
-        data={"code": code, "language": language}
+        data=event_data
     )
     await EventPublisher.publish(event)
 
 
-async def publish_code_executed(session_id: int, result: dict[str, Any]) -> None:
+async def publish_code_executed(session_id: int, result: dict[str, Any] = None, data: dict = None) -> None:
     """Publish code executed event."""
+    event_data = data if data else (result or {})
     event = Event(
         event_type=EventType.CODE_EXECUTED,
         session_id=session_id,
-        data=result
+        data=event_data
     )
     await EventPublisher.publish(event)

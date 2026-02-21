@@ -64,3 +64,11 @@ def setup_logging() -> logging.Logger:
 
 # Global logger instance
 logger = setup_logging()
+
+
+def get_logger(name: str = "app") -> logging.Logger:
+    """Get a named logger instance. Used by service modules."""
+    child_logger = logging.getLogger(name)
+    if not child_logger.handlers:
+        child_logger.parent = logger
+    return child_logger

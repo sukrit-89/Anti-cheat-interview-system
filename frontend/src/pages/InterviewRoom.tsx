@@ -10,7 +10,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useWebSocket } from '../lib/websocket';
 import { CodeEditor } from '../components/CodeEditor';
 import { Button } from '../components/Button';
-import { LogOut, Code, Maximize2, Minimize2, FileText, Clock } from 'lucide-react';
+import { LogOut, Code, Maximize2, Minimize2, FileText, Clock, AlertTriangle } from 'lucide-react';
 
 const LIVEKIT_WS_URL = import.meta.env.VITE_LIVEKIT_WS_URL;
 
@@ -25,6 +25,7 @@ export const InterviewRoom: React.FC = () => {
     const [currentCode, setCurrentCode] = useState('');
     const [language, setLanguage] = useState('typescript');
     const [elapsedTime, setElapsedTime] = useState(0);
+    const [showLeaveDialog, setShowLeaveDialog] = useState(false);
 
     useEffect(() => {
         if (!currentSession) {
@@ -50,9 +51,12 @@ export const InterviewRoom: React.FC = () => {
     }, []);
 
     const handleLeave = () => {
-        if (confirm('Are you sure you want to leave the interview?')) {
-            navigate('/dashboard');
-        }
+        setShowLeaveDialog(true);
+    };
+
+    const confirmLeave = () => {
+        setShowLeaveDialog(false);
+        navigate('/dashboard');
     };
 
     const formatTime = (seconds: number) => {
@@ -200,22 +204,43 @@ export const InterviewRoom: React.FC = () => {
                                     <span className="font-mono text-verdict-text-secondary">
                                         {currentCode.split('\n').length}
                                     </span>
+                                    <span className="text-verdict-text-tertiary">Lang:</span>
+                                    <span className="font-mono text-verdict-text-secondary">{language.toUpperCase()}</span>
                                 </div>
-
-                                <Button
-                                    variant="primary"
-                                    size="sm"
-                                    onClick={() => {
-                                        console.log('Executing code...');
-                                    }}
-                                >
-                                    Run Code
-                                </Button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Leave confirmation dialog */}
+            {showLeaveDialog && (
+                <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                    <div className="bg-verdict-surface border border-verdict-border max-w-md w-full p-8 space-y-6">
+                        <div className="flex items-center space-x-3">
+                            <AlertTriangle className="w-6 h-6 text-semantic-warning" />
+                            <h2 className="text-xl font-display text-verdict-text-primary">Leave Interview?</h2>
+                        </div>
+                        <p className="text-verdict-text-secondary">
+                            Are you sure you want to leave? Your progress has been saved but the interview session will remain active.
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowLeaveDialog(false)}
+                                className="flex-1 py-3 px-4 border border-verdict-border text-verdict-text-primary hover:bg-verdict-surface-elevated transition-colors font-medium"
+                            >
+                                Stay
+                            </button>
+                            <button
+                                onClick={confirmLeave}
+                                className="flex-1 py-3 px-4 bg-semantic-critical text-white hover:bg-semantic-critical/80 transition-colors font-medium"
+                            >
+                                Leave Interview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

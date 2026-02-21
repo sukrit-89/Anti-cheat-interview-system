@@ -1,9 +1,9 @@
 # 🏗️ Architecture Guide
-# System design and architecture of Integrity AI
+# System design and architecture of Neeti AI
 
 ## 📋 Overview
 
-Integrity AI is a modern, scalable technical interview platform that combines real-time collaboration, AI-powered evaluation, and secure code execution in a microservices architecture.
+Neeti AI is a modern, scalable technical interview platform that combines real-time collaboration, AI-powered evaluation, and secure code execution in a microservices architecture.
 
 ## 🏛️ High-Level Architecture
 
@@ -46,7 +46,7 @@ Integrity AI is a modern, scalable technical interview platform that combines re
 ### **Frontend Architecture**
 
 #### **Technology Stack**
-- **React 18** with TypeScript
+- **React 19** with TypeScript
 - **Vite** for build tooling
 - **TailwindCSS** for styling
 - **Zustand** for state management
@@ -58,26 +58,33 @@ Integrity AI is a modern, scalable technical interview platform that combines re
 frontend/src/
 ├── components/          # Reusable UI components
 │   ├── Button.tsx
+│   ├── Card.tsx          # Card, MetricCard, EvidenceCard
+│   ├── CodeEditor.tsx    # Monaco editor wrapper
+│   ├── EvidenceBlock.tsx
 │   ├── Input.tsx
-│   ├── CodeEditor.tsx
-│   └── VideoChat.tsx
+│   ├── MetricCard.tsx
+│   ├── StatusIndicator.tsx
+│   └── TechnicalBlueprint.tsx
 ├── pages/              # Route-level components
+│   ├── Landing.tsx       # Public marketing page
 │   ├── Login.tsx
+│   ├── Register.tsx
 │   ├── Dashboard.tsx
-│   ├── InterviewRoom.tsx
-│   └── Results.tsx
-├── store/              # State management
+│   ├── SessionDetail.tsx
+│   ├── SessionJoin.tsx   # Candidate join flow
+│   ├── InterviewRoom.tsx # Live interview (video + code)
+│   ├── SessionMonitor.tsx # Recruiter live monitoring
+│   ├── SessionResults.tsx
+│   └── EvaluationReport.tsx
+├── store/              # Zustand state management
 │   ├── useAuthStore.ts
 │   ├── useSessionStore.ts
 │   └── useInterviewStore.ts
-├── lib/                # Utilities and services
-│   ├── api.ts
-│   ├── livekit.ts
-│   └── utils.ts
-└── hooks/              # Custom React hooks
-    ├── useAuth.ts
-    ├── useWebSocket.ts
-    └── useCodeExecution.ts
+└── lib/                # Utilities and services
+    ├── api.ts            # Axios HTTP client
+    ├── errorUtils.ts     # Error handling helpers
+    ├── livekit.ts        # LiveKit token helpers
+    └── websocket.ts      # WebSocket hook + connection
 ```
 
 ### **Backend Architecture**
@@ -93,28 +100,44 @@ frontend/src/
 #### **Service Layer**
 ```
 app/
-├── api/                # API endpoints
-│   ├── auth.py         # Authentication
-│   ├── sessions.py     # Session management
-│   ├── coding.py       # Code execution
-│   └── websocket.py    # Real-time events
-├── core/                # Core functionality
-│   ├── config.py       # Configuration
-│   ├── auth.py         # Authentication logic
-│   ├── database.py     # Database connection
-│   └── logging.py      # Structured logging
-├── services/            # Business logic
-│   ├── ai_service.py   # AI integration
-│   ├── judge0_service.py # Code execution
-│   ├── livekit_service.py # Video/audio
-│   └── realtime_service.py # Real-time updates
-├── models/              # Database models
-│   ├── models.py       # SQLAlchemy models
-│   └── schemas.py      # Pydantic schemas
-└── workers/             # Background tasks
-    ├── celery_app.py    # Celery configuration
-    ├── agent_tasks.py   # AI agent processing
-    └── session_tasks.py # Session management
+├── api/                  # API endpoints
+│   ├── sessions.py       # Session CRUD + management
+│   ├── coding_events.py  # Code execution + event tracking
+│   ├── speech.py         # Speech transcription endpoints
+│   ├── supabase_auth.py  # Supabase JWT auth endpoints
+│   └── websocket.py      # WebSocket real-time events
+├── core/                  # Core functionality
+│   ├── config.py         # Pydantic Settings (env-driven)
+│   ├── supabase_auth.py  # Supabase JWT validation
+│   ├── database.py       # SQLAlchemy async engine
+│   ├── events.py         # Redis pub/sub event system
+│   ├── logging.py        # JSON structured logging
+│   └── redis.py          # Redis connection manager
+├── agents/                # AI evaluation agents
+│   ├── base.py           # BaseAgent abstract class
+│   ├── coding_agent.py   # Code quality analysis
+│   ├── speech_agent.py   # Communication evaluation
+│   ├── vision_agent.py   # Engagement monitoring
+│   ├── reasoning_agent.py # Problem-solving analysis
+│   └── evaluation_agent.py # Final score aggregation
+├── services/              # Business logic
+│   ├── ai_service.py     # Multi-provider AI (OpenAI → Ollama → rule-based)
+│   ├── judge0_service.py # Judge0 sandboxed code execution
+│   ├── livekit_service.py # LiveKit room + token management
+│   ├── realtime_service.py # Redis/Supabase real-time broadcast
+│   ├── speech_service.py # Whisper speech-to-text
+│   ├── vision_service.py # Frame analysis (OpenAI Vision)
+│   ├── storage_service.py # S3/MinIO file storage
+│   ├── metrics_service.py # Real-time metrics aggregation
+│   └── supabase_service.py # Supabase client wrapper
+├── models/                # Database models
+│   └── models.py         # SQLAlchemy 2.0 ORM models
+├── schemas/               # Request/response schemas
+│   └── schemas.py        # Pydantic v2 schemas
+└── workers/               # Background task processing
+    ├── celery_app.py     # Celery + Redis broker config
+    ├── agent_tasks.py    # AI agent Celery tasks
+    └── session_tasks.py  # Session lifecycle tasks
 ```
 
 ## 🗄️ Database Design
@@ -359,31 +382,42 @@ services:
 
 ### **Logging Architecture**
 ```python
-# Structured logging with correlation IDs
-import structlog
+# JSON structured logging (app/core/logging.py)
+import logging
+import json
 
-logger = structlog.get_logger()
+logger = logging.getLogger("neeti_ai")
+
+def get_logger(name: str) -> logging.Logger:
+    return logging.getLogger(f"neeti_ai.{name}")
 
 async def handle_request(request_id: str):
-    logger.info("Processing request", 
-                request_id=request_id,
-                user_id=user.id,
-                action="code_execution")
+    logger.info("Processing request",
+                extra={"request_id": request_id,
+                       "user_id": user.id,
+                       "action": "code_execution"})
 ```
 
 ### **Health Monitoring**
 ```python
-# Comprehensive health checks
-@router.get("/health")
+# Real health checks (app/main.py)
+@app.get("/health")
 async def health_check():
+    db_ok, redis_ok = False, False
+    try:
+        async with AsyncSessionLocal() as session:
+            await session.execute(text("SELECT 1"))
+            db_ok = True
+    except Exception:
+        pass
+    try:
+        redis_ok = await redis_client.ping()
+    except Exception:
+        pass
     return {
-        "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
-        "version": settings.APP_VERSION,
-        "database": await check_database_health(),
-        "redis": await check_redis_health(),
-        "judge0": await check_judge0_health(),
-        "supabase": await check_supabase_health()
+        "status": "healthy" if (db_ok and redis_ok) else "degraded",
+        "database": "connected" if db_ok else "disconnected",
+        "redis": "connected" if redis_ok else "disconnected",
     }
 ```
 

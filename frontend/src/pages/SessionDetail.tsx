@@ -7,6 +7,7 @@ export const SessionDetail: React.FC = () => {
   const navigate = useNavigate();
   const { currentSession, fetchSession, startSession, endSession, isLoading } = useSessionStore();
   const [copied, setCopied] = useState(false);
+  const [showEndDialog, setShowEndDialog] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -33,9 +34,14 @@ export const SessionDetail: React.FC = () => {
   };
 
   const handleEndSession = async () => {
-    if (currentSession && confirm('Terminate this session?')) {
+    setShowEndDialog(true);
+  };
+
+  const confirmEndSession = async () => {
+    if (currentSession) {
       try {
         await endSession(currentSession.id);
+        setShowEndDialog(false);
         navigate('/dashboard');
       } catch (err) {
         console.error('Failed to end session:', err);
@@ -258,6 +264,32 @@ export const SessionDetail: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* End Session Confirmation Dialog */}
+      {showEndDialog && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-verdict-surface border border-verdict-border max-w-md w-full p-8 space-y-6">
+            <h2 className="text-xl font-display text-verdict-text-primary">End Session?</h2>
+            <p className="text-verdict-text-secondary">
+              This will terminate the interview and trigger AI evaluation. This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowEndDialog(false)}
+                className="flex-1 py-3 px-4 border border-verdict-border text-verdict-text-primary hover:bg-verdict-surface-elevated transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmEndSession}
+                className="flex-1 py-3 px-4 bg-semantic-critical text-white hover:bg-semantic-critical/80 transition-colors font-medium"
+              >
+                End Session
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

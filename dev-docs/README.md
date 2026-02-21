@@ -1,7 +1,7 @@
-# 📚 Integrity AI Developer Documentation
+# 📚 Neeti AI Developer Documentation
 
 ## Overview
-Comprehensive documentation for developers, architects, and stakeholders working on the **Integrity AI** platform - an enterprise-grade technical interview platform powered by multi-agent AI evaluation.
+Comprehensive documentation for developers, architects, and stakeholders working on the **Neeti AI** platform - an enterprise-grade technical interview platform powered by multi-agent AI evaluation.
 
 ---
 
@@ -78,8 +78,8 @@ Comprehensive documentation for developers, architects, and stakeholders working
 
 ## 📞 Support & Contribution
 
-- **Issues**: [GitHub Issues](https://github.com/sukrit-89/Integrity-AI/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/sukrit-89/Integrity-AI/discussions)
+- **Issues**: [GitHub Issues](https://github.com/sukrit-89/Neeti-AI/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/sukrit-89/Neeti-AI/discussions)
 - **Email**: sukrit.goswami.work@gmail.com
 
 ### Contributing Guidelines
@@ -97,6 +97,13 @@ Comprehensive documentation for developers, architects, and stakeholders working
 
 | Date | Document | Changes |
 |------|----------|---------|
+| 2025-06 | All docs | Renamed Integrity AI → Neeti AI (नीति) |
+| 2025-06 | ARCHITECTURE.md | Updated file structure to match actual code, fixed React 18→19, removed structlog references |
+| 2025-06 | DEVELOPMENT.md | Replaced Alembic references with init_db.py/create_all() workflow, updated project tree |
+| 2025-06 | EXECUTIVE_SUMMARY.md | Removed claims about non-existent features (WCAG, multi-language UI, SOC2, export formats) |
+| 2025-06 | API_REFERENCE.md | Added Supabase Auth note |
+| 2025-06 | SUPABASE_DEPLOYMENT.md | Replaced Alembic with init_db.py |
+| 2025-06 | PRODUCTION_SETUP.md | Replaced Alembic with init_db.py |
 | 2026-02-10 | EXECUTIVE_SUMMARY.md | Created comprehensive project overview |
 | 2026-02-10 | README.md | Updated documentation structure |
 | 2026-01-15 | END_TO_END_SETUP.md | Added setup walkthrough |
@@ -106,7 +113,7 @@ Comprehensive documentation for developers, architects, and stakeholders working
 
 <div align="center">
 
-**Integrity AI Documentation**  
+**Neeti AI Documentation**  
 *Version 1.0 • Last Updated: February 10, 2026*
 
 [🏠 Main Repository](../) • [📖 Documentation](.) • [🚀 Get Started](END_TO_END_SETUP.md)

@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     )
     
     # Application
-    APP_NAME: str = "AI Interview Platform"
+    APP_NAME: str = "Neeti AI"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
     ENVIRONMENT: str = "production"
@@ -139,6 +139,9 @@ class Settings(BaseSettings):
     
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = 60
+    
+    # Feature Flags
+    USE_SUPABASE: bool = True
     
     # Session Configuration
     MAX_SESSION_DURATION_MINUTES: int = 120

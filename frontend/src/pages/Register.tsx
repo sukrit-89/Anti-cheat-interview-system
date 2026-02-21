@@ -74,9 +74,9 @@ export const Register: React.FC = () => {
             </div>
             <div>
               <h1 className="text-3xl font-display font-semibold text-verdict-text-primary tracking-tight">
-                Integrity AI
+                Neeti AI
               </h1>
-              <p className="text-xs text-verdict-text-quaternary font-mono tracking-wider">EVALUATION AUTHORITY</p>
+              <p className="text-xs text-verdict-text-quaternary font-mono tracking-wider">नीति · EVALUATION AUTHORITY</p>
             </div>
           </div>
 

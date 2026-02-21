@@ -1,7 +1,9 @@
 # 📡 API Reference
-# Complete API documentation for Integrity AI
+# Complete API documentation for Neeti AI
 
 ## 🔐 Authentication
+
+> **Note:** Authentication is handled via **Supabase Auth**. All endpoints below use Supabase's managed authentication service for user management, JWT token generation, and session handling. The backend validates Supabase JWTs for protected routes.
 
 ### **Register User**
 ```http

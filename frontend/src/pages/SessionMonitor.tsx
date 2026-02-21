@@ -66,11 +66,16 @@ export default function SessionMonitor() {
     }
   }, [flags]);
 
+  const [showEndDialog, setShowEndDialog] = useState(false);
+
   const handleEndSession = () => {
-    if (confirm('Are you sure you want to end this session?')) {
-      endSession(parseInt(sessionId!));
-      navigate('/dashboard');
-    }
+    setShowEndDialog(true);
+  };
+
+  const confirmEndSession = () => {
+    endSession(parseInt(sessionId!));
+    setShowEndDialog(false);
+    navigate('/dashboard');
   };
 
   if (!currentSession) {
@@ -277,6 +282,33 @@ export default function SessionMonitor() {
           </div>
         </div>
       </div>
-    </div>
+
+    {/* End Session Confirmation Dialog */}
+    {showEndDialog && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="bg-verdict-surface border border-verdict-border rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-red-500/10">
+              <AlertTriangle className="w-6 h-6 text-red-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-verdict-text-primary">End Session</h3>
+          </div>
+          <p className="text-verdict-text-secondary mb-6">
+            Are you sure you want to end this session? This action cannot be undone and the candidate will be disconnected.
+          </p>
+          <div className="flex gap-3 justify-end">
+            <Button variant="secondary" onClick={() => setShowEndDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white border-none"
+              onClick={confirmEndSession}
+            >
+              End Session
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}  </div>
   );
 }

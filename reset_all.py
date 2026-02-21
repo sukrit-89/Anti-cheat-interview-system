@@ -71,7 +71,7 @@ async def main():
     """Main entry point."""
     confirm = "--confirm" in sys.argv
     
-    print("\n🔥 Integrity AI - COMPLETE SYSTEM RESET\n")
+    print("\n🔥 Neeti AI - COMPLETE SYSTEM RESET\n")
     print("This will remove ALL data including user accounts!")
     
     # Step 1: Clean database

@@ -1,8 +1,8 @@
 # Supabase Deployment Guide
-# Production-ready deployment for Integrity AI
+# Production-ready deployment for Neeti AI
 
 ## Overview
-This guide helps you deploy Integrity AI with Supabase for production-grade scalability, real-time features, and managed infrastructure.
+This guide helps you deploy Neeti AI with Supabase for production-grade scalability, real-time features, and managed infrastructure.
 
 ## Prerequisites
 - Supabase account (https://supabase.com)
@@ -13,7 +13,7 @@ This guide helps you deploy Integrity AI with Supabase for production-grade scal
 
 1. **Sign up** at https://supabase.com
 2. **Create new project**:
-   - Project name: `integrity-ai`
+   - Project name: `neeti-ai`
    - Database password: Generate strong password
    - Region: Choose closest to your users
 3. **Get project credentials**:
@@ -47,7 +47,7 @@ USE_SUPABASE=True
 
 # Keep existing config
 JWT_SECRET_KEY=your-jwt-secret
-APP_NAME=Integrity AI
+APP_NAME=Neeti AI
 ENVIRONMENT=production
 ```
 
@@ -57,11 +57,11 @@ ENVIRONMENT=production
 # Install dependencies
 pip install -r requirements.txt
 
-# Run Alembic migrations
-alembic upgrade head
+# Initialize database tables (uses SQLAlchemy create_all)
+python init_db.py
 
-# Or use Supabase SQL Editor
-# Copy migration files from alembic/versions/
+# Or apply SQL migrations from migrations/ folder
+# via Supabase SQL Editor
 ```
 
 ## Step 5: Deploy Application
@@ -291,4 +291,4 @@ supabase logs --project-id your-project-id
 - **Community**: https://github.com/supabase/supabase/discussions
 - **Status Page**: https://status.supabase.com
 
-Your Integrity AI platform is now production-ready with Supabase!
+Your Neeti AI platform is now production-ready with Supabase!

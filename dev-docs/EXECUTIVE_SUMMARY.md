@@ -1,8 +1,8 @@
-# 📊 Integrity AI - Executive Summary
+# 📊 Neeti AI - Executive Summary
 
 ## Project Overview
 
-**Integrity AI** is an enterprise-grade AI-powered technical interview platform that revolutionizes the hiring process through real-time collaboration, intelligent candidate assessment, and comprehensive evaluation analytics.
+**Neeti AI** is an enterprise-grade AI-powered technical interview platform that revolutionizes the hiring process through real-time collaboration, intelligent candidate assessment, and comprehensive evaluation analytics.
 
 ### Vision Statement
 To transform technical hiring by combining human interaction with AI-powered insights, enabling recruiters to make data-driven hiring decisions while providing candidates with a professional, fair, and engaging interview experience.
@@ -222,25 +222,21 @@ The platform employs **5 specialized AI agents** that work in parallel to provid
 - Code quality metrics and complexity analysis
 - Communication and engagement scores
 - Hiring recommendations with justification
-- Export to PDF, JSON, CSV formats
 
 #### 7. **Enterprise Security**
 - Supabase authentication with JWT tokens
 - Role-based access control (RBAC)
-- End-to-end encrypted communication
-- SOC 2 Type II compliance ready
-- GDPR and CCPA compliant data handling
-- Audit logging for all actions
+- Sandboxed code execution via Judge0
+- Docker-isolated service architecture
+- Environment-driven configuration (no hardcoded secrets)
 
 ### Advanced Capabilities
 
-- **Multi-language Support**: Interface localization (English, Spanish, French, German)
-- **Accessibility**: WCAG 2.1 AA compliant
-- **Mobile Responsive**: Conduct interviews on tablets
+- **Mobile Responsive**: Responsive layouts with breakpoint-aware grids
 - **API Integration**: RESTful APIs for HRIS/ATS integration
-- **Webhooks**: Real-time event notifications
-- **Custom Branding**: White-label options for enterprise clients
-- **Analytics Dashboard**: Hiring funnel and performance metrics
+- **Self-Hosted**: Full Docker Compose deployment with no vendor lock-in
+- **Multi-Provider AI**: OpenAI, Ollama, and rule-based fallback support
+- **Error Boundaries**: Graceful error handling throughout the UI
 
 ---
 
@@ -301,7 +297,7 @@ The platform employs **5 specialized AI agents** that work in parallel to provid
 
 ### Competitive Differentiation
 
-| Feature | Integrity AI | HackerRank | CodeSignal | LeetCode | Karat |
+| Feature | Neeti AI | HackerRank | CodeSignal | LeetCode | Karat |
 |---------|--------------|------------|------------|----------|-------|
 | **Live Video Interview** | ✅ Advanced | ❌ | Limited | ❌ | ✅ Basic |
 | **Real-time Code Execution** | ✅ 50+ languages | ✅ Limited | ✅ | ✅ | ✅ |
@@ -445,11 +441,12 @@ The platform employs **5 specialized AI agents** that work in parallel to provid
 
 ### Compliance Readiness
 
-- ✅ **GDPR**: Data privacy, right to deletion, data portability
-- ✅ **CCPA**: California consumer privacy compliance
-- 🔄 **SOC 2 Type II**: In progress (Security, Availability, Confidentiality)
-- 🔄 **ISO 27001**: Information security management
-- ✅ **WCAG 2.1 AA**: Accessibility compliance
+- ✅ **Supabase Auth**: Managed authentication with JWT token rotation
+- ✅ **Sandboxed Execution**: All code runs in isolated Judge0 containers
+- ✅ **Docker Isolation**: Service-level network isolation
+- 🔄 **GDPR**: Data privacy controls (in progress)
+- ⏳ **SOC 2 Type II**: Planned for enterprise deployment
+- ⏳ **Accessibility**: WCAG 2.1 AA compliance planned
 
 ---
 
@@ -515,13 +512,13 @@ The platform employs **5 specialized AI agents** that work in parallel to provid
 
 ### For Technical Support
 - **Documentation**: [dev-docs/](../dev-docs/)
-- **Issues**: [GitHub Issues](https://github.com/sukrit-89/Integrity-AI/issues)
+- **Issues**: [GitHub Issues](https://github.com/sukrit-89/Neeti-AI/issues)
 - **API Docs**: http://localhost:8000/docs
 
 ### For Partnership Opportunities
-- **Enterprise Sales**: enterprise@integrity-ai.com (Coming Soon)
-- **API Access**: api@integrity-ai.com (Coming Soon)
-- **Integration Partners**: partnerships@integrity-ai.com (Coming Soon)
+- **Enterprise Sales**: enterprise@neeti-ai.com (Coming Soon)
+- **API Access**: api@neeti-ai.com (Coming Soon)
+- **Integration Partners**: partnerships@neeti-ai.com (Coming Soon)
 
 ---
 
@@ -537,9 +534,9 @@ The platform employs **5 specialized AI agents** that work in parallel to provid
 
 <div align="center">
 
-**Integrity AI - Transforming Technical Hiring with Intelligence**
+**Neeti AI (नीति) - Transforming Technical Hiring with Intelligence**
 
-*Version 1.0 | Last Updated: February 2026*
+*Version 2.0 | Last Updated: June 2025*
 
 ---
 

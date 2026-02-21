@@ -1,5 +1,5 @@
 # 🎯 End-to-End Setup Guide
-# From Zero to Running Integrity AI in 15 Minutes
+# From Zero to Running Neeti AI in 15 Minutes
 
 ## 📋 Prerequisites Checklist
 
@@ -19,7 +19,7 @@
 ### **1.1 Create Supabase Project**
 1. Go to https://supabase.com
 2. Click **"New Project"**
-3. Enter project name: `integrity-ai`
+3. Enter project name: `neeti-ai`
 4. Create strong database password
 5. Choose region closest to you
 6. Wait for project creation (2-3 minutes)
@@ -36,7 +36,7 @@
 ### **1.3 Create LiveKit Account**
 1. Go to https://cloud.livekit.io
 2. Sign up (no credit card required)
-3. Create new project: `integrity-ai`
+3. Create new project: `neeti-ai`
 4. Get API keys:
    ```
    API Key: API[xxxxxxxx]
@@ -115,7 +115,7 @@ JUDGE0_API_KEY=
    curl http://localhost:2358/about
    ```
 
-4. In your Integrity-AI `.env` file:
+4. In your Neeti-AI `.env` file:
    ```bash
    JUDGE0_API_URL=http://localhost:2358
    JUDGE0_API_KEY=  # Leave empty for self-hosted
@@ -488,7 +488,7 @@ Your platform is now set up for conducting technical interviews with AI-powered 
 
 **Next:** Configure your LiveKit credentials in `.env` to enable video functionality
 
-You now have a **fully functional Integrity AI platform** running in production mode with:
+You now have a **fully functional Neeti AI platform** running in production mode with:
 - 🗄️ **Supabase** database and authentication
 - ⚖️ **Judge0** secure code execution
 - 🤖 **Ollama** local AI processing

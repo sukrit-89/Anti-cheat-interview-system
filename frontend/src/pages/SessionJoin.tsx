@@ -37,12 +37,12 @@ export const SessionJoin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-verdict-bg grid grid-cols-12">
+    <div className="min-h-screen bg-verdict-bg grid grid-cols-1 lg:grid-cols-12">
       {/* Left Panel - Instructions */}
-      <div className="col-span-5 border-r border-verdict-border p-12 flex flex-col justify-between">
+      <div className="hidden lg:flex lg:col-span-5 border-r border-verdict-border p-12 flex-col justify-between">
         <div>
           <h1 className="font-serif text-4xl font-semibold text-verdict-text-primary mb-4">
-            Integrity AI
+            Neeti AI
           </h1>
           <div className="space-y-6 text-verdict-text-secondary leading-relaxed max-w-md">
             <p>
@@ -67,7 +67,7 @@ export const SessionJoin: React.FC = () => {
       </div>
 
       {/* Right Panel - Form */}
-      <div className="col-span-7 flex items-center justify-center p-12">
+      <div className="col-span-1 lg:col-span-7 flex items-center justify-center p-8 lg:p-12">
         <div className="w-full max-w-md">
           <h2 className="font-serif text-2xl font-medium text-verdict-text-primary mb-2">
             Join Interview Session

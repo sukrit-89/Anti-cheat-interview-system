@@ -122,7 +122,7 @@ async def main():
     """Main entry point."""
     confirm = "--confirm" in sys.argv
     
-    print("\n🧹 Integrity AI - Database Cleanup Tool\n")
+    print("\n🧹 Neeti AI - Database Cleanup Tool\n")
     
     # Perform cleanup
     await cleanup_database(confirm=confirm)

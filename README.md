@@ -1,451 +1,352 @@
-﻿<div align="center">
+<div align="center">
 
-# Integrity AI
+# नीति — Neeti AI
 
 ### AI-Powered Technical Interview Platform
 
-![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-Auth-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![Supabase](https://img.shields.io/badge/Supabase-Auth-3ECF8E?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://docker.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-**Live technical interviews with multi-agent AI evaluation  from a 6-character join code to a complete forensic report.**
+**Conduct live technical interviews with real-time video, collaborative code editing, and autonomous multi-agent AI evaluation — from a 6-character join code to a forensic hiring report.**
+
+[Quick Start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [API Reference](#-api-reference) · [Docs](dev-docs/)
 
 </div>
 
 ---
 
-## Overview
+## Why Neeti AI?
 
-Integrity AI is a full-stack platform for conducting real-time technical interviews with comprehensive, AI-driven candidate assessment. Recruiters create sessions, share a join code, and monitor candidates live. Five autonomous AI agents run in parallel, delivering a detailed evaluation report the moment the session ends.
+> **नीति** (Neeti) = Ethics / Integrity in Sanskrit — because hiring decisions should be fair, data-driven, and transparent.
+
+Most interview platforms make you choose between *live interaction* and *AI analysis*. Neeti AI does both simultaneously. Five autonomous agents observe the session in real time and produce a detailed, evidence-backed evaluation the moment the interview ends.
 
 ---
 
-## Features
+## ✨ Features
 
 ### Live Interview Experience
 
-| Feature | Details |
-|---------|---------|
-| **Video & Audio** | WebRTC via LiveKit  sub-second latency, multi-participant |
-| **Collaborative Code Editor** | Monaco (VS Code engine), 5 languages, real-time execution |
-| **Sandboxed Code Execution** | Judge0 integration  run and test code safely |
-| **Session Join Code** | 6-character code for instant candidate onboarding |
-| **Role-Based UI** | Recruiters see scheduling controls; candidates see join flow only |
-| **Live Monitoring** | Recruiter dashboard with real-time AI metrics and flags |
+- **WebRTC Video/Audio** — sub-second latency via LiveKit, multi-participant rooms
+- **Collaborative Code Editor** — Monaco (VS Code engine) with syntax highlighting, IntelliSense, and real-time sync
+- **Sandboxed Code Execution** — Judge0 integration supporting 50+ languages
+- **6-Character Join Code** — candidates join from any browser, no install required
+- **Role-Based UI** — recruiters see dashboards and controls; candidates see the interview flow
 
 ### Multi-Agent AI Evaluation
 
-Five agents run automatically after every session:
+Five specialized agents run in parallel during and after each session:
 
-| Agent | Evaluates |
-|-------|-----------|
-| **Coding Agent** | Code quality, complexity, best practices, algorithm efficiency |
-| **Speech Agent** | Clarity, technical vocabulary, explanation ability |
-| **Vision Agent** | Engagement, attention span, body language |
-| **Reasoning Agent** | Logic flow, problem decomposition, adaptability |
-| **Evaluation Agent** | Overall score, hiring recommendation, detailed forensic report |
+| Agent | What it evaluates |
+|-------|-------------------|
+| **Coding** | Code quality, algorithm efficiency, best practices, language proficiency |
+| **Speech** | Clarity, technical vocabulary, ability to explain approach, confidence |
+| **Vision** | Engagement, attention span, body language signals |
+| **Reasoning** | Logical flow, problem decomposition, adaptability |
+| **Evaluation** | Cross-agent synthesis → final score, hiring recommendation, forensic report |
 
-### Security & Access Control
+### Recruiter Tools
 
-- **Supabase Auth**  JWT with refresh rotation, UUID-based user IDs
-- **RBAC**  Route guards and UI controls differentiated by role (Recruiter / Candidate)
-- **API protection**  Rate limiting, CORS, input validation via Pydantic v2
-- **Database migrations**  Auto-applied on container startup via `init_db.py`
-
----
-
-## Technology Stack
-
-### Frontend
-- React 19 + TypeScript 5
-- Vite (build tooling)
-- TailwindCSS (custom design system)
-- Zustand (state management)
-- Monaco Editor (code editing)
-- LiveKit Components (WebRTC UI)
-- React Router v6
-
-### Backend
-- FastAPI 0.104+ (async Python API)
-- Python 3.11
-- SQLAlchemy 2.0 (async ORM)
-- PostgreSQL 15
-- Supabase (Auth + BaaS)
-- Celery + Redis (background workers + pub/sub)
-- Pydantic v2 (schema validation)
-
-### Infrastructure
-- Docker + Docker Compose
-- Judge0 (sandboxed code execution)
-- LiveKit (WebRTC SFU)
-- OpenAI GPT-4 / Anthropic Claude (AI evaluation)
-- Redis 7 (cache + real-time pub/sub)
+- **Live Monitoring Dashboard** — watch AI metrics and integrity flags in real time
+- **Session Management** — create, schedule, start, end, and review sessions
+- **Evaluation Reports** — per-candidate breakdowns with strengths, risks, and evidence
+- **Role-Based Access Control** — route guards on both frontend and API
 
 ---
 
-## Quick Start
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React 19 · TypeScript 5.9 · Vite · TailwindCSS · Zustand · Monaco Editor · LiveKit React |
+| **Backend** | FastAPI · Python 3.11 · SQLAlchemy 2.0 (async) · Pydantic v2 · Celery |
+| **Database** | PostgreSQL 15 (via Supabase) · Redis 7 (cache + pub/sub) |
+| **Auth** | Supabase Auth (JWT with refresh rotation) |
+| **Video** | LiveKit Cloud (WebRTC SFU) |
+| **Code Exec** | Judge0 (sandboxed, 50+ languages) |
+| **AI** | OpenAI GPT-4 → Ollama (local) → rule-based fallback |
+| **Infra** | Docker Compose · MinIO (S3-compatible storage) |
+
+---
+
+## 🚀 Quick Start
+
+> Full walkthrough with all options → **[QUICKSTART.md](QUICKSTART.md)**
 
 ### Prerequisites
 
-- Docker Desktop (latest)
-- Node.js 18+
-- Python 3.11+
-- A [Supabase](https://supabase.com) project (free tier works)
-- A [LiveKit Cloud](https://cloud.livekit.io) account (free tier works)
+Docker Desktop · Node.js 18+ · [Supabase project](https://supabase.com) · [LiveKit Cloud account](https://cloud.livekit.io)
 
-### 1. Clone
+### 1. Clone & configure
 
 ```bash
-git clone https://github.com/sukrit-89/Anti-cheat-interview-system.git
-cd Anti-cheat-interview-system
+git clone https://github.com/sukrit-89/Neeti-AI.git
+cd Neeti-AI
 ```
 
-### 2. Configure Environment
+Create `.env` in the project root with your Supabase + LiveKit credentials (see [QUICKSTART.md](QUICKSTART.md) for the full template).
+
+### 2. Start backend
 
 ```bash
-cp .env.example .env
-```
-
-Fill in `.env`:
-
-```env
-# Database
-POSTGRES_USER=interview_user
-POSTGRES_PASSWORD=your_secure_password
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_DB=interview_platform
-
-# Supabase
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-
-# Security
-JWT_SECRET_KEY=your-secret-key-min-32-characters-long
-
-# LiveKit
-LIVEKIT_API_KEY=your_livekit_api_key
-LIVEKIT_API_SECRET=your_livekit_api_secret
-LIVEKIT_WS_URL=wss://your-project.livekit.cloud
-
-# AI Services
-OPENAI_API_KEY=sk-your-openai-api-key
-ANTHROPIC_API_KEY=sk-ant-your-anthropic-key
-
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
-
-# Judge0 (Code Execution)
-JUDGE0_HOST=http://localhost:2358
-```
-
-### 3. Start Backend Services
-
-```bash
-# Build and start API, PostgreSQL, and Redis
 docker-compose up -d --build
-```
-
-Verify health:
-
-```bash
 curl http://localhost:8000/health
-# {"status":"healthy","database":"connected","redis":"connected"}
+# → {"status":"healthy","database":"connected","redis":"connected"}
 ```
 
-> The database initialises automatically on first start  `init_db.py` runs and applies all migrations in `migrations/`.
-
-### 4. Start Frontend
+### 3. Start frontend
 
 ```bash
-cd frontend
-npm install
-npm run dev
+cd frontend && npm install && npm run dev
 ```
 
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost:5173 |
-| Backend API | http://localhost:8000 |
-| Swagger UI | http://localhost:8000/docs |
-
-### 5. First Use
-
-1. Register as a **Recruiter** at http://localhost:5173/register
-2. Register a second account as a **Candidate** (different browser / incognito)
-3. Recruiter: **Dashboard  Create Session**
-4. Recruiter: copy the **6-character join code** from the Session Detail page
-5. Candidate: **Join Session**  enter the code
-6. Recruiter: **Start Session  Enter Interview Room**
-7. Code, talk, collaborate  then recruiter clicks **End Session**
-8. AI evaluation runs automatically; view the report from the dashboard
+Open **http://localhost:5173** — register, create a session, and start interviewing.
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-Anti-cheat-interview-system/
-
- app/                              # Python Backend
-    main.py                       # FastAPI app entry point
-   
-    api/                          # Route Handlers
-       supabase_auth.py          # Register / login / me
-       sessions.py               # Session CRUD + join/start/end/token
-       websocket.py              # Real-time WebSocket events
-       coding_events.py          # Code execution endpoints
-       speech.py                 # Speech/transcript endpoints
-   
-    agents/                       # AI Agent Implementations
-       base.py                   # Abstract base agent
-       coding_agent.py           # Code quality analysis
-       speech_agent.py           # Communication evaluation
-       vision_agent.py           # Engagement monitoring
-       reasoning_agent.py        # Problem-solving analysis
-       evaluation_agent.py       # Final assessment generation
-   
-    core/                         # Infrastructure
-       config.py                 # Pydantic settings
-       database.py               # SQLAlchemy async engine
-       auth.py                   # JWT utilities
-       supabase_auth.py          # Supabase token validation
-       redis.py                  # Redis client + pub/sub
-       events.py                 # Event publishing helpers
-       logging.py                # Structured JSON logging
-   
-    models/models.py              # SQLAlchemy ORM models
-    schemas/schemas.py            # Pydantic v2 request/response schemas
-   
-    services/                     # Business Logic
-       ai_service.py             # AI model orchestration
-       livekit_service.py        # WebRTC room management
-       judge0_service.py         # Code sandbox service
-       speech_service.py         # Speech processing
-       vision_service.py         # Vision analysis
-       storage_service.py        # File/recording storage
-       metrics_service.py        # Analytics
-       supabase_service.py       # Supabase client wrapper
-   
-    workers/                      # Background Workers
-        celery_app.py             # Celery configuration
-        agent_tasks.py            # AI agent task runners
-        session_tasks.py          # Session lifecycle tasks
-
- frontend/                         # React Frontend
-    src/
-        App.tsx                   # Router + role-based route guards
-        pages/
-           Landing.tsx           # Marketing / landing page
-           Login.tsx             # Supabase login
-           Register.tsx          # Registration (recruiter / candidate)
-           Dashboard.tsx         # Role-aware dashboard
-           SessionCreate.tsx     # Create interview (recruiter only)
-           SessionDetail.tsx     # Session info + controls
-           SessionJoin.tsx       # Join with code (candidate)
-           InterviewRoom.tsx     # Live interview (video + code editor)
-           SessionMonitor.tsx    # Real-time recruiter monitor
-           SessionResults.tsx    # Post-session results
-           EvaluationReport.tsx  # Forensic-style AI report
-        components/               # Reusable UI components
-        lib/                      # API client, WebSocket, Supabase, utils
-        store/                    # Zustand stores (auth, session)
-
- migrations/                       # SQL Migrations (auto-applied on startup)
-    001_convert_recruiter_id_to_uuid.sql
-    002_fix_candidates_user_id_type.sql
-
- tests/                            # Pytest test suite
-    conftest.py
-    test_auth.py
-    test_sessions.py
-    test_database.py
-    test_integration.py
-    test_system.py
-
- dev-docs/                         # Developer Documentation
-    ARCHITECTURE.md               # System design
-    API_REFERENCE.md              # Full API docs
-    DEVELOPMENT.md                # Local dev guide
-    END_TO_END_SETUP.md           # 15-minute setup walkthrough
-    PRODUCTION_SETUP.md           # Production deployment
-    SUPABASE_DEPLOYMENT.md        # Supabase configuration
-    EXECUTIVE_SUMMARY.md          # Business overview
-
- cleanup_database.py               # Dev utility: wipe DB data, keep auth users
- reset_all.py                      # Dev utility: full system reset (auth + DB)
- init_db.py                        # DB init + auto-applies all migrations
- docker-compose.yml                # Orchestrates api, postgres, redis
- Dockerfile                        # API container
- Dockerfile.worker                 # Celery worker container
- requirements.txt                  # Python dependencies
- .env.example                      # Environment variable template
+neeti-ai/
+│
+├── app/                            # FastAPI backend
+│   ├── api/                        # Route handlers
+│   │   ├── supabase_auth.py        #   register / login / me / refresh / logout
+│   │   ├── sessions.py             #   CRUD + join / start / end / token
+│   │   ├── coding_events.py        #   code execution + event tracking
+│   │   ├── speech.py               #   speech transcription
+│   │   └── websocket.py            #   real-time WebSocket events
+│   │
+│   ├── agents/                     # AI evaluation agents
+│   │   ├── base.py                 #   abstract base class
+│   │   ├── coding_agent.py         #   code quality analysis
+│   │   ├── speech_agent.py         #   communication scoring
+│   │   ├── vision_agent.py         #   engagement monitoring
+│   │   ├── reasoning_agent.py      #   problem-solving analysis
+│   │   └── evaluation_agent.py     #   final score + recommendation
+│   │
+│   ├── core/                       # Infrastructure
+│   │   ├── config.py               #   Pydantic settings (env-driven)
+│   │   ├── database.py             #   SQLAlchemy async engine + session
+│   │   ├── supabase_auth.py        #   JWT validation
+│   │   ├── redis.py                #   Redis connection
+│   │   ├── events.py               #   Redis pub/sub event helpers
+│   │   └── logging.py              #   JSON structured logging
+│   │
+│   ├── models/models.py            # SQLAlchemy ORM models
+│   ├── schemas/schemas.py          # Pydantic v2 request/response schemas
+│   │
+│   ├── services/                   # Business logic
+│   │   ├── ai_service.py           #   multi-provider AI orchestration
+│   │   ├── judge0_service.py       #   sandboxed code execution
+│   │   ├── livekit_service.py      #   WebRTC room + token management
+│   │   ├── speech_service.py       #   Whisper speech-to-text
+│   │   ├── vision_service.py       #   OpenAI Vision frame analysis
+│   │   ├── realtime_service.py     #   Redis / Supabase broadcast
+│   │   ├── storage_service.py      #   S3 / MinIO file storage
+│   │   ├── metrics_service.py      #   real-time analytics
+│   │   └── supabase_service.py     #   Supabase client wrapper
+│   │
+│   └── workers/                    # Celery background tasks
+│       ├── celery_app.py
+│       ├── agent_tasks.py
+│       └── session_tasks.py
+│
+├── frontend/                       # React 19 + TypeScript
+│   └── src/
+│       ├── App.tsx                  #   router + ErrorBoundary + route guards
+│       ├── pages/                   #   11 route-level pages
+│       ├── components/              #   reusable UI (Button, Card, CodeEditor…)
+│       ├── store/                   #   Zustand (auth, session, interview)
+│       └── lib/                     #   API client, WebSocket, utilities
+│
+├── tests/                          # Pytest suite
+├── migrations/                     # SQL migration scripts
+├── dev-docs/                       # Developer documentation (7 guides)
+│
+├── docker-compose.yml              # API + Postgres + Redis + Workers + MinIO
+├── Dockerfile / Dockerfile.worker  # Container definitions
+├── init_db.py                      # DB table creation
+├── reset_all.py                    # Full system reset (dev utility)
+├── cleanup_database.py             # Wipe data, keep auth users
+├── QUICKSTART.md                   # 5-minute setup guide
+└── requirements.txt                # Python dependencies
 ```
 
 ---
 
-## API Reference
+## 🔌 API Reference
 
-### Authentication
+### Authentication (Supabase)
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| `POST` | `/api/auth/register` | Register new user |  |
-| `POST` | `/api/auth/login` | Login, returns JWT |  |
-| `GET` | `/api/auth/me` | Current user info |  |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/auth/register` | Create account |
+| `POST` | `/api/auth/login` | Get access + refresh token |
+| `GET`  | `/api/auth/me` | Current user profile |
+| `POST` | `/api/auth/refresh` | Refresh access token |
+| `POST` | `/api/auth/logout` | Invalidate session |
 
 ### Sessions
 
 | Method | Endpoint | Description | Role |
 |--------|----------|-------------|------|
 | `POST` | `/api/sessions` | Create session | Recruiter |
-| `GET` | `/api/sessions` | List sessions | All |
-| `GET` | `/api/sessions/{id}` | Session details | All |
+| `GET`  | `/api/sessions` | List sessions | All |
+| `GET`  | `/api/sessions/{id}` | Session detail | All |
 | `POST` | `/api/sessions/join` | Join with code | Candidate |
 | `POST` | `/api/sessions/{id}/start` | Start interview | Recruiter |
 | `POST` | `/api/sessions/{id}/end` | End interview | Recruiter |
-| `GET` | `/api/sessions/{id}/token` | Get LiveKit room token | All |
-| `GET` | `/api/sessions/{id}/evaluation` | AI evaluation report | Recruiter |
+| `GET`  | `/api/sessions/{id}/token` | LiveKit room token | All |
+| `GET`  | `/api/sessions/{id}/evaluation` | AI evaluation report | Recruiter |
 
-### Coding Events
+### Code Execution
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| `POST` | `/api/coding-events` | Record keystroke / submit event |  |
-| `POST` | `/api/coding-events/execute` | Execute code via Judge0 |  |
-| `GET` | `/api/coding-events/{session_id}` | All events for a session |  |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/coding-events` | Record coding event |
+| `POST` | `/api/coding-events/execute` | Execute code (Judge0) |
+| `GET`  | `/api/coding-events/{session_id}` | Event history |
 
 ### WebSocket
 
 | Endpoint | Purpose |
 |----------|---------|
-| `/api/ws/session/{id}` | Live session events (code, speech, vision metrics) |
+| `/api/ws/session/{id}` | Live session events (code sync, metrics, flags) |
 
-Full interactive docs: **http://localhost:8000/docs**
-
----
-
-## Architecture
-
-```
-Browser (React 19)
-    
-     REST (axios)  FastAPI (port 8000)
-                                         
-     WebSocket        PostgreSQL  (SQLAlchemy async)
-                                           Redis        (pub/sub + cache)
-                                           Supabase     (auth + storage)
-                                           LiveKit      (WebRTC tokens)
-                                           Judge0       (code execution)
-                                                    
-                                               Celery Workers
-                                                    
-                                    
-                                                                  
-                              CodingAgent    SpeechAgent     VisionAgent
-                                    
-                                                    
-                                             ReasoningAgent
-                                                    
-                                            EvaluationAgent
-                                         (final score + report)
-```
+Full interactive docs → **http://localhost:8000/docs**
 
 ---
 
-## Development
+## 🏗 Architecture
 
-### Manual Backend Setup
+```
+┌──────────────────────────────────────────────────────────────┐
+│  Browser — React 19 + TypeScript + Vite                      │
+│  (Zustand stores • LiveKit video • Monaco editor)            │
+└──────────────────────┬───────────────────────────────────────┘
+                       │  REST (Axios) + WebSocket
+                       ▼
+┌──────────────────────────────────────────────────────────────┐
+│  FastAPI — Python 3.11 (async)                               │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────────┐      │
+│  │ Auth API │ │ Session  │ │ Coding   │ │ WebSocket  │      │
+│  │(Supabase)│ │  API     │ │ Events   │ │  Events    │      │
+│  └──────────┘ └──────────┘ └──────────┘ └────────────┘      │
+└──────┬──────────┬──────────┬──────────┬──────────────────────┘
+       │          │          │          │
+  ┌────▼───┐ ┌───▼────┐ ┌───▼────┐ ┌───▼────┐
+  │Supabase│ │Postgres│ │ Redis  │ │LiveKit │
+  │ Auth   │ │  15    │ │   7    │ │ (SFU)  │
+  └────────┘ └────────┘ └───┬────┘ └────────┘
+                            │
+                    ┌───────▼───────┐
+                    │ Celery Workers │
+                    └───────┬───────┘
+                            │
+          ┌─────────────────┼─────────────────┐
+          ▼                 ▼                  ▼
+   ┌─────────────┐  ┌─────────────┐   ┌─────────────┐
+   │CodingAgent  │  │SpeechAgent  │   │VisionAgent  │
+   └──────┬──────┘  └──────┬──────┘   └──────┬──────┘
+          └─────────────────┼─────────────────┘
+                            ▼
+                   ┌─────────────────┐
+                   │ ReasoningAgent  │
+                   └────────┬────────┘
+                            ▼
+                   ┌─────────────────┐
+                   │EvaluationAgent  │
+                   │  (final report) │
+                   └─────────────────┘
+```
+
+---
+
+## 🧑‍💻 Development
+
+### Manual backend (without Docker)
 
 ```bash
-python -m venv venv
-.\venv\Scripts\activate          # Windows
-# source venv/bin/activate       # macOS / Linux
-
+python -m venv venv && .\venv\Scripts\activate   # Windows
 pip install -r requirements.txt
 python init_db.py
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --port 8000
 ```
 
-### Run Celery Workers
+### Celery workers
 
 ```bash
 celery -A app.workers.celery_app worker --loglevel=info -Q agents --concurrency=4
 ```
 
-### Testing
+### Tests
 
 ```bash
 pytest tests/ -v
 pytest tests/ --cov=app --cov-report=html
 ```
 
-### Database Utilities
+### Dev utilities
 
 ```bash
-# Wipe all sessions/evaluations but keep Supabase auth users
-python cleanup_database.py
-
-# Full reset  deletes all auth users AND all DB data
-python reset_all.py
-```
-
-### Docker
-
-```bash
-# Start all services
-docker-compose up -d
-
-# Rebuild API after backend code changes
-docker-compose up -d --build api
-
-# Stream logs
-docker-compose logs -f api
-
-# Shell inside container
-docker-compose exec api bash
+python cleanup_database.py   # wipe data, keep Supabase auth users
+python reset_all.py          # full nuke — all auth users + all data
 ```
 
 ---
 
-## Environment Variables
+## ⚙️ Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `DATABASE_URL` |  | PostgreSQL async connection string |
-| `SUPABASE_URL` |  | Supabase project URL |
-| `SUPABASE_ANON_KEY` |  | Supabase public anon key |
-| `SUPABASE_SERVICE_ROLE_KEY` |  | Service role key (server-side only) |
-| `JWT_SECRET_KEY` |  | Minimum 32-character secret |
-| `LIVEKIT_API_KEY` |  | LiveKit API key |
-| `LIVEKIT_API_SECRET` |  | LiveKit API secret |
-| `LIVEKIT_WS_URL` |  | `wss://` LiveKit server URL |
-| `OPENAI_API_KEY` |  | GPT-4 for AI evaluation |
-| `ANTHROPIC_API_KEY` |  | Claude fallback for evaluation |
-| `REDIS_HOST` |  | Redis hostname (default: `localhost`) |
-| `JUDGE0_HOST` |  | Judge0 base URL (default: `http://localhost:2358`) |
-
----
-
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| [Architecture](dev-docs/ARCHITECTURE.md) | System design and component interactions |
-| [API Reference](dev-docs/API_REFERENCE.md) | Complete endpoint documentation |
-| [Development Guide](dev-docs/DEVELOPMENT.md) | Local environment setup details |
-| [End-to-End Setup](dev-docs/END_TO_END_SETUP.md) | 15-minute full walkthrough |
-| [Production Setup](dev-docs/PRODUCTION_SETUP.md) | Deployment and scaling guide |
-| [Supabase Deployment](dev-docs/SUPABASE_DEPLOYMENT.md) | Supabase-specific configuration |
-| [Executive Summary](dev-docs/EXECUTIVE_SUMMARY.md) | Business overview for stakeholders |
+| Variable | Required | Default | Description |
+|----------|:--------:|---------|-------------|
+| `SUPABASE_URL` | ✅ | — | Supabase project URL |
+| `SUPABASE_ANON_KEY` | ✅ | — | Supabase public anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | ✅ | — | Supabase service role key |
+| `LIVEKIT_API_KEY` | ✅ | — | LiveKit API key |
+| `LIVEKIT_API_SECRET` | ✅ | — | LiveKit API secret |
+| `LIVEKIT_WS_URL` | ✅ | — | LiveKit WebSocket URL (`wss://...`) |
+| `JWT_SECRET_KEY` | ✅ | — | Min 32-char secret for tokens |
+| `OPENAI_API_KEY` | — | — | GPT-4 for AI agents |
+| `ANTHROPIC_API_KEY` | — | — | Claude fallback |
+| `JUDGE0_API_URL` | — | — | Judge0 base URL for code execution |
+| `JUDGE0_API_KEY` | — | — | Judge0 API key (if using RapidAPI) |
+| `REDIS_HOST` | — | `localhost` | Redis hostname |
+| `REDIS_PORT` | — | `6379` | Redis port |
+| `POSTGRES_USER` | — | `interview_user` | Postgres username |
+| `POSTGRES_PASSWORD` | — | `changeme` | Postgres password |
+| `USE_OLLAMA` | — | `false` | Use local Ollama LLM instead of OpenAI |
 
 ---
 
-## License
+## 📚 Documentation
 
-MIT
+| Guide | For | Time |
+|-------|-----|------|
+| **[QUICKSTART.md](QUICKSTART.md)** | Getting running fast | 5 min |
+| [Architecture](dev-docs/ARCHITECTURE.md) | System design & data flow | 20 min |
+| [API Reference](dev-docs/API_REFERENCE.md) | Full endpoint docs | 30 min |
+| [Development Guide](dev-docs/DEVELOPMENT.md) | Local dev setup | 15 min |
+| [End-to-End Setup](dev-docs/END_TO_END_SETUP.md) | Complete walkthrough | 15 min |
+| [Production Setup](dev-docs/PRODUCTION_SETUP.md) | Docker deployment | 25 min |
+| [Supabase Deployment](dev-docs/SUPABASE_DEPLOYMENT.md) | Supabase config | 10 min |
+| [Executive Summary](dev-docs/EXECUTIVE_SUMMARY.md) | Business overview | 15 min |
+
+---
+
+## 👤 Author
+
+**Sukrit Goswami**
+
+- Email: sukrit.goswami.work@gmail.com
+- GitHub: [@sukrit-89](https://github.com/sukrit-89)
+
+---
+
+## 📄 License
+
+[MIT](LICENSE) — use it, fork it, build on it.

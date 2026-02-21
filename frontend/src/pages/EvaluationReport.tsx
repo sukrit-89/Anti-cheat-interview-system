@@ -89,7 +89,7 @@ export const EvaluationReport = () => {
                     <Scale className="w-8 h-8 text-primary" strokeWidth={1.5} />
                     <div className="flex flex-col">
                         <h2 className="text-white text-lg font-bold tracking-tight uppercase">
-                            Integrity AI <span className="text-slate-500 font-normal">|</span> Forensic Report
+                            Neeti AI <span className="text-slate-500 font-normal">|</span> Forensic Report
                         </h2>
                         <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
                             <span>SYS_REF: {data.sessionRef}</span>

@@ -28,8 +28,8 @@
 
 ### **Step 1: Clone Repository**
 ```bash
-git clone https://github.com/your-username/integrity-ai.git
-cd integrity-ai
+git clone https://github.com/your-username/neeti-ai.git
+cd neeti-ai
 ```
 
 ### **Step 2: Backend Setup**
@@ -87,22 +87,28 @@ docker-compose up -d redis postgres
 
 ### **Project Structure**
 ```
-integrity-ai/
+neeti-ai/
 ├── app/                    # FastAPI backend
-│   ├── api/               # API endpoints
-│   ├── core/               # Core functionality
-│   ├── models/             # Database models
-│   ├── services/           # Business logic
-│   └── workers/            # Background tasks
-├── frontend/               # React frontend
+│   ├── api/               # API endpoints (sessions, coding_events, speech, websocket)
+│   ├── core/               # Core functionality (config, database, auth, events, redis)
+│   ├── agents/             # AI evaluation agents (coding, speech, vision, reasoning, evaluation)
+│   ├── models/             # SQLAlchemy ORM models
+│   ├── schemas/            # Pydantic request/response schemas
+│   ├── services/           # Business logic (AI, Judge0, LiveKit, metrics, storage)
+│   └── workers/            # Celery background tasks
+├── frontend/               # React 19 + TypeScript frontend
 │   ├── src/
-│   │   ├── components/     # Reusable components
-│   │   ├── pages/         # Page components
-│   │   ├── store/         # State management
-│   │   └── lib/           # Utilities
+│   │   ├── components/     # Reusable UI components (Button, Card, CodeEditor, etc.)
+│   │   ├── pages/         # Route pages (Dashboard, InterviewRoom, SessionMonitor, etc.)
+│   │   ├── store/         # Zustand state stores
+│   │   └── lib/           # API client, WebSocket hooks, utilities
 │   └── public/            # Static assets
 ├── dev-docs/              # Developer documentation
-├── tests/                  # Test suite
+├── tests/                  # Pytest test suite
+├── migrations/             # SQL migration scripts
+├── init_db.py              # Database initialization (create_all)
+├── reset_all.py            # Full database reset
+├── cleanup_database.py     # Database cleanup utility
 └── docker-compose.yml       # Development services
 ```
 
@@ -167,14 +173,14 @@ npm run dev:debug
 # Connect to PostgreSQL
 docker-compose exec postgres psql -U postgres -d interview_platform
 
-# Check migrations
-alembic current
+# Re-initialize tables (uses SQLAlchemy create_all)
+python init_db.py
 
-# Create new migration
-alembic revision --autogenerate -m "description"
+# Reset everything (drops and recreates all tables)
+python reset_all.py
 
-# Apply migrations
-alembic upgrade head
+# Run SQL migrations manually
+# See migrations/ folder for migration scripts
 ```
 
 ## 📊 Monitoring
@@ -268,16 +274,15 @@ import { NewPage } from './pages/NewPage';
 <Route path="/new-page" element={<NewPage />} />
 ```
 
-### **Database Migration**
+### **Database Schema Changes**
 ```bash
-# Create migration
-alembic revision --autogenerate -m "add_new_table"
+# The project uses SQLAlchemy create_all() for table creation.
+# To add new tables, define models in app/models/models.py
+# then run init_db.py to create them:
+python init_db.py
 
-# Apply migration
-alembic upgrade head
-
-# Rollback migration
-alembic downgrade -1
+# For manual migrations, add SQL scripts to migrations/ folder
+# and run them against your Supabase SQL editor or psql.
 ```
 
 ## 🔒 Security in Development

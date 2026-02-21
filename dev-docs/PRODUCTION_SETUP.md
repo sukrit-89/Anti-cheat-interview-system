@@ -1,5 +1,5 @@
 # 🚀 Production Setup Guide
-# Complete Docker-based deployment for Integrity AI
+# Complete Docker-based deployment for Neeti AI
 
 ## 📋 Prerequisites
 
@@ -199,13 +199,13 @@ git pull
 docker-compose -f docker-compose.production.yml up -d --build
 ```
 
-### **Database Migrations**
+### **Database Initialization**
 ```bash
-# Run migrations
-docker-compose -f docker-compose.production.yml exec app alembic upgrade head
+# Initialize tables
+docker-compose -f docker-compose.production.yml exec app python init_db.py
 
-# Check migration status
-docker-compose -f docker-compose.production.yml exec app alembic current
+# Or reset everything
+docker-compose -f docker-compose.production.yml exec app python reset_all.py
 ```
 
 ## 🔒 Security Configuration
@@ -349,7 +349,7 @@ docker-compose -f docker-compose.production.yml exec -T judge0-db psql -U judge0
 
 ## 🎉 You're Ready!
 
-Your Integrity AI platform is now running in production mode with:
+Your Neeti AI platform is now running in production mode with:
 - ✅ **Supabase** for database and auth
 - ✅ **Judge0** for code execution  
 - ✅ **Ollama** for local AI

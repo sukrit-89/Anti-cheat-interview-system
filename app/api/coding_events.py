@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from app.core.database import get_db
 from app.core.auth import get_current_user
-from app.models.models import User, CodingEvent, Session
+from app.models.models import CodingEvent, Session
 from app.schemas.schemas import CodingEventCreate, CodingEventResponse
 from app.core.logging import logger
 from app.core.events import publish_code_changed, publish_code_executed

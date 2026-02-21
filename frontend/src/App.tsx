@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { useEffect, type ReactNode } from 'react';
 import { Landing } from './pages/Landing';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
@@ -14,69 +14,129 @@ import { EvaluationReport } from './pages/EvaluationReport';
 import { useAuthStore } from './store/useAuthStore';
 import './index.css';
 
+// Error Boundary
+import { Component, type ErrorInfo } from 'react';
+
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error?: Error }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('App Error:', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-verdict-bg flex items-center justify-center p-8">
+          <div className="max-w-md text-center space-y-6">
+            <div className="text-6xl font-mono text-semantic-critical">!</div>
+            <h1 className="text-2xl font-display text-verdict-text-primary">Something went wrong</h1>
+            <p className="text-verdict-text-secondary">
+              {this.state.error?.message || 'An unexpected error occurred.'}
+            </p>
+            <button
+              onClick={() => { this.setState({ hasError: false }); window.location.href = '/'; }}
+              className="px-6 py-3 bg-accent-bronze text-white font-medium hover:bg-accent-bronze-light transition-colors"
+            >
+              Return Home
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// Route guards using reactive hook selectors
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated);
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+}
+
+function RecruiterRoute({ children }: { children: ReactNode }) {
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated);
+  const role = useAuthStore(s => s.user?.role);
+  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (role !== 'recruiter') return <Navigate to="/dashboard" />;
+  return <>{children}</>;
+}
+
+// 404 Page
+function NotFound() {
+  return (
+    <div className="min-h-screen bg-verdict-bg flex items-center justify-center p-8">
+      <div className="max-w-md text-center space-y-6">
+        <div className="text-8xl font-mono text-accent-bronze/40">404</div>
+        <h1 className="text-2xl font-display text-verdict-text-primary">Page Not Found</h1>
+        <p className="text-verdict-text-secondary">
+          The page you are looking for does not exist or has been moved.
+        </p>
+        <Link
+          to="/"
+          className="inline-block px-6 py-3 bg-accent-bronze text-white font-medium hover:bg-accent-bronze-light transition-colors"
+        >
+          Return Home
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 function App() {
-  const { fetchCurrentUser, isAuthenticated } = useAuthStore();
+  const { fetchCurrentUser } = useAuthStore();
 
   useEffect(() => {
-    // Try to restore session from localStorage
     fetchCurrentUser();
   }, [fetchCurrentUser]);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route 
-          path="/sessions/join" 
-          element={isAuthenticated ? <SessionJoin /> : <Navigate to="/login" />} 
-        />
-        <Route path="/join" element={<SessionJoin />} />
-        <Route path="/interview" element={<InterviewRoom />} />
-        <Route path="/sessions/:id/interview" element={<InterviewRoom />} />
-        <Route
-          path="/dashboard"
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/sessions/create"
-          element={
-            isAuthenticated && useAuthStore.getState().user?.role === 'recruiter' ? (
-              <SessionCreate />
-            ) : isAuthenticated ? (
-              <Navigate to="/dashboard" />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/sessions/:id"
-          element={isAuthenticated ? <SessionDetail /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/sessions/:sessionId/monitor"
-          element={
-            isAuthenticated && useAuthStore.getState().user?.role === 'recruiter' ? (
-              <SessionMonitor />
-            ) : isAuthenticated ? (
-              <Navigate to="/dashboard" />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/sessions/:sessionId/results"
-          element={isAuthenticated ? <SessionResults /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/evaluation/:id"
-          element={isAuthenticated ? <EvaluationReport /> : <Navigate to="/login" />}
-        />
-      </Routes>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/join" element={<SessionJoin />} />
+          <Route
+            path="/sessions/join"
+            element={<ProtectedRoute><SessionJoin /></ProtectedRoute>}
+          />
+          <Route path="/interview" element={<InterviewRoom />} />
+          <Route path="/sessions/:id/interview" element={<InterviewRoom />} />
+          <Route
+            path="/dashboard"
+            element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
+          />
+          <Route
+            path="/sessions/create"
+            element={<RecruiterRoute><SessionCreate /></RecruiterRoute>}
+          />
+          <Route
+            path="/sessions/:id"
+            element={<ProtectedRoute><SessionDetail /></ProtectedRoute>}
+          />
+          <Route
+            path="/sessions/:sessionId/monitor"
+            element={<RecruiterRoute><SessionMonitor /></RecruiterRoute>}
+          />
+          <Route
+            path="/sessions/:sessionId/results"
+            element={<ProtectedRoute><SessionResults /></ProtectedRoute>}
+          />
+          <Route
+            path="/evaluation/:id"
+            element={<ProtectedRoute><EvaluationReport /></ProtectedRoute>}
+          />
+          {/* 404 catch-all */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

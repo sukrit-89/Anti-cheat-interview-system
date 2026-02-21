@@ -1,5 +1,5 @@
 /**
- * API Client for Integrity AI Platform
+ * API Client for Neeti AI Platform
  * Handles all HTTP requests to the backend
  */
 import axios from 'axios';

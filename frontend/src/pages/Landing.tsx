@@ -32,9 +32,9 @@ export const Landing = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-display font-semibold text-verdict-text-primary tracking-tight">
-                  Integrity AI
+                  Neeti AI
                 </h1>
-                <p className="text-xs text-verdict-text-tertiary font-mono tracking-wider">EVALUATION AUTHORITY</p>
+                <p className="text-xs text-verdict-text-tertiary font-mono tracking-wider">नीति · EVALUATION AUTHORITY</p>
               </div>
             </div>
             <Link to="/login">
@@ -88,9 +88,32 @@ export const Landing = () => {
                   <span>Real-time execution</span>
                 </div>
               </div>
-              {/* Technical schematic visual */}
-              <div className="relative animate-reveal-slower">
-                <TechnicalBlueprint showScanLine={true} />
+            </div>
+
+            {/* Right Column - Technical Schematic */}
+            <div className="hidden lg:block relative animate-reveal-slower">
+              <TechnicalBlueprint showScanLine={true} />
+
+              {/* Agent Status Panel */}
+              <div className="mt-8 border border-verdict-border bg-verdict-surface p-6 space-y-4">
+                <div className="text-xs font-mono text-verdict-text-quaternary tracking-wider mb-4">
+                  AGENT STATUS
+                </div>
+                {[
+                  { name: 'Coding Agent', status: 'READY', color: 'bg-semantic-success' },
+                  { name: 'Speech Agent', status: 'READY', color: 'bg-semantic-success' },
+                  { name: 'Vision Agent', status: 'READY', color: 'bg-semantic-success' },
+                  { name: 'Reasoning Agent', status: 'READY', color: 'bg-semantic-success' },
+                  { name: 'Evaluation Agent', status: 'STANDBY', color: 'bg-semantic-warning' },
+                ].map((agent) => (
+                  <div key={agent.name} className="flex items-center justify-between text-sm">
+                    <span className="text-verdict-text-secondary font-mono">{agent.name}</span>
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-1.5 h-1.5 rounded-full ${agent.color}`} />
+                      <span className="text-xs text-verdict-text-tertiary tracking-wider">{agent.status}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -260,7 +283,7 @@ export const Landing = () => {
             <div className="flex flex-col md:flex-row items-center justify-between text-sm text-verdict-text-tertiary">
               <div className="flex items-center space-x-2 mb-4 md:mb-0">
                 <Scale className="w-4 h-4 text-accent-bronze/60" strokeWidth={1.5} />
-                <span className="font-mono tracking-wider">INTEGRITY AI © 2026</span>
+                <span className="font-mono tracking-wider">NEETI AI © 2026</span>
               </div>
               <div className="flex items-center space-x-1 font-mono text-xs text-verdict-text-quaternary">
                 <span>EVAL_SYSTEM_v2.0.1</span>

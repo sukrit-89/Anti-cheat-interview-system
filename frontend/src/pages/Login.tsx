@@ -42,7 +42,7 @@ export function Login() {
             <div className="inline-flex items-center space-x-3 mb-6">
               <Shield className="w-8 h-8 text-accent-bronze" />
               <h1 className="text-headline font-display text-verdict-text-primary">
-                Integrity AI
+                Neeti AI
               </h1>
             </div>
             <p className="text-body text-verdict-text-secondary leading-relaxed">
