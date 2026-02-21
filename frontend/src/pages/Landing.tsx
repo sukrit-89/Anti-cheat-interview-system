@@ -1,117 +1,186 @@
 /**
- * Landing Page - Technical evaluation authority
- * Design: Blueprint/technical drawing aesthetic meets courtroom precision
+ * Landing Page — Forensic Authority aesthetic
+ * Dark, precise, data-driven with warm bronze authority accent
  */
 import { Link } from 'react-router-dom';
 import { TechnicalBlueprint } from '../components/TechnicalBlueprint';
-import { Scale, Terminal, FileCheck, Fingerprint, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { StatusIndicator } from '../components/StatusIndicator';
+import {
+  Scale,
+  Terminal,
+  FileCheck,
+  Fingerprint,
+  ArrowRight,
+  CheckCircle2,
+  Shield,
+} from 'lucide-react';
+
+const AGENTS = [
+  { name: 'Coding Agent', status: 'active' as const },
+  { name: 'Speech Agent', status: 'active' as const },
+  { name: 'Vision Agent', status: 'active' as const },
+  { name: 'Reasoning Agent', status: 'active' as const },
+  { name: 'Evaluation Agent', status: 'idle' as const },
+];
+
+const CAPABILITIES = [
+  {
+    icon: Terminal,
+    title: 'Real-time Execution',
+    desc: 'Immediate code compilation and execution across 50+ languages via Judge0 integration.',
+    tag: 'EXEC_001',
+  },
+  {
+    icon: Scale,
+    title: 'Multi-Agent Analysis',
+    desc: 'Specialized agents evaluate code quality, reasoning, communication, and depth.',
+    tag: 'EVAL_002',
+  },
+  {
+    icon: FileCheck,
+    title: 'Evidence Collection',
+    desc: 'Comprehensive session recording with code snapshots, audio, and behavioral metrics.',
+    tag: 'LOG_003',
+  },
+  {
+    icon: Fingerprint,
+    title: 'Secure Protocol',
+    desc: 'End-to-end encryption, authenticated access, and compliance-ready audit trails.',
+    tag: 'SEC_004',
+  },
+];
+
+const PHASES = [
+  {
+    num: '01',
+    title: 'Session Initialization',
+    desc: 'Configure evaluation parameters, define assessment criteria, and generate secure session credentials.',
+    tag: 'INIT_SESSION',
+  },
+  {
+    num: '02',
+    title: 'Live Evaluation',
+    desc: 'Real-time code execution, automated testing, and concurrent analysis by specialized AI agents.',
+    tag: 'CONDUCT_EVAL',
+  },
+  {
+    num: '03',
+    title: 'Verdict Generation',
+    desc: 'Comprehensive report compilation with evidence-backed assessments and quantified performance metrics.',
+    tag: 'GEN_VERDICT',
+  },
+];
 
 export const Landing = () => {
   return (
-    <div className="min-h-screen bg-verdict-bg relative overflow-hidden">
-      {/* Technical grid overlay - blueprint aesthetic */}
-      <div className="absolute inset-0 opacity-[0.015]" style={{
-        backgroundImage: `
-          linear-gradient(rgba(146, 64, 14, 0.3) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(146, 64, 14, 0.3) 1px, transparent 1px)
-        `,
-        backgroundSize: '80px 80px'
-      }} />
+    <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
+      {/* Faint grid overlay */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.012]"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(194,112,42,.4) 1px,transparent 1px), linear-gradient(90deg,rgba(194,112,42,.4) 1px,transparent 1px)',
+          backgroundSize: '72px 72px',
+        }}
+      />
 
-      {/* Subtle radial emphasis */}
-      <div className="absolute inset-0 bg-gradient-radial from-accent-bronze/[0.03] via-transparent to-transparent" />
+      {/* Radial glow */}
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(194,112,42,.04),transparent)]" />
 
-      <div className="relative">
-        {/* Header - Technical Authority */}
-        <header className="border-b border-verdict-border bg-verdict-surface/50 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+      <div className="relative z-10">
+        {/* ── Header ─────────────────────────────────────── */}
+        <header className="border-b border-neeti-border bg-neeti-surface/40 backdrop-blur-md sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-3">
               <div className="relative">
-                <Scale className="w-7 h-7 text-accent-bronze" strokeWidth={1.5} />
-                <div className="absolute -inset-1 bg-accent-bronze/10 blur-sm -z-10" />
+                <Scale className="w-6 h-6 text-bronze" strokeWidth={1.5} />
+                <div className="absolute -inset-1.5 bg-bronze/10 blur-md -z-10" />
               </div>
-              <div>
-                <h1 className="text-2xl font-display font-semibold text-verdict-text-primary tracking-tight">
+              <div className="leading-none">
+                <span className="text-xl font-display font-semibold text-ink-primary tracking-tight">
                   Neeti AI
-                </h1>
-                <p className="text-xs text-verdict-text-tertiary font-mono tracking-wider">नीति · EVALUATION AUTHORITY</p>
+                </span>
+                <p className="text-[10px] text-ink-ghost font-mono tracking-[0.2em] mt-0.5">
+                  नीति · EVALUATION AUTHORITY
+                </p>
               </div>
-            </div>
-            <Link to="/login">
-              <button className="px-5 py-2 border border-verdict-border hover:border-accent-bronze bg-verdict-surface-elevated text-verdict-text-primary text-sm font-medium transition-all duration-200 hover:bg-verdict-border">
-                Access System
-              </button>
+            </Link>
+
+            <Link
+              to="/login"
+              className="px-5 py-2 border border-neeti-border hover:border-bronze/50 bg-neeti-elevated text-ink-primary text-sm font-medium rounded-md transition-all duration-200 hover:shadow-glow"
+            >
+              Access System
             </Link>
           </div>
         </header>
 
-        {/* Hero - Evidence-based messaging */}
-        <section className="max-w-7xl mx-auto px-6 py-24 lg:py-32">
+        {/* ── Hero ────────────────────────────────────────── */}
+        <section className="max-w-7xl mx-auto px-6 pt-20 pb-28 lg:pt-28 lg:pb-36">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8 animate-reveal-slow">
-              <div className="inline-block px-3 py-1 border border-accent-bronze/30 bg-accent-bronze/5 text-accent-bronze text-xs font-mono tracking-wider">
-                TECHNICAL ASSESSMENT v2.0
+            {/* Left — Messaging */}
+            <div className="space-y-8 animate-fadeUp">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-bronze/25 bg-bronze-muted rounded-full">
+                <Shield className="w-3.5 h-3.5 text-bronze" />
+                <span className="text-xs font-mono text-bronze tracking-wider">
+                  TECHNICAL ASSESSMENT v2.1
+                </span>
               </div>
 
-              <h2 className="text-5xl lg:text-6xl font-display font-semibold text-verdict-text-primary leading-[1.1] tracking-tight">
+              <h2 className="text-5xl lg:text-[3.5rem] xl:text-6xl font-display font-bold text-ink-primary leading-[1.08] tracking-tight">
                 Evidence-Based
                 <br />
-                <span className="text-accent-bronze">Technical Judgment</span>
+                <span className="text-gradient-bronze">Technical Judgment</span>
               </h2>
 
-              <p className="text-lg text-verdict-text-secondary leading-relaxed max-w-xl">
-                A rigorous evaluation framework for technical interviews. Real-time code analysis,
-                multi-agent assessment, and comprehensive verdict generation backed by measurable evidence.
+              <p className="text-lg text-ink-secondary leading-relaxed max-w-xl">
+                A rigorous evaluation framework for technical interviews. Real-time
+                code analysis, multi-agent assessment, and comprehensive verdict
+                generation backed by measurable evidence.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Link to="/register" className="group">
-                  <button className="w-full sm:w-auto px-8 py-4 bg-accent-bronze hover:bg-accent-bronze-light border border-accent-bronze text-white font-medium transition-all duration-200 flex items-center justify-center space-x-2">
-                    <span>Initiate Evaluation</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <button className="w-full sm:w-auto px-8 py-3.5 bg-bronze hover:bg-bronze-light text-white font-medium rounded-md transition-all duration-200 flex items-center justify-center gap-2 shadow-glow hover:shadow-glow-strong active:scale-[0.97]">
+                    Initiate Evaluation
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </button>
                 </Link>
                 <Link to="/login">
-                  <button className="w-full sm:w-auto px-8 py-4 border border-verdict-border hover:border-accent-bronze bg-verdict-surface text-verdict-text-primary font-medium transition-all duration-200">
+                  <button className="w-full sm:w-auto px-8 py-3.5 border border-neeti-border hover:border-bronze/40 bg-neeti-surface text-ink-primary font-medium rounded-md transition-all duration-200">
                     System Login
                   </button>
                 </Link>
               </div>
 
-              <div className="flex items-center space-x-6 pt-4 text-sm text-verdict-text-tertiary">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-accent-bronze" strokeWidth={2} />
-                  <span>Multi-agent analysis</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-accent-bronze" strokeWidth={2} />
-                  <span>Real-time execution</span>
-                </div>
+              <div className="flex items-center gap-6 pt-2 text-sm text-ink-tertiary">
+                <span className="inline-flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bronze" strokeWidth={2} />
+                  Multi-agent analysis
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bronze" strokeWidth={2} />
+                  Real-time execution
+                </span>
               </div>
             </div>
 
-            {/* Right Column - Technical Schematic */}
-            <div className="hidden lg:block relative animate-reveal-slower">
-              <TechnicalBlueprint showScanLine={true} />
+            {/* Right — Schematic + Agent Status */}
+            <div className="hidden lg:block space-y-6 animate-fadeUp" style={{ animationDelay: '120ms' }}>
+              <TechnicalBlueprint showScanLine />
 
-              {/* Agent Status Panel */}
-              <div className="mt-8 border border-verdict-border bg-verdict-surface p-6 space-y-4">
-                <div className="text-xs font-mono text-verdict-text-quaternary tracking-wider mb-4">
-                  AGENT STATUS
-                </div>
-                {[
-                  { name: 'Coding Agent', status: 'READY', color: 'bg-semantic-success' },
-                  { name: 'Speech Agent', status: 'READY', color: 'bg-semantic-success' },
-                  { name: 'Vision Agent', status: 'READY', color: 'bg-semantic-success' },
-                  { name: 'Reasoning Agent', status: 'READY', color: 'bg-semantic-success' },
-                  { name: 'Evaluation Agent', status: 'STANDBY', color: 'bg-semantic-warning' },
-                ].map((agent) => (
-                  <div key={agent.name} className="flex items-center justify-between text-sm">
-                    <span className="text-verdict-text-secondary font-mono">{agent.name}</span>
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-1.5 h-1.5 rounded-full ${agent.color}`} />
-                      <span className="text-xs text-verdict-text-tertiary tracking-wider">{agent.status}</span>
-                    </div>
+              <div className="border border-neeti-border bg-neeti-surface/70 rounded-lg p-5 space-y-3 backdrop-blur-sm">
+                <p className="text-[10px] font-mono text-ink-ghost tracking-[0.2em] uppercase mb-3">
+                  Agent Status
+                </p>
+                {AGENTS.map((a) => (
+                  <div key={a.name} className="flex items-center justify-between">
+                    <span className="text-sm font-mono text-ink-secondary">{a.name}</span>
+                    <StatusIndicator
+                      status={a.status}
+                      label={a.status === 'active' ? 'READY' : 'STANDBY'}
+                      showPulse={a.status === 'active'}
+                    />
                   </div>
                 ))}
               </div>
@@ -119,178 +188,94 @@ export const Landing = () => {
           </div>
         </section>
 
-        {/* Technical Capabilities - Evidence-based */}
-        <section className="bg-verdict-surface border-y border-verdict-border py-20">
+        {/* ── Capabilities ───────────────────────────────── */}
+        <section className="border-y border-neeti-border bg-neeti-surface/40 py-24">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
-              <h3 className="text-3xl font-display font-semibold text-verdict-text-primary mb-4">
+              <h3 className="text-3xl font-display font-bold text-ink-primary mb-3">
                 Evaluation Infrastructure
               </h3>
-              <p className="text-verdict-text-secondary max-w-2xl mx-auto">
-                A comprehensive technical assessment framework built on measurable criteria and automated analysis.
+              <p className="text-ink-secondary max-w-2xl mx-auto">
+                A comprehensive technical assessment framework built on measurable
+                criteria and automated analysis.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-1">
-              {/* Real-time Execution */}
-              <div className="bg-verdict-bg border border-verdict-border p-8 hover:border-accent-bronze/30 transition-colors group">
-                <div className="mb-6 relative inline-block">
-                  <Terminal className="w-10 h-10 text-accent-bronze/80" strokeWidth={1.5} />
-                  <div className="absolute -inset-2 bg-accent-bronze/5 -z-10 group-hover:bg-accent-bronze/10 transition-colors" />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-neeti-border rounded-lg overflow-hidden">
+              {CAPABILITIES.map((cap) => (
+                <div
+                  key={cap.tag}
+                  className="bg-neeti-bg p-7 group hover:bg-neeti-surface transition-colors duration-300"
+                >
+                  <div className="mb-5 relative inline-flex items-center justify-center w-12 h-12 rounded-md bg-bronze/[0.07] group-hover:bg-bronze/[0.12] transition-colors">
+                    <cap.icon className="w-6 h-6 text-bronze" strokeWidth={1.5} />
+                  </div>
+                  <h4 className="text-base font-display font-semibold text-ink-primary mb-2">
+                    {cap.title}
+                  </h4>
+                  <p className="text-sm text-ink-secondary leading-relaxed mb-4">
+                    {cap.desc}
+                  </p>
+                  <span className="text-[10px] font-mono text-ink-ghost tracking-[0.15em]">
+                    MODULE: {cap.tag}
+                  </span>
                 </div>
-                <h4 className="text-lg font-display font-semibold text-verdict-text-primary mb-3">
-                  Real-time Execution
-                </h4>
-                <p className="text-sm text-verdict-text-secondary leading-relaxed mb-4">
-                  Immediate code compilation and execution across 50+ languages via Judge0 integration.
-                </p>
-                <div className="text-xs font-mono text-verdict-text-quaternary tracking-wider">
-                  MODULE: EXEC_001
-                </div>
-              </div>
-
-              {/* Multi-Agent Analysis */}
-              <div className="bg-verdict-bg border border-verdict-border p-8 hover:border-accent-bronze/30 transition-colors group">
-                <div className="mb-6 relative inline-block">
-                  <Scale className="w-10 h-10 text-accent-bronze/80" strokeWidth={1.5} />
-                  <div className="absolute -inset-2 bg-accent-bronze/5 -z-10 group-hover:bg-accent-bronze/10 transition-colors" />
-                </div>
-                <h4 className="text-lg font-display font-semibold text-verdict-text-primary mb-3">
-                  Multi-Agent Analysis
-                </h4>
-                <p className="text-sm text-verdict-text-secondary leading-relaxed mb-4">
-                  Specialized agents evaluate code quality, reasoning, communication, and technical depth.
-                </p>
-                <div className="text-xs font-mono text-verdict-text-quaternary tracking-wider">
-                  MODULE: EVAL_002
-                </div>
-              </div>
-
-              {/* Evidence Collection */}
-              <div className="bg-verdict-bg border border-verdict-border p-8 hover:border-accent-bronze/30 transition-colors group">
-                <div className="mb-6 relative inline-block">
-                  <FileCheck className="w-10 h-10 text-accent-bronze/80" strokeWidth={1.5} />
-                  <div className="absolute -inset-2 bg-accent-bronze/5 -z-10 group-hover:bg-accent-bronze/10 transition-colors" />
-                </div>
-                <h4 className="text-lg font-display font-semibold text-verdict-text-primary mb-3">
-                  Evidence Collection
-                </h4>
-                <p className="text-sm text-verdict-text-secondary leading-relaxed mb-4">
-                  Comprehensive session recording with code snapshots, audio, and behavioral metrics.
-                </p>
-                <div className="text-xs font-mono text-verdict-text-quaternary tracking-wider">
-                  MODULE: LOG_003
-                </div>
-              </div>
-
-              {/* Secure Protocol */}
-              <div className="bg-verdict-bg border border-verdict-border p-8 hover:border-accent-bronze/30 transition-colors group">
-                <div className="mb-6 relative inline-block">
-                  <Fingerprint className="w-10 h-10 text-accent-bronze/80" strokeWidth={1.5} />
-                  <div className="absolute -inset-2 bg-accent-bronze/5 -z-10 group-hover:bg-accent-bronze/10 transition-colors" />
-                </div>
-                <h4 className="text-lg font-display font-semibold text-verdict-text-primary mb-3">
-                  Secure Protocol
-                </h4>
-                <p className="text-sm text-verdict-text-secondary leading-relaxed mb-4">
-                  End-to-end encryption, authenticated access, and compliance-ready audit trails.
-                </p>
-                <div className="text-xs font-mono text-verdict-text-quaternary tracking-wider">
-                  MODULE: SEC_004
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Assessment Protocol - Sequential process */}
+        {/* ── Assessment Protocol ────────────────────────── */}
         <section className="max-w-7xl mx-auto px-6 py-24">
           <div className="text-center mb-16">
-            <h3 className="text-3xl font-display font-semibold text-verdict-text-primary mb-4">
+            <h3 className="text-3xl font-display font-bold text-ink-primary mb-3">
               Assessment Protocol
             </h3>
-            <p className="text-verdict-text-secondary max-w-2xl mx-auto">
-              A rigorous three-phase evaluation process designed for technical integrity and comprehensive judgment.
+            <p className="text-ink-secondary max-w-2xl mx-auto">
+              A rigorous three-phase evaluation process designed for technical
+              integrity and comprehensive judgment.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-12">
-            {/* Phase 01 */}
-            <div className="relative">
-              <div className="border-l-2 border-accent-bronze/30 pl-8 pb-12">
-                <div className="absolute left-0 top-0 w-16 h-16 -translate-x-[31px] border-2 border-accent-bronze/40 bg-verdict-surface flex items-center justify-center">
-                  <span className="text-2xl font-mono font-bold text-accent-bronze">01</span>
-                </div>
-                <div className="pt-6">
-                  <h4 className="text-xl font-display font-semibold text-verdict-text-primary mb-4">
-                    Session Initialization
-                  </h4>
-                  <p className="text-verdict-text-secondary leading-relaxed mb-4">
-                    Configure evaluation parameters, define assessment criteria, and generate secure session credentials.
-                  </p>
-                  <div className="text-xs font-mono text-verdict-text-quaternary tracking-wider">
-                    PROTOCOL: INIT_SESSION
-                  </div>
-                </div>
-              </div>
-            </div>
+            {PHASES.map((phase) => (
+              <div key={phase.num} className="relative pl-10 group">
+                {/* Vertical connector line */}
+                <div className="absolute left-4 top-0 bottom-0 w-px bg-neeti-border group-last:hidden" />
 
-            {/* Phase 02 */}
-            <div className="relative">
-              <div className="border-l-2 border-accent-bronze/30 pl-8 pb-12">
-                <div className="absolute left-0 top-0 w-16 h-16 -translate-x-[31px] border-2 border-accent-bronze/40 bg-verdict-surface flex items-center justify-center">
-                  <span className="text-2xl font-mono font-bold text-accent-bronze">02</span>
+                {/* Phase badge */}
+                <div className="absolute left-0 top-0 w-9 h-9 flex items-center justify-center border border-bronze/30 bg-neeti-surface rounded-md text-base font-mono font-bold text-bronze">
+                  {phase.num}
                 </div>
-                <div className="pt-6">
-                  <h4 className="text-xl font-display font-semibold text-verdict-text-primary mb-4">
-                    Live Evaluation
-                  </h4>
-                  <p className="text-verdict-text-secondary leading-relaxed mb-4">
-                    Real-time code execution, automated testing, and concurrent analysis by specialized AI agents.
-                  </p>
-                  <div className="text-xs font-mono text-verdict-text-quaternary tracking-wider">
-                    PROTOCOL: CONDUCT_EVAL
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Phase 03 */}
-            <div className="relative">
-              <div className="border-l-2 border-accent-bronze/30 pl-8 pb-12">
-                <div className="absolute left-0 top-0 w-16 h-16 -translate-x-[31px] border-2 border-accent-bronze/40 bg-verdict-surface flex items-center justify-center">
-                  <span className="text-2xl font-mono font-bold text-accent-bronze">03</span>
-                </div>
-                <div className="pt-6">
-                  <h4 className="text-xl font-display font-semibold text-verdict-text-primary mb-4">
-                    Verdict Generation
+                <div className="pt-1">
+                  <h4 className="text-lg font-display font-semibold text-ink-primary mb-3">
+                    {phase.title}
                   </h4>
-                  <p className="text-verdict-text-secondary leading-relaxed mb-4">
-                    Comprehensive report compilation with evidence-backed assessments and quantified performance metrics.
+                  <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                    {phase.desc}
                   </p>
-                  <div className="text-xs font-mono text-verdict-text-quaternary tracking-wider">
-                    PROTOCOL: GEN_VERDICT
-                  </div>
+                  <span className="text-[10px] font-mono text-ink-ghost tracking-[0.15em]">
+                    PROTOCOL: {phase.tag}
+                  </span>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* Footer - Institutional */}
-        <footer className="border-t border-verdict-border bg-verdict-surface/50">
-          <div className="max-w-7xl mx-auto px-6 py-8">
-            <div className="flex flex-col md:flex-row items-center justify-between text-sm text-verdict-text-tertiary">
-              <div className="flex items-center space-x-2 mb-4 md:mb-0">
-                <Scale className="w-4 h-4 text-accent-bronze/60" strokeWidth={1.5} />
-                <span className="font-mono tracking-wider">NEETI AI © 2026</span>
-              </div>
-              <div className="flex items-center space-x-1 font-mono text-xs text-verdict-text-quaternary">
-                <span>EVAL_SYSTEM_v2.0.1</span>
-                <span className="text-accent-bronze/40">|</span>
-                <span>SECURE_PROTOCOL_ACTIVE</span>
-              </div>
-            </div>
+        {/* ── Footer ─────────────────────────────────────── */}
+        <footer className="border-t border-neeti-border bg-neeti-surface/30">
+          <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-ink-ghost">
+            <span className="inline-flex items-center gap-2 font-mono tracking-wider">
+              <Scale className="w-3.5 h-3.5 text-bronze/50" strokeWidth={1.5} />
+              NEETI AI © {new Date().getFullYear()}
+            </span>
+            <span className="font-mono text-xs tracking-wider">
+              EVAL_SYSTEM_v2.1.0
+              <span className="text-bronze/30 mx-2">|</span>
+              SECURE_PROTOCOL_ACTIVE
+            </span>
           </div>
         </footer>
       </div>

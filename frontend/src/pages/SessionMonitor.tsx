@@ -5,6 +5,7 @@ import { useSessionStore } from '../store/useSessionStore';
 import { useLiveMonitoring } from '../lib/websocket';
 import { Button } from '../components/Button';
 import { Card, MetricCard, EvidenceCard } from '../components/Card';
+import { StatusIndicator } from '../components/StatusIndicator';
 
 interface ActivityEvent {
   timestamp: string;
@@ -13,236 +14,134 @@ interface ActivityEvent {
   severity?: 'info' | 'warning' | 'critical';
 }
 
+const TYPE_DOT: Record<string, string> = {
+  coding: 'bg-status-info', speech: 'bg-status-success', vision: 'bg-bronze', flag: 'bg-status-critical',
+};
+
 export default function SessionMonitor() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
   const { currentSession, fetchSession, endSession } = useSessionStore();
-  const { metrics, flags = [], isConnected } = useLiveMonitoring(
-    sessionId ? parseInt(sessionId) : null
-  );
+  const { metrics, flags = [], isConnected } = useLiveMonitoring(sessionId ? parseInt(sessionId) : null);
 
   const [activityLog, setActivityLog] = useState<ActivityEvent[]>([]);
+  const [showEndDialog, setShowEndDialog] = useState(false);
+
+  useEffect(() => { if (sessionId) fetchSession(parseInt(sessionId)); }, [sessionId, fetchSession]);
 
   useEffect(() => {
-    if (sessionId) {
-      fetchSession(parseInt(sessionId));
-    }
-  }, [sessionId, fetchSession]);
-
-  useEffect(() => {
-    if (metrics) {
-      const getMetricMessage = (metric: { type: string; success?: boolean; language?: string; duration?: number; engagement?: number }) => {
-        switch (metric.type) {
-          case 'coding':
-            return `Code execution: ${metric.success ? 'Success' : 'Error'} (${metric.language || 'Unknown'})`;
-          case 'speech':
-            return `Speech detected: ${metric.duration || 0}s of communication`;
-          case 'vision':
-            return `Engagement level: ${metric.engagement || 'Unknown'}%`;
-          default:
-            return 'Activity detected';
-        }
-      };
-
-      const event: ActivityEvent = {
-        timestamp: new Date().toISOString(),
-        type: metrics.type as 'coding' | 'speech' | 'vision',
-        message: getMetricMessage(metrics),
-        severity: 'info',
-      };
-      setActivityLog((prev) => [event, ...prev].slice(0, 50));
-    }
+    if (!metrics) return;
+    const msg = (() => {
+      switch (metrics.type) {
+        case 'coding':  return `Code execution: ${metrics.success ? 'Success' : 'Error'} (${metrics.language || 'Unknown'})`;
+        case 'speech':  return `Speech detected: ${metrics.duration || 0}s of communication`;
+        case 'vision':  return `Engagement level: ${metrics.engagement || 'Unknown'}%`;
+        default:        return 'Activity detected';
+      }
+    })();
+    setActivityLog(prev => [{ timestamp: new Date().toISOString(), type: metrics.type as any, message: msg, severity: 'info' }, ...prev].slice(0, 50));
   }, [metrics]);
 
   useEffect(() => {
-    if (flags && flags.length > 0) {
-      const newEvents = flags.map((flag) => ({
-        timestamp: flag.timestamp || new Date().toISOString(),
+    if (flags?.length) {
+      const events = flags.map(f => ({
+        timestamp: f.timestamp || new Date().toISOString(),
         type: 'flag' as const,
-        message: flag.message,
-        severity: flag.severity as 'info' | 'warning' | 'critical',
+        message: f.message,
+        severity: f.severity as 'info' | 'warning' | 'critical',
       }));
-      setActivityLog((prev) => [...newEvents, ...prev].slice(0, 50));
+      setActivityLog(prev => [...events, ...prev].slice(0, 50));
     }
   }, [flags]);
 
-  const [showEndDialog, setShowEndDialog] = useState(false);
-
-  const handleEndSession = () => {
-    setShowEndDialog(true);
-  };
-
-  const confirmEndSession = () => {
-    endSession(parseInt(sessionId!));
-    setShowEndDialog(false);
-    navigate('/dashboard');
-  };
+  const confirmEnd = () => { endSession(parseInt(sessionId!)); setShowEndDialog(false); navigate('/dashboard'); };
 
   if (!currentSession) {
-    return (
-      <div className="min-h-screen bg-verdict-bg flex items-center justify-center">
-        <div className="text-verdict-text-secondary">Loading session...</div>
-      </div>
-    );
+    return <div className="min-h-screen bg-neeti-bg flex items-center justify-center"><p className="text-ink-ghost text-sm">Loading session…</p></div>;
   }
 
   return (
-    <div className="min-h-screen bg-verdict-bg">
-      {/* Verdict Header */}
-      <header className="verdict-card border-b border-verdict-border-strong px-6 py-4">
+    <div className="min-h-screen bg-neeti-bg">
+      {/* ── Header ──────────────────────────────────── */}
+      <header className="sticky top-0 z-30 border-b border-neeti-border bg-neeti-surface/80 backdrop-blur-md px-5 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-3">
-              <Scale className="w-5 h-5 text-accent-bronze" />
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-2.5">
+              <Scale className="w-5 h-5 text-bronze" />
               <div>
-                <h1 className="text-headline font-display text-verdict-text-primary">
-                  Live Evaluation Monitor
-                </h1>
-                <p className="text-micro text-verdict-text-tertiary">
-                  {currentSession.title} · Session {currentSession.join_code}
-                </p>
+                <h1 className="text-sm font-display font-semibold text-ink-primary">Live Evaluation Monitor</h1>
+                <p className="text-[10px] text-ink-ghost">{currentSession.title} · {currentSession.join_code}</p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-2 text-micro text-verdict-text-secondary">
-              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-semantic-success' : 'bg-semantic-critical'
-                }`} />
-              <span>{isConnected ? 'MONITORING' : 'CONNECTING'}</span>
+            <div className="flex items-center gap-1.5">
+              <StatusIndicator status={isConnected ? 'success' : 'critical'} size="sm" />
+              <span className="text-[10px] uppercase tracking-wider text-ink-ghost">
+                {isConnected ? 'Monitoring' : 'Connecting'}
+              </span>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate(`/sessions/${sessionId}/results`)}
-            >
-              View Results
-            </Button>
-
-            <Button
-              variant="critical"
-              size="sm"
-              onClick={handleEndSession}
-            >
-              End Session
-            </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" onClick={() => navigate(`/sessions/${sessionId}/results`)}>View Results</Button>
+            <Button variant="critical" size="sm" onClick={() => setShowEndDialog(true)}>End Session</Button>
           </div>
         </div>
       </header>
 
-      <div className="flex h-[calc(100vh-80px)]">
-        {/* Main Monitoring Panel */}
-        <div className="flex-1 flex flex-col">
-          {/* Real-time Metrics */}
-          <div className="p-6 border-b border-verdict-border">
-            <h2 className="text-subheadline mb-6 flex items-center space-x-2">
-              <Activity className="w-5 h-5 text-accent-bronze" />
-              Live Metrics
+      <div className="flex h-[calc(100vh-56px)]">
+        {/* ── Main panel ───────────────────────────── */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Metrics */}
+          <div className="p-5 border-b border-neeti-border">
+            <h2 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider mb-4 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-bronze" /> Live Metrics
             </h2>
-
-            <div className="grid-control">
-              <div className="grid-control-3">
-                <MetricCard
-                  title="Code Quality"
-                  value={metrics?.codeQuality || 0}
-                  unit="/100"
-                  status="success"
-                  description="Algorithm efficiency"
-                />
-              </div>
-
-              <div className="grid-control-3">
-                <MetricCard
-                  title="Communication"
-                  value={metrics?.communication || 0}
-                  unit="/100"
-                  status="warning"
-                  description="Speech clarity"
-                />
-              </div>
-
-              <div className="grid-control-3">
-                <MetricCard
-                  title="Engagement"
-                  value={metrics?.engagement || 0}
-                  unit="/100"
-                  status="critical"
-                  description="Visual attention"
-                />
-              </div>
-
-              <div className="grid-control-3">
-                <MetricCard
-                  title="Problem Solving"
-                  value={metrics?.problemSolving || 0}
-                  unit="/100"
-                  status="success"
-                  description="Logical reasoning"
-                />
-              </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <MetricCard title="Code Quality"    value={metrics?.codeQuality    || 0} unit="/100" status="success" description="Algorithm efficiency" />
+              <MetricCard title="Communication"   value={metrics?.communication  || 0} unit="/100" status="warning" description="Speech clarity" />
+              <MetricCard title="Engagement"      value={metrics?.engagement     || 0} unit="/100" status="critical" description="Visual attention" />
+              <MetricCard title="Problem Solving" value={metrics?.problemSolving || 0} unit="/100" status="success" description="Logical reasoning" />
             </div>
           </div>
 
-          {/* Activity Timeline */}
-          <div className="flex-1 p-6 overflow-hidden">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-subheadline flex items-center space-x-2">
-                <Clock className="w-5 h-5 text-accent-bronze" />
-                Activity Timeline
+          {/* Timeline */}
+          <div className="flex-1 p-5 overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider flex items-center gap-2">
+                <Clock className="w-4 h-4 text-bronze" /> Activity Timeline
               </h2>
-
-              <div className="flex items-center space-x-4 text-micro text-verdict-text-secondary">
+              <div className="flex items-center gap-3 text-[10px] text-ink-ghost">
                 <span>{activityLog.length} events</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setActivityLog([])}
-                >
-                  Clear
-                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setActivityLog([])}>Clear</Button>
               </div>
             </div>
 
-            <div className="h-[calc(100%-3rem)] overflow-y-auto space-paragraph">
+            <div className="flex-1 overflow-y-auto space-y-2 pr-1">
               {activityLog.length === 0 ? (
-                <Card variant="evidence" className="text-center py-8">
-                  <div className="space-y-3">
-                    <Activity className="w-12 h-12 text-verdict-text-tertiary mx-auto" />
-                    <p className="text-body text-verdict-text-secondary">
-                      No activity detected yet. The evaluation will begin once the candidate starts.
-                    </p>
-                  </div>
+                <Card className="text-center py-10">
+                  <Activity className="w-10 h-10 text-ink-ghost mx-auto mb-3" />
+                  <p className="text-sm text-ink-secondary">No activity yet. Waiting for candidate…</p>
                 </Card>
               ) : (
-                activityLog.map((event, index) => (
+                activityLog.map((ev, i) => (
                   <div
-                    key={`${event.timestamp}-${index}`}
-                    className={`flex items-start space-x-4 p-4 rounded-sm border-l-4 ${event.severity === 'critical' ? 'border-semantic-critical bg-semantic-critical/5' :
-                        event.severity === 'warning' ? 'border-semantic-warning bg-semantic-warning/5' :
-                          'border-verdict-border bg-verdict-surface'
-                      }`}
+                    key={`${ev.timestamp}-${i}`}
+                    className={`flex items-start gap-3 p-3 rounded-lg border-l-[3px] ${
+                      ev.severity === 'critical' ? 'border-status-critical bg-status-critical/5' :
+                      ev.severity === 'warning'  ? 'border-status-warning bg-status-warning/5' :
+                                                   'border-neeti-border bg-neeti-surface'
+                    }`}
                   >
-                    <div className="flex-shrink-0 w-20">
-                      <div className="text-micro text-verdict-text-tertiary">
-                        {new Date(event.timestamp).toLocaleTimeString()}
+                    <span className="text-[10px] text-ink-ghost font-mono w-16 shrink-0 pt-0.5">
+                      {new Date(ev.timestamp).toLocaleTimeString()}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className={`w-1.5 h-1.5 rounded-full ${TYPE_DOT[ev.type] || 'bg-ink-ghost'}`} />
+                        <span className="text-[10px] font-semibold text-ink-tertiary uppercase tracking-wider">{ev.type}</span>
                       </div>
-                    </div>
-
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center space-x-2">
-                        <span className={`w-2 h-2 rounded-full ${event.type === 'coding' ? 'bg-blue-500' :
-                            event.type === 'speech' ? 'bg-green-500' :
-                              event.type === 'vision' ? 'bg-purple-500' :
-                                'bg-red-500'
-                          }`} />
-                        <span className="text-micro font-medium text-verdict-text-secondary uppercase">
-                          {event.type}
-                        </span>
-                      </div>
-                      <p className="text-body text-verdict-text-primary">
-                        {event.message}
-                      </p>
+                      <p className="text-sm text-ink-primary">{ev.message}</p>
                     </div>
                   </div>
                 ))
@@ -251,64 +150,49 @@ export default function SessionMonitor() {
           </div>
         </div>
 
-        {/* Flags Panel */}
-        <div className="w-80 border-l border-verdict-border bg-verdict-surface">
-          <div className="p-4 border-b border-verdict-border">
-            <h3 className="text-subheadline flex items-center space-x-2">
-              <AlertTriangle className="w-4 h-4 text-semantic-warning" />
-              Active Flags
+        {/* ── Flags sidebar ────────────────────────── */}
+        <div className="w-72 border-l border-neeti-border bg-neeti-surface flex flex-col">
+          <div className="px-4 py-3 border-b border-neeti-border">
+            <h3 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider flex items-center gap-2">
+              <AlertTriangle className="w-3.5 h-3.5 text-status-warning" /> Active Flags
             </h3>
           </div>
 
-          <div className="p-4 space-paragraph overflow-y-auto h-[calc(100%-4rem)]">
-            {flags && flags.length > 0 ? (
-              flags.map((flag, index) => (
-                <EvidenceCard
-                  key={index}
-                  title={flag.type || 'System Flag'}
-                  evidence={flag.message}
-                  severity={flag.severity || 'warning'}
-                  timestamp={flag.timestamp}
-                />
+          <div className="flex-1 p-3 space-y-2 overflow-y-auto">
+            {flags?.length ? (
+              flags.map((flag, i) => (
+                <EvidenceCard key={i} title={flag.type || 'System Flag'} evidence={flag.message} severity={flag.severity || 'warning'} timestamp={flag.timestamp} />
               ))
             ) : (
-              <div className="text-center py-8">
-                <AlertTriangle className="w-12 h-12 text-verdict-text-tertiary mx-auto mb-3" />
-                <p className="text-body text-verdict-text-secondary">
-                  No flags detected. The evaluation is proceeding normally.
-                </p>
+              <div className="text-center py-10">
+                <AlertTriangle className="w-8 h-8 text-ink-ghost mx-auto mb-2" />
+                <p className="text-xs text-ink-secondary">No flags detected</p>
               </div>
             )}
           </div>
         </div>
       </div>
 
-    {/* End Session Confirmation Dialog */}
-    {showEndDialog && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-        <div className="bg-verdict-surface border border-verdict-border rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 rounded-lg bg-red-500/10">
-              <AlertTriangle className="w-6 h-6 text-red-400" />
+      {/* ── End-session dialog ─────────────────────── */}
+      {showEndDialog && (
+        <div className="dialog-overlay">
+          <div className="dialog-panel max-w-md w-full mx-4 p-7 space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-status-critical/10">
+                <AlertTriangle className="w-5 h-5 text-status-critical" />
+              </div>
+              <h3 className="text-lg font-display font-semibold text-ink-primary">End Session</h3>
             </div>
-            <h3 className="text-lg font-semibold text-verdict-text-primary">End Session</h3>
-          </div>
-          <p className="text-verdict-text-secondary mb-6">
-            Are you sure you want to end this session? This action cannot be undone and the candidate will be disconnected.
-          </p>
-          <div className="flex gap-3 justify-end">
-            <Button variant="secondary" onClick={() => setShowEndDialog(false)}>
-              Cancel
-            </Button>
-            <Button
-              className="bg-red-600 hover:bg-red-700 text-white border-none"
-              onClick={confirmEndSession}
-            >
-              End Session
-            </Button>
+            <p className="text-sm text-ink-secondary">
+              Are you sure? The candidate will be disconnected and this cannot be undone.
+            </p>
+            <div className="flex gap-3 pt-1">
+              <Button variant="secondary" className="flex-1" onClick={() => setShowEndDialog(false)}>Cancel</Button>
+              <Button variant="critical" className="flex-1" onClick={confirmEnd}>End Session</Button>
+            </div>
           </div>
         </div>
-      </div>
-    )}  </div>
+      )}
+    </div>
   );
 }

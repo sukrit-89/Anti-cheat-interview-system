@@ -1,11 +1,13 @@
 import React from 'react';
 import { clsx } from 'clsx';
 
+/* ── Base Card ─────────────────────────────────────────── */
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'evidence' | 'control' | 'elevated';
+  variant?: 'default' | 'evidence' | 'control' | 'elevated' | 'glass';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   border?: boolean;
   status?: 'active' | 'critical' | 'warning' | 'neutral';
+  interactive?: boolean;
   children: React.ReactNode;
 }
 
@@ -14,51 +16,47 @@ export const Card: React.FC<CardProps> = ({
   padding = 'md',
   border = true,
   status,
+  interactive = false,
   children,
   className,
   ...props
 }) => {
-  const baseClasses = 'relative';
-
-  const variantClasses = {
-    default: 'verdict-card',
-    evidence: 'evidence-block',
-    control: 'control-panel',
-    elevated: 'verdict-card-elevated'
+  const variants = {
+    default:  'bg-neeti-surface border border-neeti-border rounded-lg shadow-card',
+    evidence: 'bg-neeti-surface border border-neeti-border border-l-4 border-l-bronze rounded-r-md',
+    control:  'bg-neeti-surface border border-neeti-border rounded-lg shadow-card',
+    elevated: 'bg-neeti-elevated border border-neeti-border-strong rounded-lg shadow-medium',
+    glass:    'glass-panel',
   };
 
-  const paddingClasses = {
-    none: '',
-    sm: 'p-3',
-    md: 'p-4',
-    lg: 'p-6'
-  };
+  const paddings = { none: '', sm: 'p-3', md: 'p-5', lg: 'p-7' };
 
-  const statusClasses: Record<string, string> = {
-    active: 'status-indicator active',
+  const statusMap: Record<string, string> = {
+    active:   'status-indicator active',
     critical: 'status-indicator critical',
-    warning: 'status-indicator warning',
-    neutral: 'status-indicator'
+    warning:  'status-indicator warning',
+    neutral:  'status-indicator',
   };
-
-  const classes = clsx(
-    baseClasses,
-    variantClasses[variant],
-    paddingClasses[padding],
-    status ? statusClasses[status] : '',
-    {
-      'border-0': !border
-    },
-    className
-  );
 
   return (
-    <div className={classes} {...props}>
+    <div
+      className={clsx(
+        'relative',
+        variants[variant],
+        paddings[padding],
+        status && statusMap[status],
+        !border && 'border-0',
+        interactive && 'interactive-authority cursor-pointer',
+        className
+      )}
+      {...props}
+    >
       {children}
     </div>
   );
 };
 
+/* ── Metric Card ───────────────────────────────────────── */
 interface MetricCardProps {
   title: string;
   value: string | number;
@@ -74,56 +72,45 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   unit,
   trend,
   status = 'neutral',
-  description
+  description,
 }) => {
   const statusColors = {
-    critical: 'text-semantic-critical',
-    warning: 'text-semantic-warning',
-    success: 'text-semantic-success',
-    neutral: 'text-verdict-text-primary'
-  };
-
-  const trendIcons = {
-    up: '↑',
-    down: '↓',
-    neutral: '→'
+    critical: 'text-status-critical',
+    warning:  'text-status-warning',
+    success:  'text-status-success',
+    neutral:  'text-ink-primary',
   };
 
   return (
-    <Card variant="control" padding="md" className="metric-display">
-      <div className="space-y-2">
+    <Card variant="control" padding="md">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-micro font-medium text-verdict-text-secondary uppercase tracking-wide">
+          <h3 className="text-xs font-medium text-ink-secondary uppercase tracking-wider">
             {title}
           </h3>
           {trend && (
-            <span className={`text-xs ${statusColors[status]}`}>
-              {trendIcons[trend]}
+            <span className={clsx('text-xs font-mono', statusColors[status])}>
+              {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
             </span>
           )}
         </div>
 
-        <div className="flex items-baseline space-x-1">
-          <span className={`text-2xl font-mono font-semibold ${statusColors[status]}`}>
+        <div className="flex items-baseline gap-1">
+          <span className={clsx('text-2xl font-mono font-bold', statusColors[status])}>
             {value}
           </span>
-          {unit && (
-            <span className="text-sm text-verdict-text-secondary">
-              {unit}
-            </span>
-          )}
+          {unit && <span className="text-sm text-ink-tertiary">{unit}</span>}
         </div>
 
         {description && (
-          <p className="text-micro text-verdict-text-tertiary">
-            {description}
-          </p>
+          <p className="text-xs text-ink-tertiary">{description}</p>
         )}
       </div>
     </Card>
   );
 };
 
+/* ── Evidence Card ─────────────────────────────────────── */
 interface EvidenceCardProps {
   title: string;
   evidence: string;
@@ -135,42 +122,40 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
   title,
   evidence,
   severity,
-  timestamp
+  timestamp,
 }) => {
-  const severityClasses = {
+  const sevClasses = {
     critical: 'evidence-critical',
-    warning: 'evidence-warning',
-    success: 'evidence-success',
-    neutral: ''
+    warning:  'evidence-warning',
+    success:  'evidence-success',
+    neutral:  '',
   };
 
   const badgeClasses = {
     critical: 'verdict-badge-critical',
-    warning: 'verdict-badge-warning',
-    success: 'verdict-badge-success',
-    neutral: 'verdict-badge-neutral'
+    warning:  'verdict-badge-warning',
+    success:  'verdict-badge-success',
+    neutral:  'verdict-badge-neutral',
   };
 
   return (
-    <Card variant="evidence" className={severityClasses[severity]}>
+    <Card variant="evidence" className={sevClasses[severity]}>
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-subheadline font-semibold text-verdict-text-primary">
+          <h3 className="font-display text-base font-semibold text-ink-primary">
             {title}
           </h3>
-          <span className={`verdict-badge ${badgeClasses[severity]}`}>
+          <span className={clsx('verdict-badge', badgeClasses[severity])}>
             {severity.toUpperCase()}
           </span>
         </div>
 
-        <p className="text-body text-verdict-text-secondary leading-relaxed">
+        <p className="text-sm text-ink-secondary leading-relaxed">
           {evidence}
         </p>
 
         {timestamp && (
-          <p className="text-micro text-verdict-text-tertiary">
-            {timestamp}
-          </p>
+          <p className="text-xs text-ink-tertiary font-mono">{timestamp}</p>
         )}
       </div>
     </Card>

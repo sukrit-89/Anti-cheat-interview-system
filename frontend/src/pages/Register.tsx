@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { Scale, UserPlus, Briefcase, User } from 'lucide-react';
+import { Button } from '../components/Button';
+import { Input } from '../components/Input';
 
 export const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -18,14 +20,10 @@ export const Register: React.FC = () => {
   const { register, isAuthenticated, error, clearError } = useAuthStore();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    }
+    if (isAuthenticated) navigate('/dashboard');
   }, [isAuthenticated, navigate]);
 
-  useEffect(() => {
-    return () => clearError();
-  }, [clearError]);
+  useEffect(() => () => clearError(), [clearError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,14 +33,12 @@ export const Register: React.FC = () => {
       setValidationError('Passwords do not match');
       return;
     }
-
     if (formData.password.length < 8) {
       setValidationError('Password must be at least 8 characters');
       return;
     }
 
     setIsLoading(true);
-
     try {
       await register(formData.email, formData.password, formData.full_name, formData.role);
       navigate('/dashboard');
@@ -53,218 +49,169 @@ export const Register: React.FC = () => {
     }
   };
 
+  const set = (key: string, value: string) =>
+    setFormData((f) => ({ ...f, [key]: value }));
+
   return (
-    <div className="min-h-screen bg-verdict-bg grid lg:grid-cols-12">
-      {/* Left Panel - Authority Branding */}
-      <div className="hidden lg:flex lg:col-span-5 border-r border-verdict-border p-12 flex-col justify-between relative overflow-hidden">
-        {/* Technical grid */}
-        <div className="absolute inset-0 opacity-[0.02]" style={{
-          backgroundImage: `
-            linear-gradient(rgba(146, 64, 14, 0.3) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(146, 64, 14, 0.3) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px'
-        }} />
+    <div className="min-h-screen bg-neeti-bg grid lg:grid-cols-12">
+      {/* ── Left branding panel ──────────────────────── */}
+      <div className="hidden lg:flex lg:col-span-5 border-r border-neeti-border p-12 flex-col justify-between relative overflow-hidden">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.015]"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(194,112,42,.3) 1px,transparent 1px), linear-gradient(90deg,rgba(194,112,42,.3) 1px,transparent 1px)',
+            backgroundSize: '60px 60px',
+          }}
+        />
 
         <div className="relative z-10">
-          <div className="flex items-center space-x-3 mb-8">
+          <Link to="/" className="flex items-center gap-3 mb-10">
             <div className="relative">
-              <Scale className="w-8 h-8 text-accent-bronze" strokeWidth={1.5} />
-              <div className="absolute -inset-1 bg-accent-bronze/10 blur-sm -z-10" />
+              <Scale className="w-7 h-7 text-bronze" strokeWidth={1.5} />
+              <div className="absolute -inset-1.5 bg-bronze/10 blur-md -z-10" />
             </div>
-            <div>
-              <h1 className="text-3xl font-display font-semibold text-verdict-text-primary tracking-tight">
+            <div className="leading-none">
+              <h1 className="text-2xl font-display font-bold text-ink-primary tracking-tight">
                 Neeti AI
               </h1>
-              <p className="text-xs text-verdict-text-quaternary font-mono tracking-wider">नीति · EVALUATION AUTHORITY</p>
+              <p className="text-[10px] text-ink-ghost font-mono tracking-[0.2em] mt-0.5">
+                नीति · EVALUATION AUTHORITY
+              </p>
             </div>
-          </div>
+          </Link>
 
           <div className="space-y-6 max-w-md">
-            <p className="text-verdict-text-secondary leading-relaxed">
-              Enterprise-grade technical interview evaluation infrastructure. Create your account to access
-              the assessment protocol and begin conducting evidence-based technical evaluations.
+            <p className="text-ink-secondary leading-relaxed">
+              Enterprise-grade technical interview evaluation infrastructure.
+              Create your account to access the assessment protocol.
             </p>
 
-            <div className="border-l-2 border-accent-bronze/30 pl-4 space-y-2">
-              <p className="text-sm text-verdict-text-tertiary">Comprehensive candidate assessment</p>
-              <p className="text-sm text-verdict-text-tertiary">Real-time code execution & analysis</p>
-              <p className="text-sm text-verdict-text-tertiary">Multi-agent evaluation framework</p>
-              <p className="text-sm text-verdict-text-tertiary">Evidence-backed verdict generation</p>
+            <div className="border-l-2 border-bronze/25 pl-4 space-y-2 text-sm text-ink-tertiary">
+              <p>Comprehensive candidate assessment</p>
+              <p>Real-time code execution & analysis</p>
+              <p>Multi-agent evaluation framework</p>
+              <p>Evidence-backed verdict generation</p>
             </div>
           </div>
         </div>
 
-        <div className="relative z-10">
-          <div className="text-xs font-mono text-verdict-text-quaternary tracking-wider">
-            REGISTRATION_PORTAL_v2.0
-          </div>
-        </div>
+        <p className="relative z-10 text-[10px] font-mono text-ink-ghost tracking-[0.15em]">
+          REGISTRATION_PORTAL_v2.1
+        </p>
       </div>
 
-      {/* Right Panel - Registration Form */}
+      {/* ── Right registration form ──────────────────── */}
       <div className="lg:col-span-7 flex items-center justify-center p-8 lg:p-12">
-        <div className="w-full max-w-md animate-reveal-slow">
+        <div className="w-full max-w-md animate-fadeUp">
           <div className="mb-8">
-            <div className="flex items-center space-x-2 mb-2">
-              <UserPlus className="w-5 h-5 text-accent-bronze" strokeWidth={1.5} />
-              <h2 className="text-2xl font-display font-semibold text-verdict-text-primary">
+            <div className="flex items-center gap-2 mb-1">
+              <UserPlus className="w-5 h-5 text-bronze" strokeWidth={1.5} />
+              <h2 className="text-2xl font-display font-bold text-ink-primary">
                 Account Registration
               </h2>
             </div>
-            <p className="text-sm text-verdict-text-tertiary">Initialize your access credentials</p>
+            <p className="text-sm text-ink-tertiary">Initialize your access credentials</p>
           </div>
 
           {(error || validationError) && (
-            <div className="mb-6 p-4 border-l-4 border-semantic-critical bg-semantic-critical/5 text-semantic-critical text-sm">
-              {validationError || (typeof error === 'string' ? error : 'An error occurred. Please try again.')}
+            <div className="mb-5 p-3 border-l-4 border-status-critical bg-status-critical/5 rounded-r-md text-sm text-status-critical">
+              {validationError ||
+                (typeof error === 'string' ? error : 'An error occurred. Please try again.')}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-verdict-text-tertiary mb-2 font-medium">
-                Full Name
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 bg-verdict-surface border border-verdict-border text-verdict-text-primary placeholder:text-verdict-text-quaternary focus:outline-none focus:border-accent-bronze transition-all font-mono text-sm"
-                placeholder="John Doe"
-                value={formData.full_name}
-                onChange={(e) =>
-                  setFormData({ ...formData, full_name: e.target.value })
-                }
-                required
-              />
-            </div>
+            <Input
+              label="Full Name"
+              type="text"
+              placeholder="John Doe"
+              value={formData.full_name}
+              onChange={(e) => set('full_name', e.target.value)}
+              required
+            />
 
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-verdict-text-tertiary mb-2 font-medium">
-                Email Address
-              </label>
-              <input
-                type="email"
-                className="w-full px-4 py-3 bg-verdict-surface border border-verdict-border text-verdict-text-primary placeholder:text-verdict-text-quaternary focus:outline-none focus:border-accent-bronze transition-all font-mono text-sm"
-                placeholder="your@company.com"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                required
-              />
-            </div>
+            <Input
+              label="Email Address"
+              type="email"
+              placeholder="your@company.com"
+              value={formData.email}
+              onChange={(e) => set('email', e.target.value)}
+              required
+            />
 
+            {/* Role selector */}
             <div>
-              <label className="block text-xs uppercase tracking-wider text-verdict-text-tertiary mb-3 font-medium">
-                Account Type
-              </label>
+              <p className="block text-sm font-medium text-ink-secondary mb-2">Account Type</p>
               <div className="grid grid-cols-2 gap-3">
-                <label className="cursor-pointer group">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="recruiter"
-                    checked={formData.role === 'recruiter'}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        role: e.target.value as 'recruiter',
-                      })
-                    }
-                    className="sr-only"
-                  />
-                  <div
-                    className={`p-4 border transition-all ${formData.role === 'recruiter'
-                        ? 'border-accent-bronze bg-accent-bronze/5'
-                        : 'border-verdict-border hover:border-verdict-border-strong group-hover:bg-verdict-surface-elevated'
+                {(['recruiter', 'candidate'] as const).map((role) => (
+                  <label key={role} className="cursor-pointer group">
+                    <input
+                      type="radio"
+                      name="role"
+                      value={role}
+                      checked={formData.role === role}
+                      onChange={(e) => set('role', e.target.value)}
+                      className="sr-only"
+                    />
+                    <div
+                      className={`p-4 border rounded-md transition-all ${
+                        formData.role === role
+                          ? 'border-bronze bg-bronze-muted shadow-glow'
+                          : 'border-neeti-border hover:border-neeti-border-strong bg-neeti-surface/50'
                       }`}
-                  >
-                    <Briefcase className="w-5 h-5 mb-2 text-accent-bronze" strokeWidth={1.5} />
-                    <div className="font-medium text-verdict-text-primary text-sm mb-1">
-                      Recruiter
+                    >
+                      {role === 'recruiter' ? (
+                        <Briefcase className="w-5 h-5 mb-2 text-bronze" strokeWidth={1.5} />
+                      ) : (
+                        <User className="w-5 h-5 mb-2 text-bronze" strokeWidth={1.5} />
+                      )}
+                      <p className="font-medium text-ink-primary text-sm mb-0.5 capitalize">
+                        {role}
+                      </p>
+                      <p className="text-xs text-ink-tertiary">
+                        {role === 'recruiter' ? 'Create & manage sessions' : 'Join interviews'}
+                      </p>
                     </div>
-                    <div className="text-xs text-verdict-text-tertiary">
-                      Create & manage sessions
-                    </div>
-                  </div>
-                </label>
-                <label className="cursor-pointer group">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="candidate"
-                    checked={formData.role === 'candidate'}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        role: e.target.value as 'candidate',
-                      })
-                    }
-                    className="sr-only"
-                  />
-                  <div
-                    className={`p-4 border transition-all ${formData.role === 'candidate'
-                        ? 'border-accent-bronze bg-accent-bronze/5'
-                        : 'border-verdict-border hover:border-verdict-border-strong group-hover:bg-verdict-surface-elevated'
-                      }`}
-                  >
-                    <User className="w-5 h-5 mb-2 text-accent-bronze" strokeWidth={1.5} />
-                    <div className="font-medium text-verdict-text-primary text-sm mb-1">
-                      Candidate
-                    </div>
-                    <div className="text-xs text-verdict-text-tertiary">
-                      Join interviews
-                    </div>
-                  </div>
-                </label>
+                  </label>
+                ))}
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-verdict-text-tertiary mb-2 font-medium">
-                Password
-              </label>
-              <input
-                type="password"
-                className="w-full px-4 py-3 bg-verdict-surface border border-verdict-border text-verdict-text-primary placeholder:text-verdict-text-quaternary focus:outline-none focus:border-accent-bronze transition-all font-mono text-sm"
-                placeholder="Minimum 8 characters"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                required
-              />
-            </div>
+            <Input
+              label="Password"
+              type="password"
+              placeholder="Minimum 8 characters"
+              value={formData.password}
+              onChange={(e) => set('password', e.target.value)}
+              required
+            />
 
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-verdict-text-tertiary mb-2 font-medium">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                className="w-full px-4 py-3 bg-verdict-surface border border-verdict-border text-verdict-text-primary placeholder:text-verdict-text-quaternary focus:outline-none focus:border-accent-bronze transition-all font-mono text-sm"
-                placeholder="Re-enter password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
+            <Input
+              label="Confirm Password"
+              type="password"
+              placeholder="Re-enter password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
 
-            <button
+            <Button
               type="submit"
-              className="w-full py-3 px-6 bg-accent-bronze hover:bg-accent-bronze-light border border-accent-bronze text-white transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed mt-6"
-              disabled={isLoading}
+              variant="primary"
+              className="w-full mt-2"
+              loading={isLoading}
             >
-              {isLoading ? 'Initializing Account...' : 'Create Account'}
-            </button>
+              {isLoading ? 'Initializing Account…' : 'Create Account'}
+            </Button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-verdict-border text-center">
-            <p className="text-sm text-verdict-text-secondary">
+          <div className="mt-8 pt-6 border-t border-neeti-border text-center">
+            <p className="text-sm text-ink-secondary">
               Already have an account?{' '}
               <Link
                 to="/login"
-                className="text-accent-bronze hover:text-accent-bronze-light font-medium transition-colors"
+                className="text-bronze hover:text-bronze-light font-medium transition-colors"
               >
                 Sign in
               </Link>

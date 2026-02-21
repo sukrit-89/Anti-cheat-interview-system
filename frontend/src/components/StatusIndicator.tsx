@@ -2,70 +2,44 @@ import React from 'react';
 import { clsx } from 'clsx';
 
 interface StatusIndicatorProps {
-    status: 'active' | 'idle' | 'warning' | 'critical';
-    label?: string;
-    showPulse?: boolean;
-    className?: string;
+  status: 'active' | 'idle' | 'warning' | 'critical';
+  label?: string;
+  showPulse?: boolean;
+  className?: string;
 }
 
 export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
-    status,
-    label,
-    showPulse = true,
-    className,
+  status,
+  label,
+  showPulse = true,
+  className,
 }) => {
-    const statusConfig = {
-        active: {
-            bgColor: 'bg-green-500',
-            textColor: 'text-green-500',
-            borderColor: 'border-green-500',
-            label: label || 'Active',
-        },
-        idle: {
-            bgColor: 'bg-amber-500',
-            textColor: 'text-amber-500',
-            borderColor: 'border-amber-500',
-            label: label || 'Idle',
-        },
-        warning: {
-            bgColor: 'bg-amber-500',
-            textColor: 'text-amber-500',
-            borderColor: 'border-amber-500',
-            label: label || 'Warning',
-        },
-        critical: {
-            bgColor: 'bg-red-500',
-            textColor: 'text-red-500',
-            borderColor: 'border-red-500',
-            label: label || 'Critical',
-        },
-    };
+  const cfg = {
+    active:   { dot: 'bg-status-success',  text: 'text-status-success',  fallback: 'Active' },
+    idle:     { dot: 'bg-status-warning',   text: 'text-status-warning',  fallback: 'Idle' },
+    warning:  { dot: 'bg-status-warning',   text: 'text-status-warning',  fallback: 'Warning' },
+    critical: { dot: 'bg-status-critical',  text: 'text-status-critical', fallback: 'Critical' },
+  }[status];
 
-    const config = statusConfig[status];
-
-    return (
-        <div className={clsx('inline-flex items-center gap-2', className)}>
-            <span className="relative flex h-2 w-2">
-                {showPulse && (
-                    <span
-                        className={clsx(
-                            'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75',
-                            config.bgColor
-                        )}
-                    />
-                )}
-                <span
-                    className={clsx(
-                        'relative inline-flex rounded-full h-2 w-2',
-                        config.bgColor
-                    )}
-                />
-            </span>
-            {label && (
-                <span className={clsx('text-xs font-mono uppercase tracking-wider', config.textColor)}>
-                    {config.label}
-                </span>
+  return (
+    <div className={clsx('inline-flex items-center gap-2', className)}>
+      <span className="relative flex h-2 w-2">
+        {showPulse && (
+          <span
+            className={clsx(
+              'animate-ping absolute inset-0 rounded-full opacity-75',
+              cfg.dot
             )}
-        </div>
-    );
+          />
+        )}
+        <span className={clsx('relative inline-flex rounded-full h-2 w-2', cfg.dot)} />
+      </span>
+
+      {label && (
+        <span className={clsx('text-xs font-mono uppercase tracking-wider', cfg.text)}>
+          {label || cfg.fallback}
+        </span>
+      )}
+    </div>
+  );
 };

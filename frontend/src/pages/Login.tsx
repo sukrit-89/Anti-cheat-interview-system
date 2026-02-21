@@ -14,18 +14,14 @@ export function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    }
+    if (isAuthenticated) navigate('/dashboard');
   }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
     try {
       await login(email, password);
-      // Explicitly navigate after successful login
       navigate('/dashboard');
     } catch (err: any) {
       setError(extractErrorMessage(err, 'Authentication failed'));
@@ -33,165 +29,129 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-verdict-bg flex">
-      {/* Authority Panel */}
-      <div className="w-full lg:w-1/2 xl:w-2/5 border-r border-verdict-border flex flex-col justify-center p-12">
-        <div className="max-w-md mx-auto w-full space-section">
-          {/* Brand Authority */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center space-x-3 mb-6">
-              <Shield className="w-8 h-8 text-accent-bronze" />
-              <h1 className="text-headline font-display text-verdict-text-primary">
+    <div className="min-h-screen bg-neeti-bg flex">
+      {/* ── Auth panel ────────────────────────────────── */}
+      <div className="w-full lg:w-[44%] border-r border-neeti-border flex flex-col justify-center px-8 py-12 lg:px-14">
+        <div className="max-w-md mx-auto w-full space-y-10">
+          {/* Brand */}
+          <div className="text-center">
+            <div className="inline-flex items-center gap-3 mb-5">
+              <Shield className="w-7 h-7 text-bronze" />
+              <h1 className="text-3xl font-display font-bold text-ink-primary tracking-tight">
                 Neeti AI
               </h1>
             </div>
-            <p className="text-body text-verdict-text-secondary leading-relaxed">
+            <p className="text-sm text-ink-secondary">
               Enterprise technical interview evaluation
             </p>
           </div>
 
-          {/* Authentication Form */}
-          <form onSubmit={handleSubmit} className="space-paragraph">
-            <div className="space-section">
-              <Input
-                label="Email Address"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your.email@company.com"
-                icon={<User className="w-4 h-4" />}
-                required
-                variant="evidence"
-              />
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <Input
+              label="Email Address"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your.email@company.com"
+              icon={<User className="w-4 h-4" />}
+              required
+            />
 
-              <Input
-                label="Password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your secure password"
-                icon={<Lock className="w-4 h-4" />}
-                required
-                variant="evidence"
-              />
-            </div>
+            <Input
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your secure password"
+              icon={<Lock className="w-4 h-4" />}
+              required
+            />
 
             {error && (
-              <div className="evidence-block evidence-critical">
-                <p className="text-body text-semantic-critical">
-                  {error}
-                </p>
+              <div className="border-l-4 border-status-critical bg-status-critical/5 p-3 rounded-r-md">
+                <p className="text-sm text-status-critical">{error}</p>
               </div>
             )}
 
-            <Button
-              type="submit"
-              variant="primary"
-              className="w-full"
-              loading={isLoading}
-            >
+            <Button type="submit" variant="primary" className="w-full" loading={isLoading}>
               Sign In
             </Button>
           </form>
 
-          {/* Trust Indicators */}
-          <div className="mt-8 pt-8 border-t border-verdict-border">
-            <div className="space-paragraph text-micro text-verdict-text-tertiary">
-              <div className="flex items-center space-x-2 mb-3">
-                <Shield className="w-4 h-4" />
-                <span className="font-medium">Secure Authentication</span>
+          {/* Footer */}
+          <div className="pt-6 border-t border-neeti-border space-y-3">
+            <div className="flex items-center gap-2 text-xs text-ink-ghost">
+              <Shield className="w-3.5 h-3.5" />
+              <span className="font-medium">Secure Authentication</span>
+            </div>
+            <p className="text-xs text-ink-ghost leading-relaxed">
+              All access is logged and monitored. This system is for authorized
+              personnel only.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Evidence panel ────────────────────────────── */}
+      <div className="hidden lg:flex lg:flex-1 bg-neeti-surface/40 items-center justify-center p-12">
+        <div className="max-w-lg space-y-10">
+          <h2 className="text-2xl font-display font-bold text-ink-primary">
+            Evidence-Based Assessment
+          </h2>
+
+          <div className="space-y-4">
+            {[
+              {
+                title: 'Objective Evaluation',
+                text: 'Multi-agent AI analysis provides standardized, bias-free technical assessments based on quantifiable metrics.',
+              },
+              {
+                title: 'Real-Time Monitoring',
+                text: 'Continuous evaluation of coding ability, communication clarity, and engagement levels throughout the interview.',
+              },
+              {
+                title: 'Defensible Decisions',
+                text: 'Comprehensive evidence trails and AI-powered insights create documented, justifiable hiring recommendations.',
+              },
+            ].map((block) => (
+              <div
+                key={block.title}
+                className="border border-neeti-border border-l-4 border-l-bronze/30 rounded-r-md bg-neeti-surface/60 p-5"
+              >
+                <h3 className="text-sm font-semibold text-ink-primary mb-2">{block.title}</h3>
+                <p className="text-sm text-ink-secondary leading-relaxed">{block.text}</p>
               </div>
-              <p>All access is logged and monitored for security purposes.</p>
-              <p>This system is for authorized personnel only.</p>
+            ))}
+          </div>
+
+          <div className="pt-8 border-t border-neeti-border">
+            <h3 className="text-sm font-semibold text-ink-primary mb-4">System Capabilities</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: '5 AI AGENTS', value: 'Autonomous' },
+                { label: 'ANALYSIS', value: 'Multi-Dimensional' },
+                { label: 'EVALUATION', value: 'Real-Time' },
+                { label: 'REPORTING', value: 'Comprehensive' },
+              ].map((m) => (
+                <div key={m.label} className="border border-neeti-border rounded-md bg-neeti-bg p-4">
+                  <p className="text-[10px] font-mono text-ink-ghost tracking-wider mb-1">{m.label}</p>
+                  <p className="text-sm font-mono text-ink-primary">{m.value}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Evidence Panel */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 bg-verdict-surface">
-        <div className="p-12 space-editorial">
-          <div className="space-section">
-            <h2 className="text-headline font-display text-verdict-text-primary mb-6">
-              Evidence-Based Assessment
-            </h2>
-
-            <div className="space-paragraph">
-              <div className="evidence-block">
-                <h3 className="text-subheadline font-semibold mb-3">Objective Evaluation</h3>
-                <p className="text-body text-verdict-text-secondary leading-relaxed">
-                  Multi-agent AI analysis provides standardized, bias-free technical assessments
-                  based on quantifiable metrics rather than subjective judgment.
-                </p>
-              </div>
-
-              <div className="evidence-block">
-                <h3 className="text-subheadline font-semibold mb-3">Real-Time Monitoring</h3>
-                <p className="text-body text-verdict-text-secondary leading-relaxed">
-                  Continuous evaluation of coding ability, communication clarity, and engagement
-                  levels throughout the interview process.
-                </p>
-              </div>
-
-              <div className="evidence-block">
-                <h3 className="text-subheadline font-semibold mb-3">Defensible Decisions</h3>
-                <p className="text-body text-verdict-text-secondary leading-relaxed">
-                  Comprehensive evidence trails and AI-powered insights create
-                  documented, justifiable hiring recommendations.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-12 pt-12 border-t border-verdict-border">
-            <div className="space-section">
-              <h3 className="text-subheadline font-semibold mb-4">System Capabilities</h3>
-
-              <div className="grid-control">
-                <div className="grid-control-6">
-                  <div className="metric-display">
-                    <div className="text-micro text-verdict-text-tertiary mb-2">5 AI AGENTS</div>
-                    <div className="text-lg font-mono text-verdict-text-primary">Autonomous</div>
-                  </div>
-                </div>
-
-                <div className="grid-control-6">
-                  <div className="metric-display">
-                    <div className="text-micro text-verdict-text-tertiary mb-2">ANALYSIS</div>
-                    <div className="text-lg font-mono text-verdict-text-primary">Multi-Dimensional</div>
-                  </div>
-                </div>
-
-                <div className="grid-control-6">
-                  <div className="metric-display">
-                    <div className="text-micro text-verdict-text-tertiary mb-2">EVALUATION</div>
-                    <div className="text-lg font-mono text-verdict-text-primary">Real-Time</div>
-                  </div>
-                </div>
-
-                <div className="grid-control-6">
-                  <div className="metric-display">
-                    <div className="text-micro text-verdict-text-tertiary mb-2">REPORTING</div>
-                    <div className="text-lg font-mono text-verdict-text-primary">Comprehensive</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Register Link */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 lg:hidden">
-        <div className="text-center text-micro text-verdict-text-tertiary">
+      {/* Mobile register link */}
+      <div className="absolute bottom-6 inset-x-0 text-center lg:hidden">
+        <p className="text-xs text-ink-tertiary">
           Don't have an account?{' '}
-          <Link
-            to="/register"
-            className="text-accent-bronze hover:text-accent-bronze-light font-medium"
-          >
+          <Link to="/register" className="text-bronze hover:text-bronze-light font-medium">
             Request Access
           </Link>
-        </div>
+        </p>
       </div>
     </div>
   );

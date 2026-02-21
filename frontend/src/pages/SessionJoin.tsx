@@ -1,155 +1,130 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Shield, Code2, Mic, Eye, Brain } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
+import { Button } from '../components/Button';
+import { Input } from '../components/Input';
+
+const EXPECT_ITEMS = [
+  { icon: Code2, text: 'Technical problem-solving assessment' },
+  { icon: Mic,   text: 'Real-time communication analysis' },
+  { icon: Eye,   text: 'Visual engagement monitoring' },
+  { icon: Brain, text: 'AI-assisted reasoning evaluation' },
+];
 
 export const SessionJoin: React.FC = () => {
   const navigate = useNavigate();
   const { joinSession, isLoading, error, clearError } = useSessionStore();
+  const [formData, setFormData] = useState({ session_code: '', email: '', full_name: '' });
 
-  const [formData, setFormData] = useState({
-    session_code: '',
-    email: '',
-    full_name: '',
-  });
-
-  React.useEffect(() => {
-    return () => clearError();
-  }, [clearError]);
+  React.useEffect(() => () => clearError(), [clearError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
-      await joinSession({
-        session_code: formData.session_code.toUpperCase(),
-        email: formData.email,
-        full_name: formData.full_name,
-      });
+      await joinSession({ session_code: formData.session_code.toUpperCase(), email: formData.email, full_name: formData.full_name });
       navigate('/interview');
-    } catch (err) {
-      console.error('Failed to join session:', err);
-    }
+    } catch {}
   };
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
-    setFormData({ ...formData, session_code: value });
+    setFormData(prev => ({ ...prev, session_code: value }));
   };
 
   return (
-    <div className="min-h-screen bg-verdict-bg grid grid-cols-1 lg:grid-cols-12">
-      {/* Left Panel - Instructions */}
-      <div className="hidden lg:flex lg:col-span-5 border-r border-verdict-border p-12 flex-col justify-between">
+    <div className="min-h-screen bg-neeti-bg grid grid-cols-1 lg:grid-cols-12">
+      {/* ── Left panel ─────────────────────────────── */}
+      <div className="hidden lg:flex lg:col-span-5 border-r border-neeti-border p-10 xl:p-14 flex-col justify-between">
         <div>
-          <h1 className="font-serif text-4xl font-semibold text-verdict-text-primary mb-4">
-            Neeti AI
-          </h1>
-          <div className="space-y-6 text-verdict-text-secondary leading-relaxed max-w-md">
-            <p>
-              You have been invited to participate in a technical interview evaluation session.
+          <div className="flex items-center gap-2.5 mb-8">
+            <Shield className="w-6 h-6 text-bronze" />
+            <span className="text-lg font-display font-semibold text-ink-primary tracking-tight">Neeti AI</span>
+          </div>
+
+          <div className="space-y-5 max-w-sm">
+            <p className="text-sm text-ink-secondary leading-relaxed">
+              You've been invited to participate in a technical interview evaluation session.
             </p>
-            <div className="border-l-2 border-verdict-line pl-4">
-              <p className="text-sm font-medium text-verdict-text-primary mb-2">
-                What to expect:
-              </p>
-              <ul className="space-y-1 text-sm">
-                <li>• Technical problem-solving assessment</li>
-                <li>• Real-time code evaluation</li>
-                <li>• Communication and reasoning analysis</li>
-                <li>• AI-assisted interview monitoring</li>
+
+            <div className="border-l-2 border-bronze/30 pl-4">
+              <p className="text-xs font-semibold text-ink-primary uppercase tracking-wider mb-3">What to expect</p>
+              <ul className="space-y-2.5">
+                {EXPECT_ITEMS.map(({ icon: Icon, text }) => (
+                  <li key={text} className="flex items-center gap-2.5 text-sm text-ink-secondary">
+                    <Icon className="w-4 h-4 text-bronze shrink-0" />
+                    {text}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
         </div>
-        <div className="text-xs text-verdict-text-tertiary">
-          CANDIDATE PORTAL
-        </div>
+
+        <span className="text-[10px] uppercase tracking-[0.2em] text-ink-ghost">Candidate Portal</span>
       </div>
 
-      {/* Right Panel - Form */}
-      <div className="col-span-1 lg:col-span-7 flex items-center justify-center p-8 lg:p-12">
-        <div className="w-full max-w-md">
-          <h2 className="font-serif text-2xl font-medium text-verdict-text-primary mb-2">
+      {/* ── Right panel — form ─────────────────────── */}
+      <div className="col-span-1 lg:col-span-7 flex items-center justify-center p-6 lg:p-12">
+        <div className="w-full max-w-md animate-fadeUp">
+          <h2 className="text-xl font-display font-semibold text-ink-primary tracking-tight mb-1">
             Join Interview Session
           </h2>
-          <p className="text-verdict-text-secondary text-sm mb-8">
+          <p className="text-sm text-ink-tertiary mb-8">
             Enter the 6-character code provided by your interviewer
           </p>
 
           {error && (
-            <div className="mb-6 p-4 border border-semantic-critical bg-semantic-critical/5 text-semantic-critical text-sm">
+            <div className="mb-6 p-4 rounded-lg border border-status-critical/30 bg-status-critical/5 text-status-critical text-sm">
               {typeof error === 'string' ? error : 'An error occurred. Please try again.'}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Session Code Input */}
+            {/* Code input — special styling */}
             <div>
-              <label className="block text-xs uppercase tracking-wide text-verdict-text-tertiary mb-3 font-medium">
+              <label className="block text-xs font-medium text-ink-ghost uppercase tracking-wider mb-2">
                 Session Access Code
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-4 bg-verdict-surface border-2 border-verdict-border text-verdict-text-primary placeholder:text-verdict-text-tertiary focus:outline-none focus:border-semantic-emphasis transition-colors font-mono text-3xl text-center tracking-[0.5em] uppercase"
+                className="w-full px-4 py-4 bg-neeti-surface border-2 border-neeti-border rounded-lg text-ink-primary placeholder:text-ink-ghost focus:outline-none focus:border-bronze transition-colors font-mono text-3xl text-center tracking-[0.5em] uppercase"
                 placeholder="ABC123"
                 value={formData.session_code}
                 onChange={handleCodeChange}
                 maxLength={6}
                 required
               />
-              <p className="mt-2 text-xs text-verdict-text-tertiary text-center">
-                6-character alphanumeric code
-              </p>
+              <p className="mt-2 text-xs text-ink-ghost text-center">6-character alphanumeric code</p>
             </div>
 
-            <div className="h-px bg-verdict-border" />
+            <div className="h-px bg-neeti-border" />
 
-            <div>
-              <label className="block text-xs uppercase tracking-wide text-verdict-text-tertiary mb-2 font-medium">
-                Full Name
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 bg-verdict-surface border border-verdict-border text-verdict-text-primary placeholder:text-verdict-text-tertiary focus:outline-none focus:border-semantic-emphasis transition-colors"
-                placeholder="John Doe"
-                value={formData.full_name}
-                onChange={(e) =>
-                  setFormData({ ...formData, full_name: e.target.value })
-                }
-                required
-              />
-            </div>
+            <Input
+              label="Full Name"
+              placeholder="John Doe"
+              value={formData.full_name}
+              onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
+              required
+            />
 
-            <div>
-              <label className="block text-xs uppercase tracking-wide text-verdict-text-tertiary mb-2 font-medium">
-                Email Address
-              </label>
-              <input
-                type="email"
-                className="w-full px-4 py-3 bg-verdict-surface border border-verdict-border text-verdict-text-primary placeholder:text-verdict-text-tertiary focus:outline-none focus:border-semantic-emphasis transition-colors"
-                placeholder="your@email.com"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                required
-              />
-            </div>
+            <Input
+              label="Email Address"
+              type="email"
+              placeholder="your@email.com"
+              value={formData.email}
+              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              required
+            />
 
-            <button
-              type="submit"
-              className="w-full py-3 px-6 bg-verdict-text-primary text-verdict-bg border border-verdict-text-primary hover:bg-transparent hover:text-verdict-text-primary transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isLoading || formData.session_code.length !== 6}
-            >
-              {isLoading ? 'Connecting...' : 'Join Session'}
-            </button>
+            <Button type="submit" variant="primary" className="w-full" disabled={isLoading || formData.session_code.length !== 6}>
+              {isLoading ? 'Connecting…' : 'Join Session'}
+            </Button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-verdict-border">
-            <p className="text-xs text-verdict-text-tertiary text-center">
-              By joining, you consent to AI-assisted evaluation and recording
-            </p>
-          </div>
+          <p className="mt-8 pt-6 border-t border-neeti-border text-[11px] text-ink-ghost text-center">
+            By joining, you consent to AI-assisted evaluation and recording
+          </p>
         </div>
       </div>
     </div>

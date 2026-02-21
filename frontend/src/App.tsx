@@ -31,16 +31,16 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-verdict-bg flex items-center justify-center p-8">
+        <div className="min-h-screen bg-neeti-bg flex items-center justify-center p-8">
           <div className="max-w-md text-center space-y-6">
-            <div className="text-6xl font-mono text-semantic-critical">!</div>
-            <h1 className="text-2xl font-display text-verdict-text-primary">Something went wrong</h1>
-            <p className="text-verdict-text-secondary">
+            <div className="text-6xl font-mono text-status-critical">!</div>
+            <h1 className="text-2xl font-display text-ink-primary">Something went wrong</h1>
+            <p className="text-ink-secondary">
               {this.state.error?.message || 'An unexpected error occurred.'}
             </p>
             <button
               onClick={() => { this.setState({ hasError: false }); window.location.href = '/'; }}
-              className="px-6 py-3 bg-accent-bronze text-white font-medium hover:bg-accent-bronze-light transition-colors"
+              className="px-6 py-3 bg-bronze text-white rounded-lg font-medium hover:bg-bronze-light transition-colors"
             >
               Return Home
             </button>
@@ -69,16 +69,16 @@ function RecruiterRoute({ children }: { children: ReactNode }) {
 // 404 Page
 function NotFound() {
   return (
-    <div className="min-h-screen bg-verdict-bg flex items-center justify-center p-8">
+    <div className="min-h-screen bg-neeti-bg flex items-center justify-center p-8">
       <div className="max-w-md text-center space-y-6">
-        <div className="text-8xl font-mono text-accent-bronze/40">404</div>
-        <h1 className="text-2xl font-display text-verdict-text-primary">Page Not Found</h1>
-        <p className="text-verdict-text-secondary">
+        <div className="text-8xl font-mono text-bronze/40">404</div>
+        <h1 className="text-2xl font-display text-ink-primary">Page Not Found</h1>
+        <p className="text-ink-secondary">
           The page you are looking for does not exist or has been moved.
         </p>
         <Link
           to="/"
-          className="inline-block px-6 py-3 bg-accent-bronze text-white font-medium hover:bg-accent-bronze-light transition-colors"
+          className="inline-block px-6 py-3 bg-bronze text-white rounded-lg font-medium hover:bg-bronze-light transition-colors"
         >
           Return Home
         </Link>

@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Copy, Check, Play, MonitorPlay, BarChart3, XCircle, Cpu } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
+import { Button } from '../components/Button';
+import { Card } from '../components/Card';
+import { StatusIndicator } from '../components/StatusIndicator';
+
+const STATUS_MAP: Record<string, 'success' | 'warning' | 'critical' | 'info'> = {
+  live: 'success', completed: 'info', cancelled: 'critical', scheduled: 'warning',
+};
+
+const AI_AGENTS = [
+  'Code Execution', 'Speech Analysis', 'Vision Detection', 'Reasoning Assessment', 'Final Evaluation',
+];
 
 export const SessionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -9,283 +21,173 @@ export const SessionDetail: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [showEndDialog, setShowEndDialog] = useState(false);
 
-  useEffect(() => {
-    if (id) {
-      fetchSession(Number(id));
-    }
-  }, [id, fetchSession]);
+  useEffect(() => { if (id) fetchSession(Number(id)); }, [id, fetchSession]);
 
-  const copySessionCode = () => {
-    if (currentSession) {
-      navigator.clipboard.writeText(currentSession.session_code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+  const copyCode = () => {
+    if (!currentSession) return;
+    navigator.clipboard.writeText(currentSession.session_code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleStartSession = async () => {
-    if (currentSession) {
-      try {
-        await startSession(currentSession.id);
-      } catch (err) {
-        console.error('Failed to start session:', err);
-      }
-    }
-  };
+  const handleStart = async () => { if (currentSession) try { await startSession(currentSession.id); } catch {} };
 
-  const handleEndSession = async () => {
-    setShowEndDialog(true);
-  };
-
-  const confirmEndSession = async () => {
-    if (currentSession) {
-      try {
-        await endSession(currentSession.id);
-        setShowEndDialog(false);
-        navigate('/dashboard');
-      } catch (err) {
-        console.error('Failed to end session:', err);
-      }
-    }
+  const confirmEnd = async () => {
+    if (currentSession) try { await endSession(currentSession.id); setShowEndDialog(false); navigate('/dashboard'); } catch {}
   };
 
   if (!currentSession) {
     return (
-      <div className="min-h-screen bg-verdict-bg flex items-center justify-center">
-        <div className="text-verdict-text-tertiary">Loading session...</div>
+      <div className="min-h-screen bg-neeti-bg flex items-center justify-center">
+        <p className="text-ink-ghost text-sm">Loading session…</p>
       </div>
     );
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'live':
-        return 'bg-semantic-success';
-      case 'completed':
-        return 'bg-verdict-line';
-      case 'cancelled':
-        return 'bg-semantic-critical';
-      default:
-        return 'bg-semantic-warning';
-    }
-  };
+  const s = currentSession;
+  const statusColor = STATUS_MAP[s.status] ?? 'warning';
+
+  /* timeline rows */
+  const timeline = [
+    { label: 'Created',   ts: s.created_at },
+    { label: 'Scheduled', ts: s.scheduled_at },
+    { label: 'Started',   ts: s.started_at },
+    { label: 'Ended',     ts: s.ended_at },
+  ].filter(r => r.ts);
 
   return (
-    <div className="min-h-screen bg-verdict-bg">
-      {/* Header */}
-      <header className="border-b border-verdict-border bg-verdict-surface/50 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-8 py-6">
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="text-sm text-verdict-text-secondary hover:text-verdict-text-primary mb-4 transition-colors"
-          >
-            ← Return to Dashboard
+    <div className="min-h-screen bg-neeti-bg">
+      {/* ── Header ──────────────────────────────────── */}
+      <header className="sticky top-0 z-30 border-b border-neeti-border bg-neeti-surface/80 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5">
+          <button onClick={() => navigate('/dashboard')} className="flex items-center gap-1.5 text-xs text-ink-ghost hover:text-ink-secondary transition-colors mb-3">
+            <ArrowLeft className="w-3.5 h-3.5" /> Dashboard
           </button>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-serif text-3xl font-semibold text-verdict-text-primary mb-2">
-                {currentSession.title}
-              </h1>
-              <div className="flex items-center gap-3">
-                <div className={`w-2 h-2 rounded-full ${getStatusColor(currentSession.status)}`} />
-                <span className="text-sm text-verdict-text-secondary uppercase tracking-wide">
-                  {currentSession.status}
-                </span>
+              <h1 className="text-xl font-display font-semibold text-ink-primary tracking-tight">{s.title}</h1>
+              <div className="flex items-center gap-2.5 mt-1">
+                <StatusIndicator status={statusColor} size="sm" />
+                <span className="text-xs text-ink-tertiary uppercase tracking-wider">{s.status}</span>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-8 py-12">
-        <div className="grid grid-cols-3 gap-8">
-          {/* Left Column - Details */}
-          <div className="col-span-2 space-y-8">
+      {/* ── Body ────────────────────────────────────── */}
+      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* ── Left: 2 col ──────────────────────────── */}
+          <div className="lg:col-span-2 space-y-6">
             {/* Access Code */}
-            <section className="border border-verdict-border bg-verdict-surface p-8">
-              <h2 className="font-serif text-lg font-medium text-verdict-text-primary mb-6">
+            <Card>
+              <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-5">
                 Session Access Code
               </h2>
-              <div className="flex items-center gap-4">
-                <div className="flex-1 bg-verdict-bg border-2 border-verdict-line p-8 text-center">
-                  <div className="text-xs uppercase tracking-wide text-verdict-text-tertiary mb-3">
-                    Candidate Join Code
-                  </div>
-                  <div className="font-mono text-5xl text-verdict-text-primary tracking-[0.3em]">
-                    {currentSession.session_code}
-                  </div>
+              <div className="flex flex-col sm:flex-row items-stretch gap-4">
+                <div className="flex-1 bg-neeti-bg border-2 border-neeti-border rounded-lg p-6 text-center">
+                  <p className="text-[10px] uppercase tracking-widest text-ink-ghost mb-2">Candidate Join Code</p>
+                  <p className="font-mono text-4xl md:text-5xl text-ink-primary tracking-[0.3em] select-all">
+                    {s.session_code}
+                  </p>
                 </div>
-                <button
-                  onClick={copySessionCode}
-                  className="px-6 py-3 border border-verdict-border hover:bg-verdict-surface transition-colors text-sm font-medium"
-                >
-                  {copied ? '✓ Copied' : 'Copy Code'}
-                </button>
+                <Button variant="secondary" onClick={copyCode} icon={copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />} className="sm:self-center">
+                  {copied ? 'Copied' : 'Copy'}
+                </Button>
               </div>
-              <div className="mt-4 border-l-2 border-verdict-line pl-4 text-xs text-verdict-text-tertiary">
+              <p className="mt-3 text-xs text-ink-ghost border-l-2 border-neeti-border pl-3">
                 Join URL: {window.location.origin}/join
-              </div>
-            </section>
+              </p>
+            </Card>
 
             {/* Description */}
-            {currentSession.description && (
-              <section className="border border-verdict-border bg-verdict-surface p-8">
-                <h2 className="font-serif text-lg font-medium text-verdict-text-primary mb-4">
-                  Session Details
-                </h2>
-                <p className="text-verdict-text-secondary leading-relaxed">
-                  {currentSession.description}
-                </p>
-              </section>
+            {s.description && (
+              <Card>
+                <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-3">Details</h2>
+                <p className="text-sm text-ink-secondary leading-relaxed">{s.description}</p>
+              </Card>
             )}
 
             {/* Timeline */}
-            <section className="border border-verdict-border bg-verdict-surface p-8">
-              <h2 className="font-serif text-lg font-medium text-verdict-text-primary mb-6">
-                Session Timeline
-              </h2>
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 text-xs">
-                  <div className="text-verdict-text-tertiary uppercase tracking-wide">Event</div>
-                  <div className="col-span-2 text-verdict-text-tertiary uppercase tracking-wide">Timestamp</div>
-                </div>
-                <div className="h-px bg-verdict-border" />
-                <div className="grid grid-cols-3 text-sm">
-                  <div className="text-verdict-text-secondary">Created</div>
-                  <div className="col-span-2 font-mono text-verdict-text-primary">
-                    {new Date(currentSession.created_at).toLocaleString()}
+            <Card>
+              <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-5">Timeline</h2>
+              <div className="divide-y divide-neeti-border">
+                {timeline.map(({ label, ts }) => (
+                  <div key={label} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                    <span className="text-sm text-ink-tertiary">{label}</span>
+                    <span className="font-mono text-sm text-ink-primary">{new Date(ts!).toLocaleString()}</span>
                   </div>
-                </div>
-                {currentSession.scheduled_at && (
-                  <div className="grid grid-cols-3 text-sm">
-                    <div className="text-verdict-text-secondary">Scheduled</div>
-                    <div className="col-span-2 font-mono text-verdict-text-primary">
-                      {new Date(currentSession.scheduled_at).toLocaleString()}
-                    </div>
-                  </div>
-                )}
-                {currentSession.started_at && (
-                  <div className="grid grid-cols-3 text-sm">
-                    <div className="text-verdict-text-secondary">Started</div>
-                    <div className="col-span-2 font-mono text-verdict-text-primary">
-                      {new Date(currentSession.started_at).toLocaleString()}
-                    </div>
-                  </div>
-                )}
-                {currentSession.ended_at && (
-                  <div className="grid grid-cols-3 text-sm">
-                    <div className="text-verdict-text-secondary">Ended</div>
-                    <div className="col-span-2 font-mono text-verdict-text-primary">
-                      {new Date(currentSession.ended_at).toLocaleString()}
-                    </div>
-                  </div>
-                )}
+                ))}
               </div>
-            </section>
+            </Card>
           </div>
 
-          {/* Right Column - Actions & Status */}
-          <div className="space-y-8">
-            {/* Actions */}
-            <section className="border border-verdict-border bg-verdict-surface p-6">
-              <h2 className="font-serif text-lg font-medium text-verdict-text-primary mb-6">
-                Controls
-              </h2>
+          {/* ── Right sidebar ────────────────────────── */}
+          <div className="space-y-6">
+            {/* Controls */}
+            <Card>
+              <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-5">Controls</h2>
               <div className="space-y-3">
-                {currentSession.status === 'scheduled' && (
-                  <button
-                    className="w-full py-3 px-6 bg-verdict-text-primary text-verdict-bg border border-verdict-text-primary hover:bg-transparent hover:text-verdict-text-primary transition-colors font-medium disabled:opacity-50"
-                    onClick={handleStartSession}
-                    disabled={isLoading}
-                  >
+                {s.status === 'scheduled' && (
+                  <Button variant="primary" className="w-full" onClick={handleStart} disabled={isLoading} icon={<Play className="w-4 h-4" />}>
                     Start Session
-                  </button>
+                  </Button>
                 )}
-                {currentSession.status === 'live' && (
+                {s.status === 'live' && (
                   <>
-                    <button
-                      className="w-full py-3 px-6 bg-verdict-text-primary text-verdict-bg border border-verdict-text-primary hover:bg-transparent hover:text-verdict-text-primary transition-colors font-medium"
-                      onClick={() => navigate(`/sessions/${currentSession.id}/interview`)}
-                    >
+                    <Button variant="primary" className="w-full" onClick={() => navigate(`/sessions/${s.id}/interview`)} icon={<MonitorPlay className="w-4 h-4" />}>
                       Enter Interview Room
-                    </button>
-                    <button
-                      className="w-full py-3 px-6 border border-verdict-border hover:bg-verdict-bg transition-colors font-medium text-verdict-text-primary"
-                      onClick={() => navigate(`/sessions/${currentSession.id}/monitor`)}
-                    >
+                    </Button>
+                    <Button variant="secondary" className="w-full" onClick={() => navigate(`/sessions/${s.id}/monitor`)} icon={<BarChart3 className="w-4 h-4" />}>
                       Live Monitor
-                    </button>
-                    <button
-                      className="w-full py-3 px-6 border border-semantic-critical text-semantic-critical hover:bg-semantic-critical hover:text-white transition-colors font-medium disabled:opacity-50"
-                      onClick={handleEndSession}
-                      disabled={isLoading}
-                    >
+                    </Button>
+                    <Button variant="critical" className="w-full" onClick={() => setShowEndDialog(true)} disabled={isLoading} icon={<XCircle className="w-4 h-4" />}>
                       End Session
-                    </button>
+                    </Button>
                   </>
                 )}
-                {currentSession.status === 'completed' && (
-                  <button
-                    className="w-full py-3 px-6 bg-verdict-text-primary text-verdict-bg border border-verdict-text-primary hover:bg-transparent hover:text-verdict-text-primary transition-colors font-medium"
-                    onClick={() => navigate(`/sessions/${currentSession.id}/results`)}
-                  >
+                {s.status === 'completed' && (
+                  <Button variant="primary" className="w-full" onClick={() => navigate(`/sessions/${s.id}/results`)}>
                     View Evaluation Report
-                  </button>
+                  </Button>
                 )}
               </div>
-            </section>
+            </Card>
 
             {/* AI Agents */}
-            <section className="border border-verdict-border bg-verdict-surface p-6">
-              <h2 className="font-serif text-lg font-medium text-verdict-text-primary mb-6">
-                AI Evaluation Agents
-              </h2>
+            <Card>
+              <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-5">AI Agents</h2>
               <div className="space-y-3">
-                {[
-                  'Code Execution',
-                  'Speech Analysis',
-                  'Vision Detection',
-                  'Reasoning Assessment',
-                  'Final Evaluation',
-                ].map((agent) => (
-                  <div key={agent} className="flex items-center justify-between text-sm">
-                    <span className="text-verdict-text-secondary">{agent}</span>
+                {AI_AGENTS.map(agent => (
+                  <div key={agent} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-semantic-success" />
-                      <span className="text-xs text-verdict-text-tertiary uppercase tracking-wide">
-                        Ready
-                      </span>
+                      <Cpu className="w-3.5 h-3.5 text-ink-ghost" />
+                      <span className="text-sm text-ink-secondary">{agent}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <StatusIndicator status="success" size="sm" />
+                      <span className="text-[10px] text-ink-ghost uppercase tracking-wider">Ready</span>
                     </div>
                   </div>
                 ))}
               </div>
-            </section>
+            </Card>
           </div>
         </div>
       </main>
 
-      {/* End Session Confirmation Dialog */}
+      {/* ── End-session dialog ─────────────────────── */}
       {showEndDialog && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-verdict-surface border border-verdict-border max-w-md w-full p-8 space-y-6">
-            <h2 className="text-xl font-display text-verdict-text-primary">End Session?</h2>
-            <p className="text-verdict-text-secondary">
+        <div className="dialog-overlay">
+          <div className="dialog-panel max-w-md w-full mx-4 p-7 space-y-5">
+            <h2 className="text-lg font-display font-semibold text-ink-primary">End Session?</h2>
+            <p className="text-sm text-ink-secondary">
               This will terminate the interview and trigger AI evaluation. This action cannot be undone.
             </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowEndDialog(false)}
-                className="flex-1 py-3 px-4 border border-verdict-border text-verdict-text-primary hover:bg-verdict-surface-elevated transition-colors font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmEndSession}
-                className="flex-1 py-3 px-4 bg-semantic-critical text-white hover:bg-semantic-critical/80 transition-colors font-medium"
-              >
-                End Session
-              </button>
+            <div className="flex gap-3 pt-1">
+              <Button variant="secondary" className="flex-1" onClick={() => setShowEndDialog(false)}>Cancel</Button>
+              <Button variant="critical" className="flex-1" onClick={confirmEnd}>End Session</Button>
             </div>
           </div>
         </div>
