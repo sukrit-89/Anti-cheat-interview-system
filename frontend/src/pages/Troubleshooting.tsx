@@ -8,7 +8,6 @@ import {
   Search,
   Wifi,
   Camera,
-  Mic,
   Monitor,
   Code2,
   Lock,

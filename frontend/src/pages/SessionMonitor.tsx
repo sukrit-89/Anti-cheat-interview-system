@@ -40,7 +40,7 @@ export default function SessionMonitor() {
         default:        return 'Activity detected';
       }
     })();
-    setActivityLog(prev => [{ timestamp: new Date().toISOString(), type: metrics.type as any, message: msg, severity: 'info' }, ...prev].slice(0, 50));
+    setActivityLog(prev => [{ timestamp: new Date().toISOString(), type: metrics.type as ActivityEvent['type'], message: msg, severity: 'info' as const }, ...prev].slice(0, 50));
   }, [metrics]);
 
   useEffect(() => {
