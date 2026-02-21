@@ -9,11 +9,37 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from app.core.database import init_db, AsyncSessionLocal
+from app.core.database import init_db, AsyncSessionLocal, engine
 from app.core.config import settings
 from app.core.logging import logger
 from app.models.models import User, UserRole
 from app.core.auth import AuthService
+from sqlalchemy import text
+
+
+async def apply_migrations():
+    """Apply SQL migration files in order."""
+    migrations_dir = Path(__file__).parent / "migrations"
+    if not migrations_dir.exists():
+        return
+
+    migration_files = sorted(migrations_dir.glob("*.sql"))
+    if not migration_files:
+        return
+
+    async with engine.begin() as conn:
+        for migration_file in migration_files:
+            logger.info(f"Applying migration: {migration_file.name}")
+            try:
+                sql = migration_file.read_text()
+                # Execute each statement separately
+                for statement in sql.split(";"):
+                    statement = statement.strip()
+                    if statement and not statement.startswith("--"):
+                        await conn.execute(text(statement))
+                logger.info(f"Migration applied: {migration_file.name}")
+            except Exception as e:
+                logger.warning(f"Migration {migration_file.name} skipped (may already be applied): {e}")
 
 
 async def create_admin_user():
@@ -53,6 +79,9 @@ async def main():
     
     # Create tables
     await init_db()
+    
+    # Apply SQL migrations (schema fixes, type changes, etc.)
+    await apply_migrations()
     
     # Create admin user if needed
     if settings.ENVIRONMENT != "production":
