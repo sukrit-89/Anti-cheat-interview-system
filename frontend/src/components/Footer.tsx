@@ -63,7 +63,7 @@ export const Footer: React.FC = () => {
 
               <div className="flex items-center gap-3 pt-2">
                 <a
-                  href="https://github.com/sukrit-89/Anti-cheat-interview-system"
+                  href="https://github.com/sukrit-89"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-md border border-neeti-border hover:border-bronze/40 bg-neeti-surface hover:bg-neeti-elevated text-ink-tertiary hover:text-bronze transition-all duration-200"
@@ -72,21 +72,25 @@ export const Footer: React.FC = () => {
                   <Github className="w-4 h-4" />
                 </a>
                 <a
-                  href="#"
+                  href="https://x.com/sukritmotion"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="p-2 rounded-md border border-neeti-border hover:border-bronze/40 bg-neeti-surface hover:bg-neeti-elevated text-ink-tertiary hover:text-bronze transition-all duration-200"
                   aria-label="Twitter"
                 >
                   <Twitter className="w-4 h-4" />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/in/sukrit-goswami-5558a5321"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="p-2 rounded-md border border-neeti-border hover:border-bronze/40 bg-neeti-surface hover:bg-neeti-elevated text-ink-tertiary hover:text-bronze transition-all duration-200"
                   aria-label="LinkedIn"
                 >
                   <Linkedin className="w-4 h-4" />
                 </a>
                 <a
-                  href="mailto:support@neeti-ai.com"
+                  href="mailto:neetiatsuuport@gmail.com"
                   className="p-2 rounded-md border border-neeti-border hover:border-bronze/40 bg-neeti-surface hover:bg-neeti-elevated text-ink-tertiary hover:text-bronze transition-all duration-200"
                   aria-label="Email"
                 >
@@ -172,10 +176,10 @@ export const Footer: React.FC = () => {
                 <p className="text-xs text-ink-secondary leading-relaxed">
                   Need help? Reach out at{' '}
                   <a
-                    href="mailto:support@neeti-ai.com"
+                    href="mailto:neetiatsuuport@gmail.com"
                     className="text-bronze hover:text-bronze-light transition-colors underline underline-offset-2"
                   >
-                    support@neeti-ai.com
+                    neetiatsuuport@gmail.com
                   </a>
                 </p>
               </div>
