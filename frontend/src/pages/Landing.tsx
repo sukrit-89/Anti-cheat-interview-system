@@ -1,7 +1,3 @@
-/**
- * Landing Page — Forensic Authority aesthetic
- * Dark, precise, data-driven with warm bronze authority accent
- */
 import { Link } from 'react-router-dom';
 import { TechnicalBlueprint } from '../components/TechnicalBlueprint';
 import { StatusIndicator } from '../components/StatusIndicator';
@@ -75,7 +71,6 @@ const PHASES = [
 export const Landing = () => {
   return (
     <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
-      {/* Faint grid overlay */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.012]"
         style={{
@@ -85,11 +80,13 @@ export const Landing = () => {
         }}
       />
 
-      {/* Radial glow */}
-      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(194,112,42,.04),transparent)]" />
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(194,112,42,.06),transparent)]" />
+
+      <div className="ambient-orb ambient-orb-bronze w-[600px] h-[600px] top-[-10%] right-[-5%] z-0 opacity-70" />
+      <div className="ambient-orb ambient-orb-blue w-[500px] h-[500px] bottom-[10%] left-[-8%] z-0 opacity-50" />
+      <div className="ambient-orb ambient-orb-warm w-[400px] h-[400px] top-[40%] right-[15%] z-0 opacity-40" />
 
       <div className="relative z-10">
-        {/* ── Header ─────────────────────────────────────── */}
         <header className="glass-header sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
               <Logo size="md" showWordmark showTagline linkTo="/" />
@@ -103,10 +100,8 @@ export const Landing = () => {
           </div>
         </header>
 
-        {/* ── Hero ────────────────────────────────────────── */}
         <section className="max-w-7xl mx-auto px-6 pt-20 pb-28 lg:pt-28 lg:pb-36">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left — Messaging */}
             <div className="space-y-8 animate-fadeUp">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-bronze/25 bg-bronze/[0.08] backdrop-blur-md rounded-full">
                 <Shield className="w-3.5 h-3.5 text-bronze" />
@@ -153,7 +148,6 @@ export const Landing = () => {
               </div>
             </div>
 
-            {/* Right — Schematic + Agent Status */}
             <div className="hidden lg:block space-y-6 animate-fadeUp" style={{ animationDelay: '120ms' }}>
               <TechnicalBlueprint showScanLine />
 
@@ -176,7 +170,6 @@ export const Landing = () => {
           </div>
         </section>
 
-        {/* ── Capabilities ───────────────────────────────── */}
         <section className="border-y border-white/[0.06] bg-white/[0.02] backdrop-blur-sm py-24">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
@@ -213,7 +206,6 @@ export const Landing = () => {
           </div>
         </section>
 
-        {/* ── Assessment Protocol ────────────────────────── */}
         <section className="max-w-7xl mx-auto px-6 py-24">
           <div className="text-center mb-16">
             <h3 className="text-3xl font-display font-bold text-ink-primary mb-3">
@@ -228,10 +220,8 @@ export const Landing = () => {
           <div className="grid md:grid-cols-3 gap-12">
             {PHASES.map((phase) => (
               <div key={phase.num} className="relative pl-10 group">
-                {/* Vertical connector line */}
                 <div className="absolute left-4 top-0 bottom-0 w-px bg-neeti-border group-last:hidden" />
 
-                {/* Phase badge */}
                 <div className="absolute left-0 top-0 w-9 h-9 flex items-center justify-center border border-bronze/30 bg-neeti-surface rounded-md text-base font-mono font-bold text-bronze">
                   {phase.num}
                 </div>
@@ -252,7 +242,6 @@ export const Landing = () => {
           </div>
         </section>
 
-        {/* ── Footer ─────────────────────────────────────── */}
         <Footer />
       </div>
     </div>

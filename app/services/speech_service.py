@@ -9,7 +9,6 @@ from typing import Optional, Dict, Any
 from app.core.config import settings
 from app.core.logging import logger
 
-# Try importing Whisper (local)
 try:
     import whisper
     WHISPER_AVAILABLE = True
@@ -17,13 +16,11 @@ except ImportError:
     WHISPER_AVAILABLE = False
     logger.warning("Whisper not installed. Install with: pip install openai-whisper")
 
-# Try importing OpenAI client (cloud)
 try:
     import openai
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
-
 
 class SpeechService:
     """Service for speech-to-text transcription."""
@@ -33,7 +30,6 @@ class SpeechService:
         self.model_name = settings.WHISPER_MODEL
         self.model = None
         
-        # Load local Whisper model if configured
         if self.use_local and WHISPER_AVAILABLE:
             try:
                 logger.info(f"Loading Whisper model: {self.model_name}")
@@ -80,11 +76,9 @@ class SpeechService:
         """Transcribe using local Whisper model."""
         
         try:
-            # Save audio to temp file
             temp_path = Path("/tmp/temp_audio.wav")
             temp_path.write_bytes(audio_file)
             
-            # Run transcription in thread pool (CPU-intensive)
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
                 None,
@@ -93,7 +87,6 @@ class SpeechService:
                 language
             )
             
-            # Clean up temp file
             temp_path.unlink(missing_ok=True)
             
             return {
@@ -135,10 +128,7 @@ class SpeechService:
         if not segments:
             return 0.0
         
-        # Whisper doesn't directly provide confidence scores
-        # We can estimate based on token probabilities if available
-        # For now, return a placeholder
-        return 0.85  # Typical Whisper accuracy
+        return 0.85
     
     async def _transcribe_openai(
         self,
@@ -150,11 +140,9 @@ class SpeechService:
         try:
             client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
             
-            # Create file-like object
             audio_io = io.BytesIO(audio_file)
             audio_io.name = "audio.wav"
             
-            # Call OpenAI Whisper API
             options = {"file": audio_io, "model": "whisper-1"}
             if language:
                 options["language"] = language
@@ -165,7 +153,7 @@ class SpeechService:
                 "success": True,
                 "text": transcript.text,
                 "error": None,
-                "confidence": 0.9,  # OpenAI doesn't provide confidence
+                "confidence": 0.9,
                 "language": language
             }
             
@@ -202,18 +190,15 @@ class SpeechService:
                 "pauses_detected": 0
             }
         
-        # Calculate metrics
         words = transcription.split()
         word_count = len(words)
         words_per_minute = (word_count / audio_duration) * 60 if audio_duration > 0 else 0
         
-        # Detect filler words
         filler_words = ["um", "uh", "like", "you know", "basically", "actually"]
         filler_count = sum(
             transcription.lower().count(filler) for filler in filler_words
         )
         
-        # Calculate clarity score (inverse of filler word ratio)
         clarity_score = max(0.0, 1.0 - (filler_count / max(word_count, 1)))
         
         return {
@@ -224,6 +209,4 @@ class SpeechService:
             "duration_seconds": audio_duration
         }
 
-
-# Singleton instance
 speech_service = SpeechService()

@@ -22,13 +22,11 @@ export const TechnicalBlueprint: React.FC<TechnicalBlueprintProps> = ({
       )}
 
       <div className="space-y-6 relative z-10">
-        {/* Header annotations */}
         <div className="flex justify-between items-start text-[10px] font-mono text-ink-ghost uppercase tracking-widest">
           <span>SYS_STATUS: MONITORING</span>
           <span>NEETI PROTOCOL</span>
         </div>
 
-        {/* Bar chart */}
         <div className="flex items-end justify-center gap-2 h-32">
           {[40, 75, 60, 90, 55, 85, 70].map((height, i) => (
             <div
@@ -41,7 +39,6 @@ export const TechnicalBlueprint: React.FC<TechnicalBlueprintProps> = ({
           ))}
         </div>
 
-        {/* Progress bars */}
         <div className="space-y-3">
           {[
             { label: 'CODE_INTEGRITY', value: 87 },
@@ -63,7 +60,6 @@ export const TechnicalBlueprint: React.FC<TechnicalBlueprintProps> = ({
           ))}
         </div>
 
-        {/* Footer annotations */}
         <div className="flex justify-between items-end text-[10px] font-mono text-ink-ghost">
           <span>V2.1.0</span>
           <span className="uppercase">Real-time Analysis</span>

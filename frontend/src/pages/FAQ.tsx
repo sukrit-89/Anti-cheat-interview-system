@@ -1,7 +1,3 @@
-/**
- * FAQ Page — Frequently Asked Questions
- * Accordion-style expandable Q&A with forensic authority aesthetic
- */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Logo } from '../components/Logo';
@@ -15,7 +11,6 @@ interface FAQItem {
 }
 
 const FAQ_DATA: FAQItem[] = [
-  // General
   {
     category: 'General',
     question: 'What is Neeti AI?',
@@ -35,7 +30,6 @@ const FAQ_DATA: FAQItem[] = [
       'Neeti AI is designed for engineering teams, technical recruiters, and hiring managers who want to conduct fair, rigorous, and repeatable technical assessments. Candidates benefit from structured, bias-aware evaluation.',
   },
 
-  // For Recruiters
   {
     category: 'For Recruiters',
     question: 'How do I create a technical assessment session?',
@@ -61,7 +55,6 @@ const FAQ_DATA: FAQItem[] = [
       'Yes. When creating a session, you can adjust the weight of different evaluation dimensions, select specific programming languages, and set difficulty parameters to match the role requirements.',
   },
 
-  // For Candidates
   {
     category: 'For Candidates',
     question: 'How do I join an interview session?',
@@ -87,7 +80,6 @@ const FAQ_DATA: FAQItem[] = [
       'The assessment uses the built-in Monaco Editor (the same editor powering VS Code) for a consistent, fair evaluation environment. External IDEs are not supported during assessments.',
   },
 
-  // Technical
   {
     category: 'Technical',
     question: 'What happens if I lose internet connection during a session?',
@@ -113,7 +105,6 @@ const FAQ_DATA: FAQItem[] = [
       'Yes. Neeti AI exposes a RESTful API built on FastAPI with comprehensive OpenAPI documentation. Contact our team for API access and integration support.',
   },
 
-  // Billing & Support
   {
     category: 'Billing & Support',
     question: 'Is Neeti AI free to use?',
@@ -175,7 +166,6 @@ export const FAQ = () => {
 
   return (
     <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
-      {/* Grid overlay */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.012]"
         style={{
@@ -185,8 +175,10 @@ export const FAQ = () => {
         }}
       />
 
+      <div className="ambient-orb ambient-orb-bronze w-[500px] h-[500px] top-[-15%] left-[20%] z-0 opacity-55" />
+      <div className="ambient-orb ambient-orb-blue w-[400px] h-[400px] bottom-[10%] right-[-5%] z-0 opacity-40" />
+
       <div className="relative z-10">
-        {/* ── Header ───────────────────────────────────── */}
         <header className="glass-header sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <Logo size="md" showWordmark linkTo="/" />
@@ -199,7 +191,6 @@ export const FAQ = () => {
           </div>
         </header>
 
-        {/* ── Hero ─────────────────────────────────────── */}
         <section className="max-w-4xl mx-auto px-6 pt-20 pb-12">
           <div className="animate-fadeUp">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-bronze/25 bg-bronze/[0.08] backdrop-blur-md rounded-full mb-6">
@@ -222,9 +213,7 @@ export const FAQ = () => {
           </div>
         </section>
 
-        {/* ── Search + Filters ─────────────────────────── */}
         <section className="max-w-4xl mx-auto px-6 pb-8">
-          {/* Search */}
           <div className="relative mb-6">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-ghost" />
             <input
@@ -236,7 +225,6 @@ export const FAQ = () => {
             />
           </div>
 
-          {/* Category tabs */}
           <div className="flex flex-wrap gap-2">
             {['All', ...CATEGORIES].map((cat) => (
               <button
@@ -254,7 +242,6 @@ export const FAQ = () => {
           </div>
         </section>
 
-        {/* ── FAQ List ─────────────────────────────────── */}
         <section className="max-w-4xl mx-auto px-6 pb-16">
           {filteredFAQs.length > 0 ? (
             <div className="space-y-3">
@@ -284,7 +271,6 @@ export const FAQ = () => {
           )}
         </section>
 
-        {/* ── Still Need Help ──────────────────────────── */}
         <section className="border-t border-white/[0.06] bg-white/[0.02] py-16">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h2 className="text-2xl font-display font-bold text-ink-primary mb-3">

@@ -1,15 +1,9 @@
-/**
- * API Client for Neeti AI Platform
- * Handles all HTTP requests to the backend
- */
 import axios from 'axios';
 import type { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { supabase } from './supabase';
 
-// API Base URL - from environment or default
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-// Create axios instance
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
@@ -18,7 +12,6 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
-// Request interceptor - add Supabase auth token
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -30,13 +23,11 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor - handle errors and token refresh
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // If 401, try to refresh Supabase session
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
@@ -44,19 +35,16 @@ apiClient.interceptors.response.use(
         const { data: { session }, error: refreshError } = await supabase.auth.refreshSession();
 
         if (refreshError || !session) {
-          // Refresh failed - sign out
           await supabase.auth.signOut();
           window.location.href = '/login';
           return Promise.reject(error);
         }
 
-        // Retry original request with new token
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${session.access_token}`;
         }
         return apiClient(originalRequest);
       } catch {
-        // Refresh failed - sign out
         await supabase.auth.signOut();
         window.location.href = '/login';
         return Promise.reject(error);
@@ -66,10 +54,6 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// ============================================================================
-// AUTH API
-// ============================================================================
 
 export interface RegisterRequest {
   email: string;
@@ -120,10 +104,6 @@ export const authApi = {
     localStorage.removeItem('refresh_token');
   },
 };
-
-// ============================================================================
-// SESSIONS API
-// ============================================================================
 
 export interface SessionCreateRequest {
   title: string;
@@ -205,10 +185,6 @@ export const sessionsApi = {
   },
 };
 
-// ============================================================================
-// CODING EVENTS API
-// ============================================================================
-
 export interface CodingEventRequest {
   session_id: number;
   event_type: string;
@@ -239,10 +215,6 @@ export const codingApi = {
   },
 };
 
-// ============================================================================
-// EVALUATION API
-// ============================================================================
-
 export interface Evaluation {
   id: number;
   session_id: number;
@@ -272,5 +244,4 @@ export const evaluationApi = {
   },
 };
 
-// Export default client
 export default apiClient;

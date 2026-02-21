@@ -8,14 +8,12 @@ from typing import Optional, Dict, Any, List
 from app.core.config import settings
 from app.core.logging import logger
 
-# Try importing MediaPipe
 try:
     import mediapipe as mp
     MEDIAPIPE_AVAILABLE = True
 except ImportError:
     MEDIAPIPE_AVAILABLE = False
     logger.warning("MediaPipe not installed. Install with: pip install mediapipe")
-
 
 class VisionService:
     """Service for vision-based behavior analysis."""
@@ -64,22 +62,18 @@ class VisionService:
             return await self._fallback_analysis()
         
         try:
-            # Decode frame
             np_arr = np.frombuffer(frame_bytes, np.uint8)
             frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
             
             if frame is None:
                 raise ValueError("Failed to decode frame")
             
-            # Convert BGR to RGB
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             
-            # Analyze face
             face_results = self.face_detection.process(rgb_frame)
             face_mesh_results = self.face_mesh.process(rgb_frame)
             pose_results = self.pose.process(rgb_frame)
             
-            # Calculate metrics
             metrics = self._calculate_metrics(
                 face_results,
                 face_mesh_results,
@@ -120,62 +114,50 @@ class VisionService:
             "suspicious_behavior": False
         }
         
-        # Face detection
         if face_results and face_results.detections:
             metrics["face_detected"] = True
             
-            # Check for multiple faces (potential cheating)
             if len(face_results.detections) > 1:
                 metrics["multiple_faces"] = True
                 metrics["suspicious_behavior"] = True
             
-            # Get primary face
             face = face_results.detections[0]
             bbox = face.location_data.relative_bounding_box
             
-            # Calculate face position (center of frame = good eye contact)
             frame_height, frame_width = frame_shape[:2]
             face_center_x = bbox.xmin + bbox.width / 2
             face_center_y = bbox.ymin + bbox.height / 2
             
-            # Eye contact score (0-1, higher when looking at camera)
-            center_x, center_y = 0.5, 0.4  # Slightly above center
+            center_x, center_y = 0.5, 0.4
             distance = np.sqrt(
                 (face_center_x - center_x) ** 2 + 
                 (face_center_y - center_y) ** 2
             )
             metrics["eye_contact_score"] = max(0.0, 1.0 - distance * 2)
         
-        # Face mesh for detailed analysis
         if face_mesh_results and face_mesh_results.multi_face_landmarks:
             landmarks = face_mesh_results.multi_face_landmarks[0].landmark
             
-            # Estimate head pose from landmarks
             nose_tip = landmarks[4]
             left_eye = landmarks[33]
             right_eye = landmarks[263]
             
-            # Check if looking away (basic heuristic)
             eye_diff = abs(left_eye.x - right_eye.x)
-            if eye_diff < 0.05:  # Eyes too close together = side view
+            if eye_diff < 0.05:
                 metrics["head_pose"] = "looking_away"
                 metrics["suspicious_behavior"] = True
-            elif nose_tip.y < 0.3:  # Looking up
+            elif nose_tip.y < 0.3:
                 metrics["head_pose"] = "looking_up"
-            elif nose_tip.y > 0.7:  # Looking down
+            elif nose_tip.y > 0.7:
                 metrics["head_pose"] = "looking_down"
             else:
                 metrics["head_pose"] = "forward"
         
-        # Pose analysis
         if pose_results and pose_results.pose_landmarks:
-            # Check posture
             shoulders = pose_results.pose_landmarks.landmark[11:13]
             if all(s.visibility > 0.5 for s in shoulders):
-                # Good posture detected
                 metrics["engagement_score"] = min(1.0, metrics["engagement_score"] + 0.3)
         
-        # Overall engagement score
         if metrics["face_detected"]:
             engagement = (
                 metrics["eye_contact_score"] * 0.6 +
@@ -192,7 +174,7 @@ class VisionService:
         
         return {
             "face_detected": True,
-            "eye_contact_score": 0.75,  # Assume reasonable default
+            "eye_contact_score": 0.75,
             "head_pose": "forward",
             "emotion": "neutral",
             "engagement_score": 0.70,
@@ -232,13 +214,10 @@ class VisionService:
                 if not ret:
                     break
                 
-                # Sample frames
                 if frame_count % sample_rate == 0:
-                    # Encode frame to bytes
                     _, buffer = cv2.imencode('.jpg', frame)
                     frame_bytes = buffer.tobytes()
                     
-                    # Analyze frame
                     result = await self.analyze_frame(frame_bytes)
                     if result["success"]:
                         metrics_history.append(result)
@@ -248,7 +227,6 @@ class VisionService:
             
             cap.release()
             
-            # Aggregate metrics
             if not metrics_history:
                 return await self._fallback_session_analysis()
             
@@ -266,7 +244,6 @@ class VisionService:
         
         total_frames = len(metrics_history)
         
-        # Calculate averages
         avg_eye_contact = np.mean([
             m["eye_contact_score"] for m in metrics_history
             if m.get("face_detected")
@@ -276,7 +253,6 @@ class VisionService:
             if m.get("face_detected")
         ])
         
-        # Count suspicious behaviors
         suspicious_frames = sum(
             1 for m in metrics_history if m.get("suspicious_behavior")
         )
@@ -284,7 +260,6 @@ class VisionService:
             1 for m in metrics_history if m.get("multiple_faces")
         )
         
-        # Face visibility percentage
         face_visible = sum(
             1 for m in metrics_history if m.get("face_detected")
         )
@@ -314,7 +289,6 @@ class VisionService:
         if total_frames == 0:
             return 0.0
         
-        # Penalize suspicious behavior
         suspicious_ratio = suspicious_frames / total_frames
         multiple_faces_ratio = multiple_faces_frames / total_frames
         
@@ -337,6 +311,4 @@ class VisionService:
             "note": "MediaPipe not configured. Using baseline metrics."
         }
 
-
-# Singleton instance
 vision_service = VisionService()

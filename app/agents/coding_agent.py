@@ -12,7 +12,6 @@ from app.core.database import AsyncSessionLocal
 from app.core.logging import logger
 from app.services.ai_service import ai_service
 
-
 class CodingAgent(BaseAgent):
     """
     Analyzes coding events to assess:
@@ -30,7 +29,6 @@ class CodingAgent(BaseAgent):
         session_id = input_data.session_id
         
         async with AsyncSessionLocal() as db:
-            # Fetch all coding events
             result = await db.execute(
                 select(CodingEvent)
                 .where(CodingEvent.session_id == session_id)
@@ -46,10 +44,8 @@ class CodingAgent(BaseAgent):
                 insights="No coding activity detected"
             )
         
-        # Analyze coding patterns
         metrics = self._analyze_events(events)
         
-        # Calculate score
         weights = {
             "execution_success_rate": 0.3,
             "code_quality": 0.3,
@@ -58,10 +54,8 @@ class CodingAgent(BaseAgent):
         }
         score = self.calculate_score(metrics, weights)
         
-        # Extract flags
         flags = self._extract_flags(events, metrics)
         
-        # Generate insights
         insights = self._generate_insights(metrics, flags)
         
         return AgentOutput(
@@ -78,7 +72,6 @@ class CodingAgent(BaseAgent):
         total_events = len(events)
         execution_events = [e for e in events if e.event_type == "execute"]
         
-        # Execution success rate
         successful_executions = sum(
             1 for e in execution_events if e.execution_error is None
         )
@@ -87,13 +80,11 @@ class CodingAgent(BaseAgent):
             if execution_events else 0
         )
         
-        # Code changes frequency
         keystroke_events = [e for e in events if e.event_type == "keystroke"]
         
-        # Placeholder metrics (in production, use real analysis)
-        code_quality = 75.0  # Would analyze code complexity, style, etc.
-        problem_solving = 70.0  # Would analyze solution approach
-        efficiency = 65.0  # Would analyze time to solution
+        code_quality = 75.0
+        problem_solving = 70.0
+        efficiency = 65.0
         
         return {
             "total_events": total_events,
@@ -134,7 +125,6 @@ class CodingAgent(BaseAgent):
         flags: list[dict[str, Any]]
     ) -> str:
         """Generate natural language insights using AI or rule-based fallback."""
-        # Build analysis prompt
         prompt = f"""
 Analyze this candidate's coding performance:
 
@@ -155,7 +145,6 @@ Provide a 2-3 sentence assessment of their coding skills.
         system_prompt = "You are an expert technical interviewer evaluating a candidate's coding ability."
         
         try:
-            # Use AI service (OpenAI, Ollama, or rule-based)
             import asyncio
             insights = asyncio.run(ai_service.generate_completion(
                 prompt=prompt,

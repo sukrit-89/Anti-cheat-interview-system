@@ -8,25 +8,21 @@ from typing import Optional, Dict, Any
 from app.core.config import settings
 from app.core.logging import logger
 
-
-# Language ID mapping for Judge0 API
-# Full list: https://github.com/judge0/judge0/blob/master/CHANGELOG.md
 LANGUAGE_MAP = {
-    "python": 71,  # Python 3.8.1
-    "javascript": 63,  # JavaScript (Node.js 12.14.0)
-    "typescript": 74,  # TypeScript 3.7.4
-    "java": 62,  # Java (OpenJDK 13.0.1)
-    "cpp": 54,  # C++ (GCC 9.2.0)
-    "c": 50,  # C (GCC 9.2.0)
-    "csharp": 51,  # C# (Mono 6.6.0.161)
-    "go": 60,  # Go (1.13.5)
-    "rust": 73,  # Rust (1.40.0)
-    "ruby": 72,  # Ruby (2.7.0)
-    "php": 68,  # PHP (7.4.1)
-    "swift": 83,  # Swift (5.2.3)
-    "kotlin": 78,  # Kotlin (1.3.70)
+    "python": 71,
+    "javascript": 63,
+    "typescript": 74,
+    "java": 62,
+    "cpp": 54,
+    "c": 50,
+    "csharp": 51,
+    "go": 60,
+    "rust": 73,
+    "ruby": 72,
+    "php": 68,
+    "swift": 83,
+    "kotlin": 78,
 }
-
 
 class Judge0Service:
     """Service for executing code using Judge0 API."""
@@ -58,7 +54,6 @@ class Judge0Service:
             Dict with execution results (output, error, status)
         """
         
-        # Check if Judge0 is configured
         if not self.api_url or not self.api_key:
             logger.warning("Judge0 not configured, using rule-based analysis")
             return await self._rule_based_execution(code, language)
@@ -76,7 +71,6 @@ class Judge0Service:
         
         try:
             async with httpx.AsyncClient() as client:
-                # Submit code for execution
                 submission = await self._submit_code(
                     client, code, language_id, stdin
                 )
@@ -89,7 +83,6 @@ class Judge0Service:
                         "status": "error"
                     }
                 
-                # Poll for results
                 result = await self._get_submission_result(
                     client, submission["token"]
                 )
@@ -163,7 +156,7 @@ class Judge0Service:
         }
         
         for attempt in range(max_attempts):
-            await asyncio.sleep(1)  # Wait 1 second between polls
+            await asyncio.sleep(1)
             
             response = await client.get(
                 f"{self.api_url}/submissions/{token}?base64_encoded=false",
@@ -174,8 +167,6 @@ class Judge0Service:
             if response.status_code == 200:
                 result = response.json()
                 
-                # Check if execution is complete
-                # Status IDs: 1-2 = In Queue/Processing, 3 = Accepted, 4+ = Errors
                 if result.get("status", {}).get("id", 0) > 2:
                     return result
             else:
@@ -199,7 +190,6 @@ class Judge0Service:
         status = result.get("status", {})
         status_id = status.get("id", 0)
         
-        # Status ID 3 = Accepted (successful execution)
         if status_id == 3:
             return {
                 "success": True,
@@ -210,7 +200,6 @@ class Judge0Service:
                 "memory": result.get("memory")
             }
         else:
-            # Compilation error, runtime error, etc.
             error_msg = (
                 result.get("compile_output") or
                 result.get("stderr") or
@@ -239,11 +228,9 @@ class Judge0Service:
         
         logger.info("Using rule-based code analysis (no execution)")
         
-        # Basic syntax checks
         issues = []
         
         if language == "python":
-            # Check for basic Python syntax
             if "print(" in code:
                 issues.append("✓ Print statement detected")
             if "def " in code:
@@ -272,6 +259,4 @@ class Judge0Service:
             "status": "analyzed"
         }
 
-
-# Singleton instance
 judge0_service = Judge0Service()

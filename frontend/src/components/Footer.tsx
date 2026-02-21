@@ -1,7 +1,3 @@
-/**
- * Footer — Production-level site footer
- * Forensic Authority aesthetic with glass panels, bronze accents
- */
 import { Link } from 'react-router-dom';
 import { Logo } from './Logo';
 import {
@@ -42,14 +38,11 @@ const LEGAL_LINKS = [
 export const Footer: React.FC = () => {
   return (
     <footer className="relative border-t border-white/[0.08]">
-      {/* Ambient gradient behind footer */}
       <div className="absolute inset-0 bg-gradient-to-t from-neeti-surface/60 via-transparent to-transparent pointer-events-none" />
 
       <div className="relative z-10">
-        {/* ── Main Footer Grid ──────────────────────────── */}
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
-            {/* Column 1 — Brand + About */}
             <div className="lg:col-span-4 space-y-5">
               <Logo size="lg" showWordmark showTagline linkTo="/" />
 
@@ -68,7 +61,6 @@ export const Footer: React.FC = () => {
                 </div>
               </div>
 
-              {/* Social Links */}
               <div className="flex items-center gap-3 pt-2">
                 <a
                   href="https://github.com/sukrit-89/Anti-cheat-interview-system"
@@ -103,7 +95,6 @@ export const Footer: React.FC = () => {
               </div>
             </div>
 
-            {/* Column 2 — Platform */}
             <div className="lg:col-span-2 lg:col-start-6">
               <h4 className="text-[10px] font-mono text-ink-ghost tracking-[0.2em] uppercase mb-5">
                 Platform
@@ -122,7 +113,6 @@ export const Footer: React.FC = () => {
               </ul>
             </div>
 
-            {/* Column 3 — Resources */}
             <div className="lg:col-span-3">
               <h4 className="text-[10px] font-mono text-ink-ghost tracking-[0.2em] uppercase mb-5">
                 Resources
@@ -155,7 +145,6 @@ export const Footer: React.FC = () => {
               </ul>
             </div>
 
-            {/* Column 4 — Legal */}
             <div className="lg:col-span-3">
               <h4 className="text-[10px] font-mono text-ink-ghost tracking-[0.2em] uppercase mb-5">
                 Legal
@@ -173,7 +162,6 @@ export const Footer: React.FC = () => {
                 ))}
               </ul>
 
-              {/* Contact Support */}
               <div className="mt-8 p-4 glass-subtle rounded-md">
                 <div className="flex items-center gap-2 mb-2">
                   <Shield className="w-4 h-4 text-bronze" />
@@ -195,7 +183,6 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Bottom Bar ────────────────────────────────── */}
         <div className="border-t border-white/[0.06]">
           <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3 text-xs text-ink-ghost font-mono tracking-wider">

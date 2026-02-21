@@ -16,7 +16,6 @@ from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-
 class StorageService:
     """
     Multi-backend storage service with automatic fallback:
@@ -38,7 +37,6 @@ class StorageService:
                     region_name=settings.S3_REGION,
                     config=Config(signature_version='s3v4')
                 )
-                # Test connection and create bucket if needed
                 self._ensure_bucket_exists()
                 logger.info(f"S3/MinIO storage initialized: {settings.S3_ENDPOINT_URL or 'AWS S3'}")
             except Exception as e:
@@ -88,12 +86,9 @@ class StorageService:
                 ContentType=content_type
             )
             
-            # Return object URL
             if settings.S3_ENDPOINT_URL:
-                # MinIO or custom endpoint
                 return f"{settings.S3_ENDPOINT_URL}/{settings.S3_BUCKET_NAME}/{object_key}"
             else:
-                # AWS S3
                 return f"https://{settings.S3_BUCKET_NAME}.s3.{settings.S3_REGION}.amazonaws.com/{object_key}"
         
         except Exception as e:
@@ -102,7 +97,6 @@ class StorageService:
     
     async def _upload_to_local(self, file_content: bytes, file_name: str) -> str:
         """Upload to local filesystem (free fallback)"""
-        # Create date-based subdirectory
         date_path = self.local_storage_path / datetime.utcnow().strftime('%Y/%m/%d')
         date_path.mkdir(parents=True, exist_ok=True)
         
@@ -120,7 +114,6 @@ class StorageService:
         expires_in: seconds (default 1 hour)
         """
         if self.use_s3 and file_path.startswith("http"):
-            # Extract object key from URL
             object_key = file_path.split(f"{settings.S3_BUCKET_NAME}/")[-1]
             
             try:
@@ -137,7 +130,6 @@ class StorageService:
                 logger.error(f"Failed to generate presigned URL: {e}")
                 return file_path
         else:
-            # Local file - return path (in production, serve via nginx)
             return file_path
     
     async def delete_file(self, file_path: str) -> bool:
@@ -156,7 +148,6 @@ class StorageService:
                 logger.error(f"S3 deletion failed: {e}")
                 return False
         else:
-            # Local file
             try:
                 if os.path.exists(file_path):
                     os.remove(file_path)
@@ -185,12 +176,9 @@ class StorageService:
                 logger.error(f"S3 list failed: {e}")
                 return []
         else:
-            # Local filesystem
             session_path = self.local_storage_path / str(session_id)
             if session_path.exists():
                 return [str(f) for f in session_path.rglob("*") if f.is_file()]
             return []
 
-
-# Singleton instance
 storage_service = StorageService()

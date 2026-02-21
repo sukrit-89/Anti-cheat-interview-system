@@ -62,8 +62,10 @@ export default function SessionMonitor() {
   }
 
   return (
-    <div className="min-h-screen bg-neeti-bg">
-      {/* ── Header ──────────────────────────────────── */}
+    <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
+      <div className="ambient-orb ambient-orb-bronze w-[450px] h-[450px] top-[-10%] left-[10%] z-0 opacity-50" />
+      <div className="ambient-orb ambient-orb-blue w-[350px] h-[350px] bottom-[20%] right-[-3%] z-0 opacity-35" />
+
       <header className="sticky top-0 z-30 glass-header px-5 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
@@ -91,9 +93,7 @@ export default function SessionMonitor() {
       </header>
 
       <div className="flex h-[calc(100vh-56px)]">
-        {/* ── Main panel ───────────────────────────── */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Metrics */}
           <div className="p-5 border-b border-neeti-border">
             <h2 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider mb-4 flex items-center gap-2">
               <Activity className="w-4 h-4 text-bronze" /> Live Metrics
@@ -106,7 +106,6 @@ export default function SessionMonitor() {
             </div>
           </div>
 
-          {/* Timeline */}
           <div className="flex-1 p-5 overflow-hidden flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider flex items-center gap-2">
@@ -151,7 +150,6 @@ export default function SessionMonitor() {
           </div>
         </div>
 
-        {/* ── Flags sidebar ────────────────────────── */}
         <div className="w-72 border-l border-white/[0.06] bg-neeti-surface/60 backdrop-blur-md flex flex-col">
           <div className="px-4 py-3 border-b border-neeti-border">
             <h3 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider flex items-center gap-2">
@@ -174,7 +172,6 @@ export default function SessionMonitor() {
         </div>
       </div>
 
-      {/* ── End-session dialog ─────────────────────── */}
       {showEndDialog && (
         <div className="dialog-overlay">
           <div className="dialog-panel max-w-md w-full mx-4 p-7 space-y-5">

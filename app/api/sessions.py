@@ -28,11 +28,9 @@ from app.core.logging import logger
 
 router = APIRouter(prefix="/sessions", tags=["Sessions"])
 
-
 def generate_session_code() -> str:
     """Generate unique 6-character session code."""
     return secrets.token_urlsafe(6)[:6].upper()
-
 
 @router.post("", response_model=SessionResponse, status_code=status.HTTP_201_CREATED)
 async def create_session(
@@ -42,10 +40,8 @@ async def create_session(
 ) -> Session:
     """Create a new interview session (Recruiter only)."""
     
-    # Generate unique session code
     session_code = generate_session_code()
     
-    # Ensure uniqueness
     while True:
         result = await db.execute(
             select(Session).where(Session.session_code == session_code)
@@ -54,10 +50,8 @@ async def create_session(
             break
         session_code = generate_session_code()
     
-    # Create LiveKit room
     room_name = f"session-{session_code}-{int(datetime.utcnow().timestamp())}"
     
-    # Initialize LiveKit service and create room
     livekit_service = LiveKitService()
     try:
         await livekit_service.create_room(
@@ -68,14 +62,12 @@ async def create_session(
         logger.info(f"LiveKit room created: {room_name}")
     except Exception as e:
         logger.error(f"Failed to create LiveKit room {room_name}: {e}")
-        # Continue anyway - room will be created on first join if needed
     
-    # Create session - recruiter_id is now the Supabase UUID
     new_session = Session(
         session_code=session_code,
         title=session_data.title,
         description=session_data.description,
-        recruiter_id=current_user["id"],  # Supabase UUID string
+        recruiter_id=current_user["id"],
         status=SessionStatus.SCHEDULED,
         scheduled_at=session_data.scheduled_at,
         room_name=room_name,
@@ -88,7 +80,6 @@ async def create_session(
     
     logger.info(f"Session created: {new_session.id} by recruiter {current_user['id']}")
     
-    # Publish event
     await publish_session_created(
         session_id=new_session.id,
         data={
@@ -100,7 +91,6 @@ async def create_session(
     
     return new_session
 
-
 @router.post("/join", response_model=SessionJoinResponse)
 async def join_session(
     join_data: SessionJoinRequest,
@@ -109,7 +99,6 @@ async def join_session(
 ) -> SessionJoinResponse:
     """Join a session using session code."""
     
-    # Find session
     result = await db.execute(
         select(Session).where(Session.session_code == join_data.session_code)
     )
@@ -133,7 +122,6 @@ async def join_session(
             detail="Session has been cancelled"
         )
     
-    # Check if candidate already exists
     result = await db.execute(
         select(Candidate).where(
             and_(
@@ -145,7 +133,6 @@ async def join_session(
     candidate = result.scalar_one_or_none()
     
     if not candidate:
-        # Create new candidate entry
         candidate = Candidate(
             session_id=session.id,
             user_id=current_user["id"],
@@ -160,12 +147,10 @@ async def join_session(
         
         logger.info(f"Candidate {candidate.id} joined session {session.id}")
     else:
-        # Update existing candidate
         candidate.joined_at = datetime.utcnow()
         candidate.is_present = True
         await db.commit()
     
-    # Generate LiveKit token for candidate
     livekit_service = LiveKitService()
     room_token = livekit_service.generate_token(
         room_name=session.room_name,
@@ -179,7 +164,6 @@ async def join_session(
         candidate_id=candidate.id
     )
 
-
 @router.get("/{session_id}/token", response_model=RoomTokenResponse)
 async def get_room_token(
     session_id: int,
@@ -188,7 +172,6 @@ async def get_room_token(
 ) -> RoomTokenResponse:
     """Get LiveKit room token for a session (for both recruiters and candidates)."""
     
-    # Find session
     result = await db.execute(
         select(Session).where(Session.id == session_id)
     )
@@ -200,7 +183,6 @@ async def get_room_token(
             detail="Session not found"
         )
     
-    # Check authorization - user must be recruiter of session or participant
     from app.models.models import UserRole
     
     is_recruiter = (
@@ -208,7 +190,6 @@ async def get_room_token(
         session.recruiter_id == current_user["id"]
     )
     
-    # Check if user is a candidate in this session
     is_candidate = False
     if not is_recruiter:
         result = await db.execute(
@@ -227,10 +208,8 @@ async def get_room_token(
             detail="Not authorized to access this session"
         )
     
-    # Generate LiveKit token
     livekit_service = LiveKitService()
     
-    # Determine participant name and identity
     if is_recruiter:
         participant_name = f"Recruiter - {current_user.get('email', 'Unknown')}"
         participant_identity = f"recruiter-{current_user['id']}"
@@ -254,7 +233,6 @@ async def get_room_token(
         participant_identity=participant_identity
     )
 
-
 @router.get("", response_model=List[SessionResponse])
 async def list_sessions(
     db: AsyncSession = Depends(get_db),
@@ -266,10 +244,8 @@ async def list_sessions(
     from app.models.models import UserRole
     
     if current_user.get("role") == UserRole.RECRUITER:
-        # Recruiters see their created sessions
         query = select(Session).where(Session.recruiter_id == current_user["id"])
     else:
-        # Candidates see sessions they've joined
         query = (
             select(Session)
             .join(Candidate)
@@ -285,7 +261,6 @@ async def list_sessions(
     sessions = result.scalars().all()
     
     return sessions
-
 
 @router.get("/{session_id}", response_model=SessionResponse)
 async def get_session(
@@ -304,7 +279,6 @@ async def get_session(
             detail="Session not found"
         )
     
-    # Authorization check
     from app.models.models import UserRole
     
     if current_user.get("role") == UserRole.RECRUITER:
@@ -314,7 +288,6 @@ async def get_session(
                 detail="Not authorized to view this session"
             )
     else:
-        # Check if candidate participated
         result = await db.execute(
             select(Candidate).where(
                 and_(
@@ -330,7 +303,6 @@ async def get_session(
             )
     
     return session
-
 
 @router.patch("/{session_id}", response_model=SessionResponse)
 async def update_session(
@@ -356,7 +328,6 @@ async def update_session(
             detail="Not authorized to update this session"
         )
     
-    # Update fields
     update_dict = update_data.model_dump(exclude_unset=True)
     
     for field, value in update_dict.items():
@@ -368,7 +339,6 @@ async def update_session(
     logger.info(f"Session {session_id} updated by recruiter {current_user['id']}")
     
     return session
-
 
 @router.post("/{session_id}/start", response_model=SessionResponse)
 async def start_session(
@@ -407,14 +377,12 @@ async def start_session(
     
     logger.info(f"Session {session_id} started by recruiter {current_user['id']}")
     
-    # Publish event
     await publish_session_started(
         session_id=session.id,
         data={"started_at": session.started_at.isoformat()}
     )
     
     return session
-
 
 @router.post("/{session_id}/end", response_model=SessionResponse)
 async def end_session(
@@ -453,11 +421,9 @@ async def end_session(
     
     logger.info(f"Session {session_id} ended by recruiter {current_user['id']}")
     
-    # Publish end event
     await publish_session_end_event(session_id, session)
     
     return session
-
 
 @router.get("/{session_id}/candidates", response_model=List[CandidateResponse])
 async def get_session_candidates(
@@ -489,8 +455,6 @@ async def get_session_candidates(
     
     return candidates
 
-
-# Publish session ended event
 async def publish_session_end_event(session_id: int, session):
     """Publish event when session ends."""
     from app.core.events import publish_session_ended
@@ -498,5 +462,3 @@ async def publish_session_end_event(session_id: int, session):
         session_id=session_id,
         data={"ended_at": session.ended_at.isoformat()}
     )
-    
-    # 

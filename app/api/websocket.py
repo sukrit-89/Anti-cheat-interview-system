@@ -14,7 +14,6 @@ from app.core.events import EventType, EventSubscriber
 
 router = APIRouter()
 
-
 class ConnectionManager:
     """Manages WebSocket connections for real-time updates."""
     
@@ -54,7 +53,6 @@ class ConnectionManager:
                     logger.error(f"Error sending message: {e}")
                     disconnected.append(connection)
             
-            # Clean up disconnected websockets
             for conn in disconnected:
                 self.disconnect(conn, session_id)
     
@@ -63,9 +61,7 @@ class ConnectionManager:
         for session_id in self.active_connections:
             await self.send_to_session(session_id, message)
 
-
 manager = ConnectionManager()
-
 
 @router.websocket("/ws/session/{session_id}")
 async def websocket_endpoint(
@@ -84,7 +80,6 @@ async def websocket_endpoint(
     await manager.connect(websocket, session_id)
     
     try:
-        # Subscribe to events for this session
         subscriber = EventSubscriber([
             EventType.CODE_CHANGED,
             EventType.CODE_EXECUTED,
@@ -95,10 +90,8 @@ async def websocket_endpoint(
         
         await subscriber.subscribe()
         
-        # Listen for events
         async for event in subscriber.listen():
             if event.session_id == session_id:
-                # Forward event to WebSocket
                 await websocket.send_json({
                     "type": event.event_type.value,
                     "timestamp": event.timestamp.isoformat(),
@@ -112,7 +105,6 @@ async def websocket_endpoint(
     except Exception as e:
         logger.error(f"WebSocket error: {e}")
         manager.disconnect(websocket, session_id)
-
 
 @router.websocket("/ws/live/{session_id}")
 async def live_monitoring_endpoint(
@@ -131,15 +123,12 @@ async def live_monitoring_endpoint(
     
     try:
         while True:
-            # Listen for messages from client
             data = await websocket.receive_json()
             
-            # Handle different message types
             if data.get("type") == "ping":
                 await websocket.send_json({"type": "pong"})
             
             elif data.get("type") == "request_metrics":
-                # Fetch and send current session metrics
                 import asyncio
                 from app.services.metrics_service import MetricsService
                 

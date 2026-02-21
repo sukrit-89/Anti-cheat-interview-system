@@ -4,7 +4,6 @@ Test configuration and environment settings.
 import pytest
 from app.core.config import settings
 
-
 class TestConfiguration:
     """Test application configuration."""
     
@@ -41,22 +40,18 @@ class TestConfiguration:
     
     def test_storage_configuration(self):
         """Test storage configuration."""
-        # Check S3/storage settings are accessible
         assert hasattr(settings, 'USE_LOCAL_STORAGE')
         if not settings.USE_LOCAL_STORAGE:
-            # If using S3-compatible storage, check these exist
             assert hasattr(settings, 'S3_ENDPOINT_URL')
             assert hasattr(settings, 'S3_ACCESS_KEY_ID')
             assert hasattr(settings, 'S3_BUCKET_NAME')
     
     def test_ai_configuration(self):
         """Test AI service configuration."""
-        # Should have either OpenAI or Ollama configured
         has_openai = bool(settings.OPENAI_API_KEY)
         has_ollama = settings.USE_OLLAMA and settings.OLLAMA_BASE_URL
         
         assert has_openai or has_ollama, "At least one AI service should be configured"
-
 
 class TestHealthEndpoints:
     """Test health and monitoring endpoints."""

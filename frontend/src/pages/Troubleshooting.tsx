@@ -1,7 +1,3 @@
-/**
- * Troubleshooting Page — Technical issue resolution guide
- * Categorised issue resolution with search and forensic authority aesthetic
- */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Logo } from '../components/Logo';
@@ -31,7 +27,6 @@ interface TroubleshootItem {
 }
 
 const TROUBLESHOOT_DATA: TroubleshootItem[] = [
-  // Connection Issues
   {
     category: 'Connection',
     title: 'Cannot connect to the interview session',
@@ -84,7 +79,6 @@ const TROUBLESHOOT_DATA: TroubleshootItem[] = [
     ],
   },
 
-  // Audio & Video
   {
     category: 'Audio & Video',
     title: 'Camera not detected or not working',
@@ -140,7 +134,6 @@ const TROUBLESHOOT_DATA: TroubleshootItem[] = [
     ],
   },
 
-  // Code Editor
   {
     category: 'Code Editor',
     title: 'Code execution fails or times out',
@@ -176,7 +169,6 @@ const TROUBLESHOOT_DATA: TroubleshootItem[] = [
     ],
   },
 
-  // Authentication
   {
     category: 'Authentication',
     title: 'Cannot log in or register',
@@ -212,7 +204,6 @@ const TROUBLESHOOT_DATA: TroubleshootItem[] = [
     ],
   },
 
-  // Performance
   {
     category: 'Performance',
     title: 'Platform is slow or laggy',
@@ -279,7 +270,6 @@ const TroubleshootAccordion: React.FC<{
         }`}
       >
         <div className="px-5 pb-5 pt-4 border-t border-white/[0.04] space-y-4">
-          {/* Symptoms */}
           <div>
             <p className="text-[10px] font-mono text-ink-ghost tracking-[0.15em] uppercase mb-2">
               Symptoms
@@ -294,7 +284,6 @@ const TroubleshootAccordion: React.FC<{
             </ul>
           </div>
 
-          {/* Resolution Steps */}
           <div>
             <p className="text-[10px] font-mono text-ink-ghost tracking-[0.15em] uppercase mb-2">
               Resolution Steps
@@ -333,7 +322,6 @@ export const Troubleshooting = () => {
 
   return (
     <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
-      {/* Grid overlay */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.012]"
         style={{
@@ -343,8 +331,10 @@ export const Troubleshooting = () => {
         }}
       />
 
+      <div className="ambient-orb ambient-orb-bronze w-[500px] h-[500px] top-[-10%] right-[5%] z-0 opacity-55" />
+      <div className="ambient-orb ambient-orb-blue w-[400px] h-[400px] bottom-[15%] left-[-5%] z-0 opacity-40" />
+
       <div className="relative z-10">
-        {/* ── Header ───────────────────────────────────── */}
         <header className="glass-header sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <Logo size="md" showWordmark linkTo="/" />
@@ -357,7 +347,6 @@ export const Troubleshooting = () => {
           </div>
         </header>
 
-        {/* ── Hero ─────────────────────────────────────── */}
         <section className="max-w-4xl mx-auto px-6 pt-20 pb-12">
           <div className="animate-fadeUp">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-bronze/25 bg-bronze/[0.08] backdrop-blur-md rounded-full mb-6">
@@ -380,7 +369,6 @@ export const Troubleshooting = () => {
           </div>
         </section>
 
-        {/* ── Quick Diagnostics ────────────────────────── */}
         <section className="max-w-4xl mx-auto px-6 pb-8">
           <div className="glass-subtle p-5 mb-8">
             <div className="flex items-center gap-2 mb-4">
@@ -421,7 +409,6 @@ export const Troubleshooting = () => {
             </div>
           </div>
 
-          {/* Search */}
           <div className="relative mb-6">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-ghost" />
             <input
@@ -433,7 +420,6 @@ export const Troubleshooting = () => {
             />
           </div>
 
-          {/* Category tabs */}
           <div className="flex flex-wrap gap-2">
             {['All', ...CATEGORIES].map((cat) => {
               const Icon = CATEGORY_ICONS[cat];
@@ -455,7 +441,6 @@ export const Troubleshooting = () => {
           </div>
         </section>
 
-        {/* ── Issue List ───────────────────────────────── */}
         <section className="max-w-4xl mx-auto px-6 pb-16">
           {filteredItems.length > 0 ? (
             <div className="space-y-3">
@@ -485,7 +470,6 @@ export const Troubleshooting = () => {
           )}
         </section>
 
-        {/* ── Escalation CTA ──────────────────────────── */}
         <section className="border-t border-white/[0.06] bg-white/[0.02] py-16">
           <div className="max-w-4xl mx-auto px-6">
             <div className="grid sm:grid-cols-2 gap-6">

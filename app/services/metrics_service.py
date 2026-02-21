@@ -9,7 +9,6 @@ from app.models.models import CodingEvent, SpeechSegment, VisionMetric, Candidat
 from app.core.database import AsyncSessionLocal
 from app.core.logging import logger
 
-
 class MetricsService:
     """Service for calculating real-time session metrics."""
     
@@ -21,20 +20,17 @@ class MetricsService:
         Returns aggregated metrics for recruiter dashboard.
         """
         async with AsyncSessionLocal() as db:
-            # Get candidate info
             candidate_result = await db.execute(
                 select(Candidate).where(Candidate.session_id == session_id)
             )
             candidates = candidate_result.scalars().all()
             
-            # Coding metrics
             coding_result = await db.execute(
                 select(func.count(CodingEvent.id))
                 .where(CodingEvent.session_id == session_id)
             )
             coding_events_count = coding_result.scalar() or 0
             
-            # Speech metrics
             speech_result = await db.execute(
                 select(
                     func.count(SpeechSegment.id),
@@ -46,7 +42,6 @@ class MetricsService:
             speech_segments_count = speech_data[0] or 0
             total_speech_duration = speech_data[1] or 0
             
-            # Vision metrics
             vision_result = await db.execute(
                 select(func.count(VisionMetric.id))
                 .where(VisionMetric.session_id == session_id)

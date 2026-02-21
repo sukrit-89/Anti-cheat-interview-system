@@ -1,7 +1,6 @@
 import React from 'react';
 import { clsx } from 'clsx';
 
-/* ── Base Card ─────────────────────────────────────────── */
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'evidence' | 'control' | 'elevated' | 'glass';
   padding?: 'none' | 'sm' | 'md' | 'lg';
@@ -29,7 +28,6 @@ export const Card: React.FC<CardProps> = ({
     glass:    'glass-strong',
   };
 
-  // Glass-aware backgrounds via inline styles applied in the element
   const variantStyles: Record<string, React.CSSProperties> = {
     default:  { background: 'linear-gradient(135deg, rgba(21,21,24,0.85) 0%, rgba(21,21,24,0.70) 100%)', backdropFilter: 'blur(12px) saturate(1.2)', WebkitBackdropFilter: 'blur(12px) saturate(1.2)', border: '1px solid rgba(255,255,255,0.08)' },
     evidence: { background: 'linear-gradient(135deg, rgba(21,21,24,0.85) 0%, rgba(21,21,24,0.70) 100%)', backdropFilter: 'blur(12px) saturate(1.2)', WebkitBackdropFilter: 'blur(12px) saturate(1.2)', border: '1px solid rgba(255,255,255,0.08)' },
@@ -66,7 +64,6 @@ export const Card: React.FC<CardProps> = ({
   );
 };
 
-/* ── Metric Card ───────────────────────────────────────── */
 interface MetricCardProps {
   title: string;
   value: string | number;
@@ -120,7 +117,6 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   );
 };
 
-/* ── Evidence Card ─────────────────────────────────────── */
 interface EvidenceCardProps {
   title: string;
   evidence: string;

@@ -2,27 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { clsx } from 'clsx';
 
-/**
- * Neeti AI Logo — Indic-inspired geometric mark
- *
- * The form is a stylised dharma-chakra (wheel of law/ethics) merged with
- * balanced scales — representing नीति (ethical judgment).  Eight spokes
- * invoke the Ashoka Chakra, the central node anchors balance, and the
- * outer ring references the cyclical nature of evaluation.
- *
- * Colour: bronze accent by default, inherits currentColor via `inherit`.
- */
-
 interface LogoProps {
-  /** sm = 24px, md = 32px, lg = 48px, xl = 64px, 2xl = 96px */
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-  /** Override with any colour — use 'inherit' to follow parent text-color */
   color?: string;
-  /** Show the wordmark beside the mark */
   showWordmark?: boolean;
-  /** Add the Devanagari tagline */
   showTagline?: boolean;
-  /** Wrap logo in a Link to this path (e.g. '/') */
   linkTo?: string;
   className?: string;
 }
@@ -54,7 +38,6 @@ export const Logo: React.FC<LogoProps> = ({
 
   return (
     <Wrapper>
-      {/* ── Mark ───────────────────────────────────── */}
       <svg
         width={s}
         height={s}
@@ -64,7 +47,6 @@ export const Logo: React.FC<LogoProps> = ({
         aria-label="Neeti AI logo"
         className="shrink-0"
       >
-        {/* Glow filter */}
         <defs>
           <filter id="logo-glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur" />
@@ -80,7 +62,6 @@ export const Logo: React.FC<LogoProps> = ({
           </linearGradient>
         </defs>
 
-        {/* Outer Chakra ring */}
         <circle
           cx="32"
           cy="32"
@@ -91,7 +72,6 @@ export const Logo: React.FC<LogoProps> = ({
           opacity="0.6"
         />
 
-        {/* Inner Chakra ring */}
         <circle
           cx="32"
           cy="32"
@@ -102,7 +82,6 @@ export const Logo: React.FC<LogoProps> = ({
           opacity="0.35"
         />
 
-        {/* 8 Spokes — Ashoka Chakra inspired */}
         {Array.from({ length: 8 }).map((_, i) => {
           const angle = (i * 45 * Math.PI) / 180;
           const x1 = 32 + 10 * Math.cos(angle);
@@ -121,7 +100,6 @@ export const Logo: React.FC<LogoProps> = ({
           );
         })}
 
-        {/* Central balance / node — scales motif */}
         <circle
           cx="32"
           cy="32"
@@ -131,27 +109,22 @@ export const Logo: React.FC<LogoProps> = ({
           strokeWidth="1.6"
         />
 
-        {/* Balance beam */}
         <line x1="22" y1="32" x2="42" y2="32" stroke={fill} strokeWidth="1.6" strokeLinecap="round" />
 
-        {/* Left scale pan */}
         <path
           d="M24 32 L22 36 L26 36 Z"
           fill={fill}
           opacity="0.8"
         />
 
-        {/* Right scale pan */}
         <path
           d="M40 32 L38 36 L42 36 Z"
           fill={fill}
           opacity="0.8"
         />
 
-        {/* Centre dot — pivot */}
         <circle cx="32" cy="32" r="2.2" fill={fill} />
 
-        {/* Small accent dots at cardinal spokes */}
         {[0, 90, 180, 270].map((deg) => {
           const rad = (deg * Math.PI) / 180;
           return (
@@ -167,7 +140,6 @@ export const Logo: React.FC<LogoProps> = ({
         })}
       </svg>
 
-      {/* ── Wordmark ───────────────────────────────── */}
       {showWordmark && (
         <div className="leading-none select-none">
           <span

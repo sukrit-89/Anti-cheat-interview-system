@@ -17,7 +17,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import AsyncSessionLocal, engine
 from app.core.logging import logger
 
-
 async def cleanup_database(confirm: bool = False):
     """Clean up all data from the database."""
     
@@ -43,25 +42,21 @@ async def cleanup_database(confirm: bool = False):
         async with AsyncSessionLocal() as db:
             logger.info("Starting database cleanup...")
             
-            # Delete in order respecting foreign key constraints
             tables = [
                 "coding_events",
                 "evaluations", 
                 "evaluation_reports",
                 "candidates",
                 "sessions",
-                # Note: We don't delete users table as auth is managed by Supabase
             ]
             
             deleted_counts = {}
             
             for table in tables:
                 try:
-                    # Get count before deletion
                     result = await db.execute(text(f"SELECT COUNT(*) FROM {table}"))
                     count = result.scalar()
                     
-                    # Delete all records
                     await db.execute(text(f"DELETE FROM {table}"))
                     
                     deleted_counts[table] = count
@@ -71,7 +66,6 @@ async def cleanup_database(confirm: bool = False):
                     logger.warning(f"Could not delete from {table}: {e}")
                     deleted_counts[table] = 0
             
-            # Commit all deletions
             await db.commit()
             
             print("\n" + "="*60)
@@ -88,14 +82,12 @@ async def cleanup_database(confirm: bool = False):
         print(f"\n❌ Error during cleanup: {e}")
         raise
 
-
 async def reset_sequences():
     """Reset auto-increment sequences for primary keys."""
     try:
         async with AsyncSessionLocal() as db:
             logger.info("Resetting ID sequences...")
             
-            # Reset sequences for PostgreSQL
             sequences = [
                 "sessions_id_seq",
                 "candidates_id_seq",
@@ -117,21 +109,17 @@ async def reset_sequences():
     except Exception as e:
         logger.warning(f"Sequence reset failed (this is normal for non-PostgreSQL databases): {e}")
 
-
 async def main():
     """Main entry point."""
     confirm = "--confirm" in sys.argv
     
     print("\n🧹 Neeti AI - Database Cleanup Tool\n")
     
-    # Perform cleanup
     await cleanup_database(confirm=confirm)
     
-    # Reset sequences
     await reset_sequences()
     
     print("\n✅ All done!")
-
 
 if __name__ == "__main__":
     asyncio.run(main())

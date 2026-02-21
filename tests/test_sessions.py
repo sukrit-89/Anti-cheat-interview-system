@@ -5,7 +5,6 @@ import pytest
 from httpx import AsyncClient
 from app.models.models import User
 
-
 class TestSessions:
     """Test session management."""
     
@@ -46,14 +45,12 @@ class TestSessions:
     @pytest.mark.asyncio
     async def test_list_sessions(self, client: AsyncClient, auth_headers):
         """Test listing sessions."""
-        # Create a session first
         session_data = {
             "title": "Test Interview 1",
             "description": "First test interview"
         }
         await client.post("/api/sessions", json=session_data, headers=auth_headers)
         
-        # List sessions
         response = await client.get("/api/sessions", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
@@ -63,7 +60,6 @@ class TestSessions:
     @pytest.mark.asyncio
     async def test_get_session_by_id(self, client: AsyncClient, auth_headers):
         """Test getting specific session by ID."""
-        # Create session
         session_data = {
             "title": "Specific Session Test",
             "description": "Testing session retrieval"
@@ -75,7 +71,6 @@ class TestSessions:
         )
         session_id = create_response.json()["id"]
         
-        # Get session
         response = await client.get(f"/api/sessions/{session_id}", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
@@ -91,7 +86,6 @@ class TestSessions:
     @pytest.mark.asyncio
     async def test_update_session(self, client: AsyncClient, auth_headers):
         """Test updating session details."""
-        # Create session
         session_data = {
             "title": "Original Title",
             "description": "Original description"
@@ -103,7 +97,6 @@ class TestSessions:
         )
         session_id = create_response.json()["id"]
         
-        # Update session
         update_data = {
             "title": "Updated Title",
             "description": "Updated description"
@@ -121,7 +114,6 @@ class TestSessions:
     @pytest.mark.asyncio
     async def test_start_session(self, client: AsyncClient, auth_headers):
         """Test starting a scheduled session."""
-        # Create session
         session_data = {
             "title": "Session to Start",
             "description": "Testing session start"
@@ -133,7 +125,6 @@ class TestSessions:
         )
         session_id = create_response.json()["id"]
         
-        # Start session
         response = await client.post(
             f"/api/sessions/{session_id}/start",
             headers=auth_headers
@@ -146,7 +137,6 @@ class TestSessions:
     @pytest.mark.asyncio
     async def test_end_session(self, client: AsyncClient, auth_headers):
         """Test ending an in-progress session."""
-        # Create and start session
         session_data = {
             "title": "Session to End",
             "description": "Testing session end"
@@ -160,7 +150,6 @@ class TestSessions:
         
         await client.post(f"/api/sessions/{session_id}/start", headers=auth_headers)
         
-        # End session
         response = await client.post(
             f"/api/sessions/{session_id}/end",
             headers=auth_headers
@@ -175,7 +164,6 @@ class TestSessions:
         """Test candidate joining a session."""
         from app.core.auth import AuthService
         
-        # Create session as recruiter (using existing auth_headers)
         session_data = {
             "title": "Session to Join",
             "description": "Testing session join"
@@ -187,7 +175,6 @@ class TestSessions:
         )
         session_code = create_response.json()["session_code"]
         
-        # Join as candidate
         candidate_token = AuthService.create_access_token(
             test_candidate.id,
             test_candidate.email
@@ -213,7 +200,6 @@ class TestSessions:
     @pytest.mark.asyncio
     async def test_filter_sessions_by_status(self, client: AsyncClient, auth_headers):
         """Test filtering sessions by status."""
-        # Create multiple sessions
         for i in range(3):
             session_data = {
                 "title": f"Session {i}",
@@ -221,7 +207,6 @@ class TestSessions:
             }
             await client.post("/api/sessions", json=session_data, headers=auth_headers)
         
-        # Filter by status
         response = await client.get(
             "/api/sessions?status=scheduled",
             headers=auth_headers

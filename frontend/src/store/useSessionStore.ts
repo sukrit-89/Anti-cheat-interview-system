@@ -1,7 +1,3 @@
-/**
- * Session State Management
- * Manages interview sessions and real-time updates
- */
 import { create } from 'zustand';
 import { sessionsApi } from '../lib/api';
 import { extractErrorMessage } from '../lib/errorUtils';
@@ -15,7 +11,6 @@ interface SessionState {
   isLoading: boolean;
   error: string | null;
 
-  // Actions
   fetchSessions: (status?: string) => Promise<void>;
   createSession: (data: SessionCreateRequest) => Promise<Session>;
   joinSession: (data: SessionJoinRequest) => Promise<void>;

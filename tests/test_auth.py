@@ -4,7 +4,6 @@ Test authentication endpoints.
 import pytest
 from httpx import AsyncClient
 
-
 class TestAuthentication:
     """Test authentication endpoints."""
     
@@ -168,9 +167,7 @@ class TestAuthentication:
         """Test password truncation for bcrypt compatibility."""
         from app.core.auth import AuthService
         
-        # Create password longer than 72 bytes
         long_password = "a" * 100
         hashed = AuthService.hash_password(long_password)
         
-        # Should verify with truncated version
         assert AuthService.verify_password(long_password, hashed)

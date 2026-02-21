@@ -10,14 +10,12 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.core.config import settings
 from app.core.logging import logger
 
-# Import Supabase
 try:
     from supabase import create_client
     from app.services.supabase_service import supabase_service
     SUPABASE_AUTH_AVAILABLE = True
 except ImportError:
     SUPABASE_AUTH_AVAILABLE = False
-
 
 class SupabaseAuthService:
     """Supabase-only authentication service."""
@@ -33,12 +31,10 @@ class SupabaseAuthService:
             'email': getattr(user, 'email', None),
         }
         
-        # Handle created_at datetime
         created_at = getattr(user, 'created_at', None)
         if created_at:
             user_dict['created_at'] = created_at.isoformat() if hasattr(created_at, 'isoformat') else str(created_at)
         
-        # Handle updated_at datetime
         updated_at = getattr(user, 'updated_at', None)
         if updated_at:
             user_dict['updated_at'] = updated_at.isoformat() if hasattr(updated_at, 'isoformat') else str(updated_at)
@@ -52,7 +48,6 @@ class SupabaseAuthService:
             logger.warning("Supabase not installed. Skipping Supabase auth.")
             return
         
-        # Check if Supabase credentials are configured
         if not settings.SUPABASE_URL or settings.SUPABASE_URL == "" or not settings.SUPABASE_ANON_KEY or settings.SUPABASE_ANON_KEY == "":
             logger.info("Supabase credentials not configured. Skipping Supabase auth.")
             return
@@ -76,7 +71,6 @@ class SupabaseAuthService:
             )
         
         try:
-            # Disable email confirmation for development to avoid rate limits
             result = self.supabase_client.auth.sign_up({
                 'email': email,
                 'password': password,
@@ -85,13 +79,11 @@ class SupabaseAuthService:
                         'full_name': full_name,
                         'role': role
                     },
-                    'email_redirect_to': None  # Disable email confirmation for dev
+                    'email_redirect_to': None
                 }
             })
             
             if result.user:
-                # Try to create user record in database
-                # If it already exists, that's okay - they might have registered before
                 try:
                     user_data = {
                         'id': result.user.id,
@@ -105,7 +97,6 @@ class SupabaseAuthService:
                     await supabase_service.create_user(user_data)
                     logger.info(f"Supabase user registered: {email}")
                 except Exception as db_error:
-                    # If user already exists in database, that's fine
                     logger.warning(f"User record might already exist in database: {db_error}")
                 
                 return {
@@ -120,17 +111,14 @@ class SupabaseAuthService:
         except Exception as e:
             logger.error(f"Supabase registration error: {e}")
             
-            # Provide more specific error message based on error type
             error_msg = str(e).lower()
             
-            # Check for rate limit errors
             if 'rate limit' in error_msg or 'too many' in error_msg:
                 raise HTTPException(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                     detail="Email rate limit exceeded. Supabase limits email sending. Please wait a few minutes or disable email confirmation in Supabase dashboard (Authentication > Settings > Email Auth > Confirm email = OFF)."
                 )
             
-            # Check for duplicate user errors (multiple variations)
             elif any(phrase in error_msg for phrase in [
                 'already registered',
                 'already exists', 
@@ -145,7 +133,6 @@ class SupabaseAuthService:
                     detail="This email is already registered. If you registered recently, please try logging in instead. If you forgot your password, use the password reset option."
                 )
             
-            # Generic error
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Registration failed: {str(e)}"
@@ -203,11 +190,9 @@ class SupabaseAuthService:
             return None
         
         try:
-            # Get user directly with the JWT token
             response = self.supabase_client.auth.get_user(access_token)
             
             if response and response.user:
-                # Extract user metadata for role and full_name
                 user_metadata = response.user.user_metadata or {}
                 
                 user_dict = {
@@ -254,10 +239,7 @@ class SupabaseAuthService:
                 detail=f"Token refresh failed: {str(e)}"
             )
 
-
-# Supabase auth service instance
 supabase_auth_service = SupabaseAuthService()
-
 
 async def get_current_supabase_user(
     credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())
@@ -282,7 +264,6 @@ async def get_current_supabase_user(
     
     return user
 
-
 async def get_current_recruiter(
     current_user: dict = Depends(get_current_supabase_user)
 ) -> dict:
@@ -295,7 +276,6 @@ async def get_current_recruiter(
         )
     
     return current_user
-
 
 async def get_current_candidate(
     current_user: dict = Depends(get_current_supabase_user)

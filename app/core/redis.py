@@ -9,7 +9,6 @@ from redis.asyncio import Redis, ConnectionPool
 from app.core.config import settings
 from app.core.logging import logger
 
-
 class RedisClient:
     """Async Redis client wrapper."""
     
@@ -83,10 +82,7 @@ class RedisClient:
             value = json.dumps(value)
         return await self.set(key, value, expire)
 
-
-# Global Redis client instance
 redis_client = RedisClient()
-
 
 async def get_redis() -> Redis:
     """Dependency for getting Redis client."""

@@ -1,7 +1,3 @@
-/**
- * About Page — Neeti AI platform overview
- * Forensic Authority aesthetic with detailed sections
- */
 import { Link } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { Footer } from '../components/Footer';
@@ -78,7 +74,6 @@ const TECH_STACK = [
 export const About = () => {
   return (
     <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
-      {/* Grid overlay */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.012]"
         style={{
@@ -88,8 +83,11 @@ export const About = () => {
         }}
       />
 
+      <div className="ambient-orb ambient-orb-bronze w-[600px] h-[600px] top-[-10%] right-[-5%] z-0 opacity-60" />
+      <div className="ambient-orb ambient-orb-blue w-[450px] h-[450px] bottom-[20%] left-[-8%] z-0 opacity-40" />
+      <div className="ambient-orb ambient-orb-warm w-[350px] h-[350px] top-[50%] right-[10%] z-0 opacity-30" />
+
       <div className="relative z-10">
-        {/* ── Header ───────────────────────────────────── */}
         <header className="glass-header sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <Logo size="md" showWordmark linkTo="/" />
@@ -102,7 +100,6 @@ export const About = () => {
           </div>
         </header>
 
-        {/* ── Hero / Intro ─────────────────────────────── */}
         <section className="max-w-7xl mx-auto px-6 pt-20 pb-16">
           <div className="max-w-3xl animate-fadeUp">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-bronze/25 bg-bronze/[0.08] backdrop-blur-md rounded-full mb-6">
@@ -133,7 +130,6 @@ export const About = () => {
           </div>
         </section>
 
-        {/* ── How It Works ─────────────────────────────── */}
         <section id="how-it-works" className="border-y border-white/[0.06] bg-white/[0.02] py-24">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
@@ -186,7 +182,6 @@ export const About = () => {
           </div>
         </section>
 
-        {/* ── Multi-Agent System ───────────────────────── */}
         <section id="agents" className="max-w-7xl mx-auto px-6 py-24">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-display font-bold text-ink-primary mb-3">
@@ -220,7 +215,6 @@ export const About = () => {
               </div>
             ))}
 
-            {/* CTA card */}
             <div className="glass-bronze p-6 flex flex-col justify-between">
               <div>
                 <h4 className="text-sm font-display font-semibold text-ink-primary mb-2">
@@ -241,7 +235,6 @@ export const About = () => {
           </div>
         </section>
 
-        {/* ── Security ─────────────────────────────────── */}
         <section id="security" className="border-y border-white/[0.06] bg-white/[0.02] py-24">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid lg:grid-cols-2 gap-16 items-start">
@@ -293,7 +286,6 @@ export const About = () => {
           </div>
         </section>
 
-        {/* ── Responsible AI ───────────────────────────── */}
         <section id="responsible-ai" className="max-w-7xl mx-auto px-6 py-24">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-display font-bold text-ink-primary mb-3">
@@ -336,7 +328,6 @@ export const About = () => {
           </div>
         </section>
 
-        {/* ── CTA ──────────────────────────────────────── */}
         <section className="border-t border-white/[0.06] bg-white/[0.02] py-20">
           <div className="max-w-7xl mx-auto px-6 text-center">
             <h2 className="text-2xl font-display font-bold text-ink-primary mb-4">

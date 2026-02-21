@@ -10,7 +10,6 @@ from app.models.models import AgentOutput as AgentOutputModel, AgentType
 from app.core.database import AsyncSessionLocal
 from app.core.logging import logger
 
-
 class EvaluationAgent(BaseAgent):
     """
     Final evaluation agent that:
@@ -27,7 +26,6 @@ class EvaluationAgent(BaseAgent):
         session_id = input_data.session_id
         
         async with AsyncSessionLocal() as db:
-            # Fetch all completed agent outputs
             result = await db.execute(
                 select(AgentOutputModel)
                 .where(
@@ -45,16 +43,12 @@ class EvaluationAgent(BaseAgent):
                 insights="No agent data available for evaluation"
             )
         
-        # Aggregate scores
         evaluation = self._aggregate_outputs(agent_outputs)
         
-        # Generate recommendation
         recommendation = self._generate_recommendation(evaluation)
         
-        # Extract key findings
         findings = self._extract_key_findings(agent_outputs, evaluation)
         
-        # Generate comprehensive insights
         insights = self._generate_comprehensive_insights(evaluation, recommendation)
         
         return AgentOutput(
@@ -77,7 +71,6 @@ class EvaluationAgent(BaseAgent):
             if output.score is not None:
                 scores[output.agent_type.value] = output.score
         
-        # Weighted combination
         weights = {
             AgentType.CODING.value: 0.35,
             AgentType.SPEECH.value: 0.20,
@@ -140,21 +133,18 @@ class EvaluationAgent(BaseAgent):
         weaknesses = []
         
         for output in agent_outputs:
-            # Collect flags
             if output.flags:
                 for flag in output.flags:
                     flag_copy = dict(flag)
                     flag_copy["agent"] = output.agent_type.value
                     all_flags.append(flag_copy)
             
-            # Identify strengths and weaknesses
             if output.score is not None:
                 if output.score >= 80:
                     strengths.append(f"Strong {output.agent_type.value} performance")
                 elif output.score < 50:
                     weaknesses.append(f"Weak {output.agent_type.value} performance")
         
-        # Sort flags by severity
         severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
         all_flags.sort(key=lambda f: severity_order.get(f.get("severity", "low"), 3))
         
@@ -173,14 +163,12 @@ class EvaluationAgent(BaseAgent):
         
         insights = []
         
-        # Overall assessment
         score = evaluation["overall_score"]
         insights.append(
             f"Overall performance score: {score:.1f}/100. "
             f"Recommendation: {recommendation['recommendation'].upper()}."
         )
         
-        # Detailed breakdown
         if evaluation.get("coding_score"):
             insights.append(f"Coding: {evaluation['coding_score']:.1f}/100.")
         if evaluation.get("communication_score"):
@@ -190,7 +178,6 @@ class EvaluationAgent(BaseAgent):
         if evaluation.get("engagement_score"):
             insights.append(f"Engagement: {evaluation['engagement_score']:.1f}/100.")
         
-        # Add reasoning
         insights.append(recommendation["reasoning"])
         
         return " ".join(insights)

@@ -17,7 +17,6 @@ from app.core.logging import logger
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register_supabase(
     user_data: UserCreate,
@@ -58,7 +57,6 @@ async def register_supabase(
             detail=f"Registration failed: {str(e)}"
         )
 
-
 @router.post("/login", response_model=TokenResponse)
 async def login_supabase(
     credentials: UserLogin,
@@ -79,7 +77,7 @@ async def login_supabase(
                 access_token=result['access_token'],
                 refresh_token=result.get('refresh_token', ''),
                 token_type="bearer",
-                expires_in=3600  # 1 hour
+                expires_in=3600
             )
         else:
             raise HTTPException(
@@ -95,7 +93,6 @@ async def login_supabase(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Authentication failed: {str(e)}"
         )
-
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh_token_supabase(
@@ -114,7 +111,7 @@ async def refresh_token_supabase(
                 access_token=result['access_token'],
                 refresh_token=result.get('refresh_token', ''),
                 token_type="bearer",
-                expires_in=3600  # 1 hour
+                expires_in=3600
             )
         else:
             raise HTTPException(
@@ -130,7 +127,6 @@ async def refresh_token_supabase(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Token refresh failed: {str(e)}"
         )
-
 
 @router.get("/me", response_model=UserResponse)
 async def get_me_supabase(
@@ -153,7 +149,6 @@ async def get_me_supabase(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get user information"
         )
-
 
 @router.post("/logout")
 async def logout_supabase(

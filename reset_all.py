@@ -16,7 +16,6 @@ from app.core.logging import logger
 from app.services.supabase_service import supabase_service
 from cleanup_database import cleanup_database, reset_sequences
 
-
 async def delete_all_auth_users(confirm: bool = False):
     """Delete all users from Supabase Auth."""
     
@@ -35,10 +34,6 @@ async def delete_all_auth_users(confirm: bool = False):
     
     try:
         logger.info("Starting Supabase auth cleanup...")
-        
-        # Get all users from Supabase
-        # Note: This requires admin access to Supabase
-        # For now, we'll provide instructions for manual cleanup
         
         print("\n" + "="*60)
         print("📋 MANUAL AUTH CLEANUP INSTRUCTIONS")
@@ -66,7 +61,6 @@ async def delete_all_auth_users(confirm: bool = False):
         print(f"\n❌ Error during auth cleanup: {e}")
         return False
 
-
 async def main():
     """Main entry point."""
     confirm = "--confirm" in sys.argv
@@ -74,14 +68,12 @@ async def main():
     print("\n🔥 Neeti AI - COMPLETE SYSTEM RESET\n")
     print("This will remove ALL data including user accounts!")
     
-    # Step 1: Clean database
     print("\n" + "="*60)
     print("STEP 1: Database Cleanup")
     print("="*60)
     await cleanup_database(confirm=confirm)
     await reset_sequences()
     
-    # Step 2: Clean auth users
     print("\n" + "="*60)
     print("STEP 2: Authentication Cleanup")
     print("="*60)
@@ -97,7 +89,6 @@ async def main():
     print("   2. Create test sessions")
     print("   3. Test the system")
     print("\n")
-
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -1,6 +1,3 @@
-/**
- * Code Editor — Monaco with real-time keystroke tracking
- */
 import React, { useCallback, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { codingApi } from '@/lib/api';
@@ -74,7 +71,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
   return (
     <div className="h-full flex flex-col rounded-lg overflow-hidden border border-neeti-border">
-      {/* Editor */}
       <div className="flex-1 relative min-h-0">
         <Editor
           height="100%"
@@ -99,7 +95,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         />
       </div>
 
-      {/* Output Panel */}
       <div className="flex-shrink-0 border-t border-neeti-border bg-neeti-surface/60">
         <div className="px-4 py-2 border-b border-neeti-border flex items-center justify-between">
           <span className="inline-flex items-center gap-2 text-sm font-medium text-ink-secondary">

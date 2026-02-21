@@ -1,7 +1,3 @@
-/**
- * Authentication State Management with Supabase
- * Using Zustand for simple, performant state management
- */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '@/lib/supabase';
@@ -20,7 +16,6 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
 
-  // Actions
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, fullName: string, role: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -88,7 +83,6 @@ export const useAuthStore = create<AuthState>()(
           if (error) throw error;
 
           if (data.user) {
-            // Auto-login after registration
             await supabase.auth.signInWithPassword({
               email,
               password,

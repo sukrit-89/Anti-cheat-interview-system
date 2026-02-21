@@ -6,7 +6,6 @@ import asyncio
 import sys
 from pathlib import Path
 
-# Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from app.core.database import init_db, AsyncSessionLocal, engine
@@ -15,7 +14,6 @@ from app.core.logging import logger
 from app.models.models import User, UserRole
 from app.core.auth import AuthService
 from sqlalchemy import text
-
 
 async def apply_migrations():
     """Apply SQL migration files in order."""
@@ -32,7 +30,6 @@ async def apply_migrations():
             logger.info(f"Applying migration: {migration_file.name}")
             try:
                 sql = migration_file.read_text()
-                # Execute each statement separately
                 for statement in sql.split(";"):
                     statement = statement.strip()
                     if statement and not statement.startswith("--"):
@@ -41,13 +38,11 @@ async def apply_migrations():
             except Exception as e:
                 logger.warning(f"Migration {migration_file.name} skipped (may already be applied): {e}")
 
-
 async def create_admin_user():
     """Create default admin user if not exists."""
     async with AsyncSessionLocal() as db:
         from sqlalchemy import select
         
-        # Check if admin exists
         result = await db.execute(
             select(User).where(User.email == "admin@example.com")
         )
@@ -57,7 +52,6 @@ async def create_admin_user():
             logger.info("Admin user already exists")
             return
         
-        # Create admin user
         admin = User(
             email="admin@example.com",
             full_name="System Administrator",
@@ -72,23 +66,18 @@ async def create_admin_user():
         logger.info("Admin user created: admin@example.com / admin123")
         logger.warning("CHANGE THE DEFAULT PASSWORD IN PRODUCTION!")
 
-
 async def main():
     """Initialize database and create seed data."""
     logger.info("Initializing database...")
     
-    # Create tables
     await init_db()
     
-    # Apply SQL migrations (schema fixes, type changes, etc.)
     await apply_migrations()
     
-    # Create admin user if needed
     if settings.ENVIRONMENT != "production":
         await create_admin_user()
     
     logger.info("Database initialization complete!")
-
 
 if __name__ == "__main__":
     asyncio.run(main())

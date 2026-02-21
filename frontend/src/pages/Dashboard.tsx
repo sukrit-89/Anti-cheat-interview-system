@@ -6,9 +6,7 @@ import { useSessionStore } from '../store/useSessionStore';
 import { Button } from '../components/Button';
 import { Card, MetricCard } from '../components/Card';
 import { Logo } from '../components/Logo';
-// StatusIndicator available if needed for future enhancements
 
-/* ── stat card config ─────────────────────────────────── */
 const STATUS_CFG = {
   live:      { color: 'text-status-critical', icon: Radio },
   scheduled: { color: 'text-status-warning',  icon: CalendarClock },
@@ -34,13 +32,11 @@ function StatCard({ label, value, status = 'total' }: {
   );
 }
 
-/* ── badge helper ─────────────────────────────────────── */
 const badgeClass = (s: string) =>
   s === 'live'      ? 'bg-status-critical/10 text-status-critical border-status-critical/20' :
   s === 'completed' ? 'bg-status-success/10 text-status-success border-status-success/20' :
                       'bg-neeti-elevated text-ink-secondary border-neeti-border';
 
-/* ═══════════════════════════════════════════════════════ */
 export function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
@@ -58,8 +54,10 @@ export function Dashboard() {
   const recentSessions = sessions.slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-neeti-bg">
-      {/* ── Header ─────────────────────────────────────── */}
+    <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
+      <div className="ambient-orb ambient-orb-bronze w-[500px] h-[500px] top-[-10%] right-[-5%] z-0 opacity-50" />
+      <div className="ambient-orb ambient-orb-blue w-[400px] h-[400px] bottom-[15%] left-[-8%] z-0 opacity-35" />
+
       <header className="sticky top-0 z-30 glass-header">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -82,7 +80,6 @@ export function Dashboard() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10 space-y-12">
-        {/* ── Stats Grid ───────────────────────────────── */}
         <section>
           <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-5">
             Session Overview
@@ -95,7 +92,6 @@ export function Dashboard() {
           </div>
         </section>
 
-        {/* ── Recent Sessions ──────────────────────────── */}
         <section>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider">
@@ -169,7 +165,6 @@ export function Dashboard() {
           </div>
         </section>
 
-        {/* ── Quick Metrics ────────────────────────────── */}
         <section>
           <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-5">
             Quick Metrics

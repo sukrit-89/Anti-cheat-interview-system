@@ -8,28 +8,20 @@ from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 from app.models.models import UserRole, SessionStatus, AgentType
 
-
-# ============================================================================
-# User Schemas
-# ============================================================================
-
 class UserBase(BaseModel):
     email: EmailStr
     full_name: str = Field(..., min_length=1, max_length=255)
     role: UserRole
 
-
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8, max_length=100)
-
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-
 class UserResponse(BaseModel):
-    id: Union[int, str]  # Support both integer IDs (local) and UUID strings (Supabase)
+    id: Union[int, str]
     email: EmailStr
     full_name: str = Field(default="User", min_length=1, max_length=255)
     role: UserRole
@@ -38,17 +30,11 @@ class UserResponse(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
-
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
     expires_in: int
-
-
-# ============================================================================
-# Session Schemas
-# ============================================================================
 
 class SessionCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=255)
@@ -56,20 +42,18 @@ class SessionCreate(BaseModel):
     scheduled_at: Optional[datetime] = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
-
 class SessionUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = None
     scheduled_at: Optional[datetime] = None
     status: Optional[SessionStatus] = None
 
-
 class SessionResponse(BaseModel):
     id: int
     session_code: str
     title: str
     description: Optional[str]
-    recruiter_id: str  # Supabase UUID
+    recruiter_id: str
     status: SessionStatus
     scheduled_at: Optional[datetime]
     started_at: Optional[datetime]
@@ -80,28 +64,20 @@ class SessionResponse(BaseModel):
     
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
-
 class SessionJoinRequest(BaseModel):
     session_code: str = Field(..., min_length=6, max_length=50)
     full_name: str = Field(..., min_length=1, max_length=255)
     email: EmailStr
-
 
 class SessionJoinResponse(BaseModel):
     session: SessionResponse
     room_token: str
     candidate_id: int
 
-
 class RoomTokenResponse(BaseModel):
     room_token: str
     room_name: str
     participant_identity: str
-
-
-# ============================================================================
-# Candidate Schemas
-# ============================================================================
 
 class CandidateResponse(BaseModel):
     id: int
@@ -114,21 +90,15 @@ class CandidateResponse(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
-
-# ============================================================================
-# Coding Event Schemas
-# ============================================================================
-
 class CodingEventCreate(BaseModel):
     session_id: int
-    event_type: str = Field(..., min_length=1, max_length=50)  # keystroke, execute, submit
+    event_type: str = Field(..., min_length=1, max_length=50)
     code_snapshot: Optional[str] = None
     language: Optional[str] = Field(None, max_length=50)
     execution_output: Optional[str] = None
     execution_error: Optional[str] = None
     execution_time_ms: Optional[int] = None
     metadata: dict[str, Any] = Field(default_factory=dict)
-
 
 class CodingEventResponse(BaseModel):
     id: int
@@ -144,11 +114,6 @@ class CodingEventResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
-
-# ============================================================================
-# Speech Segment Schemas
-# ============================================================================
-
 class SpeechSegmentCreate(BaseModel):
     start_time: float = Field(..., ge=0)
     end_time: float = Field(..., ge=0)
@@ -158,7 +123,6 @@ class SpeechSegmentCreate(BaseModel):
     confidence: Optional[float] = Field(None, ge=0, le=1)
     speaker_id: Optional[str] = None
     audio_url: Optional[str] = None
-
 
 class SpeechSegmentResponse(BaseModel):
     id: int
@@ -174,18 +138,12 @@ class SpeechSegmentResponse(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
-
-# ============================================================================
-# Vision Metric Schemas
-# ============================================================================
-
 class VisionMetricCreate(BaseModel):
     metric_type: str = Field(..., min_length=1, max_length=50)
     value: Optional[float] = None
     label: Optional[str] = Field(None, max_length=100)
     confidence: Optional[float] = Field(None, ge=0, le=1)
     metadata: dict[str, Any] = Field(default_factory=dict)
-
 
 class VisionMetricResponse(BaseModel):
     id: int
@@ -198,11 +156,6 @@ class VisionMetricResponse(BaseModel):
     metadata: dict[str, Any]
     
     model_config = ConfigDict(from_attributes=True)
-
-
-# ============================================================================
-# Agent Output Schemas
-# ============================================================================
 
 class AgentOutputResponse(BaseModel):
     id: int
@@ -218,11 +171,6 @@ class AgentOutputResponse(BaseModel):
     error_message: Optional[str]
     
     model_config = ConfigDict(from_attributes=True)
-
-
-# ============================================================================
-# Evaluation Schemas
-# ============================================================================
 
 class EvaluationResponse(BaseModel):
     id: int
@@ -243,27 +191,19 @@ class EvaluationResponse(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
-
-# ============================================================================
-# WebSocket Message Schemas
-# ============================================================================
-
 class WSMessage(BaseModel):
     """Base WebSocket message."""
     type: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     data: dict[str, Any] = Field(default_factory=dict)
 
-
 class WSCodingUpdate(WSMessage):
     """Coding activity update."""
     type: str = "coding_update"
 
-
 class WSMetricUpdate(WSMessage):
     """Real-time metric update."""
     type: str = "metric_update"
-
 
 class WSSessionUpdate(WSMessage):
     """Session status update."""

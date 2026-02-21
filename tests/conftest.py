@@ -16,10 +16,7 @@ from app.core.database import get_db, Base
 from app.models.models import User, UserRole
 from app.core.auth import AuthService
 
-
-# Test database URL
 TEST_DATABASE_URL = f"postgresql+asyncpg://interview_user:local_dev_password@localhost:5432/interview_test"
-
 
 @pytest.fixture(scope="session")
 def event_loop() -> Generator:
@@ -27,7 +24,6 @@ def event_loop() -> Generator:
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
-
 
 @pytest_asyncio.fixture(scope="function")
 async def test_engine():
@@ -38,7 +34,6 @@ async def test_engine():
         echo=False
     )
     
-    # Drop and recreate all tables for each test to ensure clean state
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
@@ -46,7 +41,6 @@ async def test_engine():
     yield engine
     
     await engine.dispose()
-
 
 @pytest_asyncio.fixture
 async def db_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
@@ -59,7 +53,6 @@ async def db_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
     
     async with async_session() as session:
         yield session
-
 
 @pytest_asyncio.fixture
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
@@ -75,11 +68,9 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     
     app.dependency_overrides.clear()
 
-
 def _generate_unique_email(prefix: str) -> str:
     """Generate unique email for each test run."""
     return f"{prefix}_{uuid.uuid4().hex[:8]}@example.com"
-
 
 @pytest_asyncio.fixture
 async def test_user(db_session: AsyncSession) -> User:
@@ -96,7 +87,6 @@ async def test_user(db_session: AsyncSession) -> User:
     await db_session.refresh(user)
     return user
 
-
 @pytest_asyncio.fixture
 async def test_admin(db_session: AsyncSession) -> User:
     """Create test admin user."""
@@ -111,7 +101,6 @@ async def test_admin(db_session: AsyncSession) -> User:
     await db_session.commit()
     await db_session.refresh(admin)
     return admin
-
 
 @pytest_asyncio.fixture
 async def test_candidate(db_session: AsyncSession) -> User:
@@ -128,13 +117,11 @@ async def test_candidate(db_session: AsyncSession) -> User:
     await db_session.refresh(candidate)
     return candidate
 
-
 @pytest_asyncio.fixture
 async def auth_headers(test_user: User) -> dict:
     """Create authorization headers for test user."""
     token = AuthService.create_access_token(test_user.id, test_user.email)
     return {"Authorization": f"Bearer {token}"}
-
 
 @pytest_asyncio.fixture
 async def admin_headers(test_admin: User) -> dict:

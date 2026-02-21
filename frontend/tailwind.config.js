@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 export default {
     content: [
         "./index.html",
@@ -7,7 +6,6 @@ export default {
     theme: {
         extend: {
             colors: {
-                // ── Core palette ─────────────────────────────────
                 neeti: {
                     bg:       '#0A0A0D',
                     surface:  '#151518',
@@ -42,7 +40,6 @@ export default {
                     neutral:       '#8C8C99',
                     'neutral-bg':  'rgba(140,140,153,0.12)',
                 },
-                // Legacy compat
                 primary: '#D4873F',
                 'primary-dark': '#B06A28',
                 'background-dark': '#0A0A0D',

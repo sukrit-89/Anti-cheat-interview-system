@@ -35,8 +35,10 @@ export const SessionCreate: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neeti-bg">
-      {/* Header */}
+    <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
+      <div className="ambient-orb ambient-orb-bronze w-[450px] h-[450px] top-[-10%] right-[10%] z-0 opacity-50" />
+      <div className="ambient-orb ambient-orb-blue w-[350px] h-[350px] bottom-[20%] left-[-5%] z-0 opacity-35" />
+
       <header className="sticky top-0 z-30 glass-header">
         <div className="max-w-3xl mx-auto px-6 lg:px-8 py-5">
           <button onClick={() => navigate('/dashboard')} className="flex items-center gap-1.5 text-xs text-ink-ghost hover:text-ink-secondary transition-colors mb-3">
@@ -49,8 +51,7 @@ export const SessionCreate: React.FC = () => {
         </div>
       </header>
 
-      {/* Content */}
-      <main className="max-w-3xl mx-auto px-6 lg:px-8 py-10">
+      <main className="max-w-3xl mx-auto px-6 lg:px-8 py-10 relative z-10">
         <div className="glass-medium p-6 lg:p-8">
           {error && (
             <div className="mb-6 p-4 rounded-lg border border-status-critical/30 bg-status-critical/5 text-status-critical text-sm">
@@ -85,7 +86,6 @@ export const SessionCreate: React.FC = () => {
             />
 
             <div className="pt-6 border-t border-neeti-border">
-              {/* Workflow info */}
               <div className="border-l-2 border-bronze/30 pl-5 mb-8">
                 <h3 className="text-sm font-semibold text-ink-primary mb-3">Session Workflow</h3>
                 <ul className="space-y-2.5">

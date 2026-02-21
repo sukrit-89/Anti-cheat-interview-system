@@ -9,7 +9,6 @@ from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-
 class AIService:
     """
     Multi-provider AI service with automatic fallback:
@@ -41,21 +40,18 @@ class AIService:
         """
         Generate AI completion with automatic provider fallback
         """
-        # Try OpenAI first
         if self.openai_available:
             try:
                 return await self._openai_completion(prompt, system_prompt, temperature, max_tokens)
             except Exception as e:
                 logger.warning(f"OpenAI failed, trying fallback: {e}")
         
-        # Try Ollama
         if self.ollama_available:
             try:
                 return await self._ollama_completion(prompt, system_prompt, temperature, max_tokens)
             except Exception as e:
                 logger.warning(f"Ollama failed, using rule-based: {e}")
         
-        # Fallback to rule-based (always works)
         return self._rule_based_completion(prompt)
     
     async def _openai_completion(
@@ -72,7 +68,7 @@ class AIService:
         messages.append({"role": "user", "content": prompt})
         
         response = self.openai_client.chat.completions.create(
-            model="gpt-3.5-turbo",  # Cheapest model
+            model="gpt-3.5-turbo",
             messages=messages,
             temperature=temperature,
             max_tokens=max_tokens
@@ -115,7 +111,6 @@ class AIService:
         """
         prompt_lower = prompt.lower()
         
-        # Code analysis
         if "code quality" in prompt_lower or "code review" in prompt_lower:
             return """
 Code Quality Analysis:
@@ -130,7 +125,6 @@ Recommendations:
 - Consider edge cases
 """
         
-        # Communication analysis
         elif "communication" in prompt_lower or "speech" in prompt_lower:
             return """
 Communication Assessment:
@@ -145,7 +139,6 @@ Suggestions:
 - Reduce filler words
 """
         
-        # Problem-solving
         elif "reasoning" in prompt_lower or "problem solving" in prompt_lower:
             return """
 Reasoning Evaluation:
@@ -160,7 +153,6 @@ Notes:
 - Shows potential for growth
 """
         
-        # Default response
         else:
             return """
 Analysis completed using rule-based evaluation.
@@ -170,6 +162,4 @@ Current assessment: Meets baseline requirements.
 Consider deeper evaluation with AI models for production use.
 """
 
-
-# Singleton instance
 ai_service = AIService()

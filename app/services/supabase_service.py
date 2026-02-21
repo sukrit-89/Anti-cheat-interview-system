@@ -15,7 +15,6 @@ except ImportError:
 from app.core.config import settings
 from app.core.logging import logger
 
-
 class SupabaseService:
     """Service for Supabase operations."""
     
@@ -26,8 +25,6 @@ class SupabaseService:
             logger.warning("Supabase not installed. Install with: pip install supabase")
             return
         
-        # Check if Supabase credentials are properly configured
-        # Handle None, empty string, and whitespace-only values
         supabase_url = getattr(settings, 'SUPABASE_URL', None)
         supabase_anon_key = getattr(settings, 'SUPABASE_ANON_KEY', None)
         
@@ -40,13 +37,11 @@ class SupabaseService:
             return
             
         try:
-            # Initialize Supabase client
             self.client: Optional[Client] = create_client(
                 supabase_url=supabase_url.strip(),
                 supabase_key=supabase_anon_key.strip()
             )
             
-            # Set auth header for admin operations
             service_role_key = getattr(settings, 'SUPABASE_SERVICE_ROLE_KEY', None)
             if service_role_key and str(service_role_key).strip():
                 self.client.postgrest.auth(service_role_key)
@@ -61,13 +56,11 @@ class SupabaseService:
         if not self.client:
             return None
             
-        # Use service role for admin operations
         if hasattr(settings, 'SUPABASE_SERVICE_ROLE_KEY'):
             self.client.postgrest.auth(settings.SUPABASE_SERVICE_ROLE_KEY)
             
         return self.client
     
-    # Database Operations
     async def create_user(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create user in Supabase database."""
         client = await self.get_client()
@@ -107,7 +100,6 @@ class SupabaseService:
             logger.error(f"Supabase update user error: {e}")
             raise
     
-    # Session Operations
     async def create_session(self, session_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create interview session."""
         client = await self.get_client()
@@ -147,7 +139,6 @@ class SupabaseService:
             logger.error(f"Supabase update session error: {e}")
             raise
     
-    # Storage Operations
     async def upload_file(self, bucket: str, file_path: str, file_content: bytes) -> str:
         """Upload file to Supabase storage."""
         client = await self.get_client()
@@ -174,7 +165,6 @@ class SupabaseService:
             logger.error(f"Supabase get URL error: {e}")
             return ""
     
-    # Real-time Operations
     async def subscribe_to_session(self, session_id: int, callback):
         """Subscribe to real-time session updates."""
         client = await self.get_client()
@@ -199,7 +189,6 @@ class SupabaseService:
             logger.error(f"Supabase coding events subscription error: {e}")
             return None
     
-    # Analytics Operations
     async def create_evaluation(self, evaluation_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create evaluation record."""
         client = await self.get_client()
@@ -226,6 +215,4 @@ class SupabaseService:
             logger.error(f"Supabase get evaluation error: {e}")
             return None
 
-
-# Singleton instance
 supabase_service = SupabaseService()

@@ -9,7 +9,6 @@ from typing import Any
 
 from app.core.config import settings
 
-
 class JSONFormatter(logging.Formatter):
     """Custom JSON formatter for structured logging."""
     
@@ -34,16 +33,13 @@ class JSONFormatter(logging.Formatter):
         
         return json.dumps(log_data)
 
-
 def setup_logging() -> logging.Logger:
     """Configure application logging."""
     logger = logging.getLogger("app")
     logger.setLevel(getattr(logging, settings.LOG_LEVEL.upper()))
     
-    # Remove existing handlers
     logger.handlers.clear()
     
-    # Console handler
     handler = logging.StreamHandler(sys.stdout)
     
     if settings.LOG_FORMAT == "json":
@@ -56,15 +52,11 @@ def setup_logging() -> logging.Logger:
     
     logger.addHandler(handler)
     
-    # Prevent propagation to root logger
     logger.propagate = False
     
     return logger
 
-
-# Global logger instance
 logger = setup_logging()
-
 
 def get_logger(name: str = "app") -> logging.Logger:
     """Get a named logger instance. Used by service modules."""

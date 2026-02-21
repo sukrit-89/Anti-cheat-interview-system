@@ -10,7 +10,6 @@ from app.models.models import CodingEvent, SpeechSegment
 from app.core.database import AsyncSessionLocal
 from app.core.logging import logger
 
-
 class ReasoningAgent(BaseAgent):
     """
     Analyzes reasoning patterns by combining:
@@ -28,7 +27,6 @@ class ReasoningAgent(BaseAgent):
         session_id = input_data.session_id
         
         async with AsyncSessionLocal() as db:
-            # Fetch coding events
             coding_result = await db.execute(
                 select(CodingEvent)
                 .where(CodingEvent.session_id == session_id)
@@ -36,7 +34,6 @@ class ReasoningAgent(BaseAgent):
             )
             coding_events = coding_result.scalars().all()
             
-            # Fetch speech segments
             speech_result = await db.execute(
                 select(SpeechSegment)
                 .where(SpeechSegment.session_id == session_id)
@@ -44,10 +41,8 @@ class ReasoningAgent(BaseAgent):
             )
             speech_segments = speech_result.scalars().all()
         
-        # Analyze reasoning patterns
         metrics = self._analyze_reasoning(coding_events, speech_segments)
         
-        # Calculate score
         weights = {
             "logical_approach": 0.3,
             "problem_decomposition": 0.3,
@@ -56,10 +51,8 @@ class ReasoningAgent(BaseAgent):
         }
         score = self.calculate_score(metrics, weights)
         
-        # Extract flags
         flags = self._extract_flags(metrics)
         
-        # Generate insights
         insights = self._generate_insights(metrics, flags)
         
         return AgentOutput(
@@ -78,30 +71,24 @@ class ReasoningAgent(BaseAgent):
     ) -> dict[str, float]:
         """Analyze reasoning from coding and speech data."""
         
-        # Analyze coding progression
         code_iterations = len([e for e in coding_events if e.code_snapshot])
         execution_attempts = len([e for e in coding_events if e.event_type == "execute"])
         
-        # Analyze verbal reasoning
         total_words = sum(
             len(s.transcript.split())
             for s in speech_segments
         )
         
-        # Placeholder metrics (in production, use LLM analysis)
-        logical_approach = 70.0  # Would analyze code structure progression
-        problem_decomposition = 65.0  # Would analyze how problem was broken down
-        explanation_quality = 75.0  # Would analyze speech content quality
-        adaptability = 70.0  # Would analyze response to errors/failures
+        logical_approach = 70.0
+        problem_decomposition = 65.0
+        explanation_quality = 75.0
+        adaptability = 70.0
         
-        # Adjust based on available data
         if execution_attempts > 0:
-            # More attempts might indicate trial-and-error vs systematic approach
             if execution_attempts > 10:
                 logical_approach = max(40.0, logical_approach - 20)
         
         if total_words > 500:
-            # Good verbal explanation
             explanation_quality = min(90.0, explanation_quality + 15)
         
         return {

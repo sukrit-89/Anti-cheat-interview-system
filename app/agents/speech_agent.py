@@ -10,7 +10,6 @@ from app.models.models import SpeechSegment
 from app.core.database import AsyncSessionLocal
 from app.core.logging import logger
 
-
 class SpeechAgent(BaseAgent):
     """
     Analyzes speech segments to assess:
@@ -28,7 +27,6 @@ class SpeechAgent(BaseAgent):
         session_id = input_data.session_id
         
         async with AsyncSessionLocal() as db:
-            # Fetch all speech segments
             result = await db.execute(
                 select(SpeechSegment)
                 .where(SpeechSegment.session_id == session_id)
@@ -44,10 +42,8 @@ class SpeechAgent(BaseAgent):
                 insights="No speech detected"
             )
         
-        # Analyze speech patterns
         metrics = self._analyze_segments(segments)
         
-        # Calculate score
         weights = {
             "clarity": 0.3,
             "technical_depth": 0.3,
@@ -56,10 +52,8 @@ class SpeechAgent(BaseAgent):
         }
         score = self.calculate_score(metrics, weights)
         
-        # Extract flags
         flags = self._extract_flags(segments, metrics)
         
-        # Generate insights
         insights = self._generate_insights(metrics, flags)
         
         return AgentOutput(
@@ -76,24 +70,20 @@ class SpeechAgent(BaseAgent):
         total_segments = len(segments)
         total_duration = sum(s.duration for s in segments)
         
-        # Concatenate all transcripts
         full_transcript = " ".join(s.transcript for s in segments)
         word_count = len(full_transcript.split())
         
-        # Average confidence
         avg_confidence = (
             sum(s.confidence for s in segments if s.confidence) / total_segments
             if total_segments > 0 else 0
         ) * 100
         
-        # Words per minute
         wpm = (word_count / total_duration * 60) if total_duration > 0 else 0
         
-        # Placeholder metrics (in production, use NLP analysis)
         clarity = min(100.0, avg_confidence)
-        technical_depth = 70.0  # Would analyze technical terms
-        fluency = min(100.0, max(0.0, (wpm / 150) * 100))  # Normalize around 150 wpm
-        confidence = 75.0  # Would analyze speech patterns
+        technical_depth = 70.0
+        fluency = min(100.0, max(0.0, (wpm / 150) * 100))
+        confidence = 75.0
         
         return {
             "total_segments": total_segments,

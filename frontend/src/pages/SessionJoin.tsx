@@ -34,9 +34,11 @@ export const SessionJoin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neeti-bg grid grid-cols-1 lg:grid-cols-12">
-      {/* ── Left panel ─────────────────────────────── */}
-      <div className="hidden lg:flex lg:col-span-5 border-r border-white/[0.06] p-10 xl:p-14 flex-col justify-between">
+    <div className="min-h-screen bg-neeti-bg grid grid-cols-1 lg:grid-cols-12 relative overflow-hidden">
+      <div className="ambient-orb ambient-orb-bronze w-[500px] h-[500px] top-[-10%] left-[30%] z-0 opacity-55" />
+      <div className="ambient-orb ambient-orb-blue w-[350px] h-[350px] bottom-[10%] right-[-3%] z-0 opacity-40" />
+
+      <div className="hidden lg:flex lg:col-span-5 border-r border-white/[0.06] p-10 xl:p-14 flex-col justify-between relative z-10">
         <div>
           <div className="flex items-center gap-2.5 mb-8">
             <Logo size="md" showWordmark linkTo="/" />
@@ -64,8 +66,7 @@ export const SessionJoin: React.FC = () => {
         <span className="text-[10px] uppercase tracking-[0.2em] text-ink-ghost">Candidate Portal</span>
       </div>
 
-      {/* ── Right panel — form ─────────────────────── */}
-      <div className="col-span-1 lg:col-span-7 flex items-center justify-center p-6 lg:p-12">
+      <div className="col-span-1 lg:col-span-7 flex items-center justify-center p-6 lg:p-12 relative z-10">
         <div className="w-full max-w-md animate-fadeUp">
           <h2 className="text-xl font-display font-semibold text-ink-primary tracking-tight mb-1">
             Join Interview Session
@@ -81,7 +82,6 @@ export const SessionJoin: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Code input — special styling */}
             <div>
               <label className="block text-xs font-medium text-ink-ghost uppercase tracking-wider mb-2">
                 Session Access Code

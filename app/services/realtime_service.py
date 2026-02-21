@@ -16,7 +16,6 @@ except ImportError:
 
 from app.core.logging import logger
 
-
 class RealtimeService:
     """Real-time service for live interview updates."""
     
@@ -33,7 +32,6 @@ class RealtimeService:
         """Subscribe to session updates."""
         
         if not self.use_supabase:
-            # Fallback to Redis pub/sub
             return await self._redis_subscribe_session(session_id, callback)
         
         try:
@@ -51,7 +49,6 @@ class RealtimeService:
         """Subscribe to coding events for a session."""
         
         if not self.use_supabase:
-            # Fallback to Redis pub/sub
             return await self._redis_subscribe_coding(session_id, callback)
         
         try:
@@ -69,11 +66,9 @@ class RealtimeService:
         """Broadcast session update to all connected clients."""
         
         if not self.use_supabase:
-            # Fallback to Redis pub/sub
             return await self._redis_broadcast_session(session_id, update_data)
         
         try:
-            # Update session in Supabase (triggers realtime update)
             await supabase_service.update_session(session_id, update_data)
             logger.info(f"Broadcasted session update for {session_id}")
             return True
@@ -85,14 +80,11 @@ class RealtimeService:
         """Broadcast coding event to all connected clients."""
         
         if not self.use_supabase:
-            # Fallback to Redis pub/sub
             return await self._redis_broadcast_coding(session_id, event_data)
         
         try:
-            # Insert coding event (triggers realtime update)
             from app.models.models import CodingEvent
             event_data['created_at'] = datetime.utcnow().isoformat()
-            # This would need to be adapted to use Supabase service
             logger.info(f"Created coding event for session {session_id}")
             return True
         except Exception as e:
@@ -116,7 +108,6 @@ class RealtimeService:
                     logger.error(f"Unsubscribe error: {e}")
                     return False
             else:
-                # Supabase subscriptions don't have explicit unsubscribe
                 del self.active_subscriptions[subscription_key]
                 return True
         
@@ -127,11 +118,9 @@ class RealtimeService:
         try:
             from app.core.redis import redis_client
             
-            # Subscribe to Redis channel
             pubsub = redis_client.pubsub()
             await pubsub.subscribe(f"session:{session_id}")
             
-            # Start listening in background
             asyncio.create_task(self._redis_listener(pubsub, callback))
             logger.info(f"Redis subscribed to session {session_id}")
             return True
@@ -212,6 +201,4 @@ class RealtimeService:
         
         self.active_subscriptions.clear()
 
-
-# Singleton instance
 realtime_service = RealtimeService()

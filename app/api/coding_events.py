@@ -16,7 +16,6 @@ from app.core.events import publish_code_changed, publish_code_executed
 
 router = APIRouter(prefix="/coding-events", tags=["Coding"])
 
-
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_coding_event(
     event_data: CodingEventCreate,
@@ -25,7 +24,6 @@ async def create_coding_event(
 ) -> dict:
     """Create a coding event (keystroke, execution, etc.)"""
     
-    # Verify session exists
     result = await db.execute(
         select(Session).where(Session.id == event_data.session_id)
     )
@@ -37,7 +35,6 @@ async def create_coding_event(
             detail="Session not found"
         )
     
-    # Create event
     new_event = CodingEvent(
         session_id=event_data.session_id,
         event_type=event_data.event_type,
@@ -57,7 +54,6 @@ async def create_coding_event(
         f"for session {event_data.session_id}"
     )
     
-    # Publish event
     if event_data.event_type == "execute":
         await publish_code_executed(
             session_id=event_data.session_id,
@@ -79,7 +75,6 @@ async def create_coding_event(
     
     return {"success": True, "event_id": new_event.id}
 
-
 @router.post("/execute")
 async def execute_code(
     event_data: CodingEventCreate,
@@ -91,7 +86,6 @@ async def execute_code(
     Falls back to rule-based analysis if Judge0 not configured.
     """
     
-    # Verify session exists
     result = await db.execute(
         select(Session).where(Session.id == event_data.session_id)
     )
@@ -103,7 +97,6 @@ async def execute_code(
             detail="Session not found"
         )
     
-    # Execute code using Judge0 service
     from app.services.judge0_service import judge0_service
     
     execution_result = await judge0_service.execute_code(
@@ -115,7 +108,6 @@ async def execute_code(
     output = execution_result.get("output")
     error = execution_result.get("error")
     
-    # Track the execution event
     execution_event = CodingEvent(
         session_id=event_data.session_id,
         event_type="execute",
@@ -134,7 +126,6 @@ async def execute_code(
     db.add(execution_event)
     await db.commit()
     
-    # Publish execution event
     await publish_code_executed(
         session_id=event_data.session_id,
         data={
@@ -154,7 +145,6 @@ async def execute_code(
         "memory": execution_result.get("memory"),
         "status": execution_result.get("status")
     }
-
 
 @router.get("/{session_id}")
 async def get_coding_events(

@@ -30,11 +30,12 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-neeti-bg flex">
-      {/* ── Auth panel ────────────────────────────────── */}
-      <div className="w-full lg:w-[44%] border-r border-white/[0.06] flex flex-col justify-center px-8 py-12 lg:px-14">
+    <div className="min-h-screen bg-neeti-bg flex relative overflow-hidden">
+      <div className="ambient-orb ambient-orb-bronze w-[500px] h-[500px] top-[-15%] left-[30%] z-0 opacity-60" />
+      <div className="ambient-orb ambient-orb-blue w-[400px] h-[400px] bottom-[5%] right-[-5%] z-0 opacity-40" />
+
+      <div className="relative z-10 w-full lg:w-[44%] border-r border-white/[0.06] flex flex-col justify-center px-8 py-12 lg:px-14">
         <div className="max-w-md mx-auto w-full space-y-10">
-          {/* Brand */}
           <div className="text-center">
             <div className="inline-flex items-center justify-center mb-5">
               <Logo size="xl" showWordmark linkTo="/" />
@@ -44,7 +45,6 @@ export function Login() {
             </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <Input
               label="Email Address"
@@ -77,7 +77,6 @@ export function Login() {
             </Button>
           </form>
 
-          {/* Footer */}
           <div className="pt-6 border-t border-white/[0.06] space-y-3">
             <div className="flex items-center gap-2 text-xs text-ink-ghost">
               <Shield className="w-3.5 h-3.5" />
@@ -91,8 +90,7 @@ export function Login() {
         </div>
       </div>
 
-      {/* ── Evidence panel ────────────────────────────── */}
-      <div className="hidden lg:flex lg:flex-1 bg-white/[0.02] backdrop-blur-sm items-center justify-center p-12">
+      <div className="relative z-10 hidden lg:flex lg:flex-1 bg-white/[0.02] backdrop-blur-sm items-center justify-center p-12">
         <div className="max-w-lg space-y-10">
           <h2 className="text-2xl font-display font-bold text-ink-primary">
             Evidence-Based Assessment
@@ -142,8 +140,7 @@ export function Login() {
         </div>
       </div>
 
-      {/* Mobile register link */}
-      <div className="absolute bottom-6 inset-x-0 text-center lg:hidden">
+      <div className="absolute bottom-6 inset-x-0 text-center lg:hidden z-10">
         <p className="text-xs text-ink-tertiary">
           Don't have an account?{' '}
           <Link to="/register" className="text-bronze hover:text-bronze-light font-medium">

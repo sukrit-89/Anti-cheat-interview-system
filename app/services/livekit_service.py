@@ -10,7 +10,6 @@ from livekit import api
 from app.core.config import settings
 from app.core.logging import logger
 
-
 class LiveKitService:
     """Service for LiveKit operations."""
     
@@ -48,7 +47,6 @@ class LiveKitService:
         token.with_name(participant_name)
         token.with_ttl(timedelta(hours=valid_for_hours))
         
-        # Grant permissions
         grants = api.VideoGrants(
             room_join=True,
             room=room_name,

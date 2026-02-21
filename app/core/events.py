@@ -11,42 +11,32 @@ from pydantic import BaseModel, Field
 from app.core.redis import redis_client
 from app.core.logging import logger
 
-
 class EventType(str, Enum):
     """System event types."""
-    # Session events
     SESSION_CREATED = "session.created"
     SESSION_STARTED = "session.started"
     SESSION_ENDED = "session.ended"
     
-    # Recording events
     RECORDING_STARTED = "recording.started"
     RECORDING_STOPPED = "recording.stopped"
     
-    # Candidate events
     CANDIDATE_JOINED = "candidate.joined"
     CANDIDATE_LEFT = "candidate.left"
     
-    # Coding events
     CODE_CHANGED = "code.changed"
     CODE_EXECUTED = "code.executed"
     
-    # Speech events
     SPEECH_DETECTED = "speech.detected"
     SPEECH_TRANSCRIBED = "speech.transcribed"
     
-    # Vision events
     VISION_METRIC_CAPTURED = "vision.metric_captured"
     
-    # Agent events
     AGENT_PROCESSING_STARTED = "agent.processing_started"
     AGENT_PROCESSING_COMPLETED = "agent.processing_completed"
     AGENT_PROCESSING_FAILED = "agent.processing_failed"
     
-    # Evaluation events
     EVALUATION_REQUESTED = "evaluation.requested"
     EVALUATION_COMPLETED = "evaluation.completed"
-
 
 class Event(BaseModel):
     """Base event model."""
@@ -55,7 +45,6 @@ class Event(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     data: dict[str, Any] = Field(default_factory=dict)
     metadata: dict[str, Any] = Field(default_factory=dict)
-
 
 class EventPublisher:
     """Publishes events to Redis channels."""
@@ -75,8 +64,6 @@ class EventPublisher:
             )
         except Exception as e:
             logger.error(f"Failed to publish event: {e}")
-            # Don't raise - allow operation to continue even if event publishing fails
-
 
 class EventSubscriber:
     """Subscribes to events from Redis channels."""
@@ -111,8 +98,6 @@ class EventSubscriber:
             await self.pubsub.unsubscribe(*self.channels)
             logger.info("Unsubscribed from event channels")
 
-
-# Helper functions
 async def publish_session_created(session_id: int, data: dict[str, Any]) -> None:
     """Publish session created event."""
     event = Event(
@@ -121,7 +106,6 @@ async def publish_session_created(session_id: int, data: dict[str, Any]) -> None
         data=data
     )
     await EventPublisher.publish(event)
-
 
 async def publish_session_started(session_id: int, data: dict[str, Any]) -> None:
     """Publish session started event."""
@@ -132,7 +116,6 @@ async def publish_session_started(session_id: int, data: dict[str, Any]) -> None
     )
     await EventPublisher.publish(event)
 
-
 async def publish_session_ended(session_id: int, data: dict[str, Any]) -> None:
     """Publish session ended event."""
     event = Event(
@@ -142,7 +125,6 @@ async def publish_session_ended(session_id: int, data: dict[str, Any]) -> None:
     )
     await EventPublisher.publish(event)
 
-
 async def publish_recording_started(session_id: int, recording_url: str) -> None:
     """Publish recording started event."""
     event = Event(
@@ -151,7 +133,6 @@ async def publish_recording_started(session_id: int, recording_url: str) -> None
         data={"recording_url": recording_url}
     )
     await EventPublisher.publish(event)
-
 
 async def publish_agent_completed(
     session_id: int,
@@ -169,7 +150,6 @@ async def publish_agent_completed(
     )
     await EventPublisher.publish(event)
 
-
 async def publish_evaluation_requested(session_id: int) -> None:
     """Publish evaluation requested event."""
     event = Event(
@@ -178,7 +158,6 @@ async def publish_evaluation_requested(session_id: int) -> None:
         data={}
     )
     await EventPublisher.publish(event)
-
 
 async def publish_code_changed(session_id: int, code: str = "", language: str = "", data: dict = None) -> None:
     """Publish code changed event."""
@@ -189,7 +168,6 @@ async def publish_code_changed(session_id: int, code: str = "", language: str = 
         data=event_data
     )
     await EventPublisher.publish(event)
-
 
 async def publish_code_executed(session_id: int, result: dict[str, Any] = None, data: dict = None) -> None:
     """Publish code executed event."""

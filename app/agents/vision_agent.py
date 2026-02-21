@@ -10,7 +10,6 @@ from app.models.models import VisionMetric
 from app.core.database import AsyncSessionLocal
 from app.core.logging import logger
 
-
 class VisionAgent(BaseAgent):
     """
     Analyzes vision metrics to assess:
@@ -28,7 +27,6 @@ class VisionAgent(BaseAgent):
         session_id = input_data.session_id
         
         async with AsyncSessionLocal() as db:
-            # Fetch all vision metrics
             result = await db.execute(
                 select(VisionMetric)
                 .where(VisionMetric.session_id == session_id)
@@ -44,10 +42,8 @@ class VisionAgent(BaseAgent):
                 insights="No vision data available"
             )
         
-        # Analyze vision metrics
         metrics = self._analyze_metrics(metrics_list)
         
-        # Calculate score
         weights = {
             "engagement": 0.4,
             "attention": 0.3,
@@ -55,10 +51,8 @@ class VisionAgent(BaseAgent):
         }
         score = self.calculate_score(metrics, weights)
         
-        # Extract flags
         flags = self._extract_flags(metrics_list, metrics)
         
-        # Generate insights
         insights = self._generate_insights(metrics, flags)
         
         return AgentOutput(
@@ -74,12 +68,10 @@ class VisionAgent(BaseAgent):
         """Analyze vision metrics."""
         total_metrics = len(metrics_list)
         
-        # Group by metric type
         gaze_metrics = [m for m in metrics_list if m.metric_type == "gaze"]
         emotion_metrics = [m for m in metrics_list if m.metric_type == "emotion"]
         presence_metrics = [m for m in metrics_list if m.metric_type == "presence"]
         
-        # Calculate engagement from gaze
         if gaze_metrics:
             focused_gaze = sum(
                 1 for m in gaze_metrics
@@ -89,7 +81,6 @@ class VisionAgent(BaseAgent):
         else:
             engagement = 0.0
         
-        # Calculate attention score
         if emotion_metrics:
             positive_emotions = sum(
                 1 for m in emotion_metrics
@@ -97,14 +88,13 @@ class VisionAgent(BaseAgent):
             )
             attention = (positive_emotions / len(emotion_metrics)) * 100
         else:
-            attention = 70.0  # Default
+            attention = 70.0
         
-        # Calculate presence score
         if presence_metrics:
             present = sum(1 for m in presence_metrics if m.value == 1.0)
             presence = (present / len(presence_metrics)) * 100
         else:
-            presence = 100.0  # Assume present if no data
+            presence = 100.0
         
         return {
             "total_metrics": total_metrics,

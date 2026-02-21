@@ -1,15 +1,9 @@
-/* ═══════════════════════════════════════════════════════════
-   Neeti AI — Design System
-   Forensic Authority aesthetic: dark, precise, editorial
-   ═══════════════════════════════════════════════════════════ */
-
 @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ── Base Layer ─────────────────────────────────────────── */
 @layer base {
   * {
     border-color: theme('colors.neeti.border');
@@ -29,7 +23,6 @@
     position: relative;
   }
 
-  /* Noise texture overlay for tactile depth */
   body::before {
     content: '';
     position: fixed;
@@ -40,7 +33,6 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* Editorial headings */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Crimson Pro', Georgia, serif;
     font-weight: 600;
@@ -55,29 +47,24 @@
   h5 { font-size: 1.125rem; }
   h6 { font-size: 1rem; }
 
-  /* Scrollbar — minimal, dark */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #484854; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: #5A5A66; }
 
-  /* Selection */
   ::selection {
     background-color: rgba(212, 135, 63, 0.35);
     color: #F5F5F7;
   }
 
-  /* Focus — WCAG-compliant bronze ring */
   :focus-visible {
     outline: 2px solid #D4873F;
     outline-offset: 2px;
   }
 }
 
-/* ── Component Layer ────────────────────────────────────── */
 @layer components {
 
-  /* ── Cards ───────────────────────────────────────────── */
   .verdict-card {
     @apply rounded-lg;
     background: linear-gradient(135deg, rgba(21,21,24,0.85) 0%, rgba(21,21,24,0.70) 100%);
@@ -96,7 +83,6 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 16px rgba(0,0,0,0.5);
   }
 
-  /* ── Buttons ─────────────────────────────────────────── */
   .btn-authority {
     @apply bg-neeti-surface border border-neeti-border text-ink-primary;
     @apply px-4 py-2.5 rounded-md font-medium text-sm;
@@ -122,7 +108,6 @@
     @apply hover:bg-green-600 hover:border-green-600;
   }
 
-  /* ── Inputs ──────────────────────────────────────────── */
   .input-authority {
     @apply bg-neeti-bg border border-neeti-border text-ink-primary;
     @apply px-3.5 py-2.5 rounded-md text-sm;
@@ -132,7 +117,6 @@
     @apply transition-all duration-200;
   }
 
-  /* ── Evidence blocks ─────────────────────────────────── */
   .evidence-block {
     @apply bg-neeti-surface border-l-4 border-l-bronze;
     @apply p-4 rounded-r-md;
@@ -142,7 +126,6 @@
   .evidence-success  { @apply border-l-status-success; }
   .evidence-warning  { @apply border-l-status-warning; }
 
-  /* ── Badges ──────────────────────────────────────────── */
   .verdict-badge {
     @apply inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold tracking-wide;
     @apply border;
@@ -152,7 +135,6 @@
   .verdict-badge-success  { @apply bg-status-success-bg border-status-success/30 text-status-success; }
   .verdict-badge-neutral  { @apply bg-neeti-elevated border-neeti-border text-ink-secondary; }
 
-  /* ── Panels ──────────────────────────────────────────── */
   .control-panel {
     @apply rounded-lg;
     background: linear-gradient(135deg, rgba(21,21,24,0.85) 0%, rgba(21,21,24,0.70) 100%);
@@ -167,7 +149,6 @@
     @apply font-mono text-sm;
   }
 
-  /* ── Glass panels — layered depth ───────────────────── */
   .glass-panel {
     @apply rounded-xl;
     background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
@@ -180,7 +161,6 @@
                 0 0 0 1px rgba(255,255,255,0.05);
   }
 
-  /* Glassmorphism tiers */
   .glass-subtle {
     @apply rounded-lg;
     background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
@@ -225,7 +205,6 @@
                 0 0 80px rgba(212,135,63,0.08);
   }
 
-  /* Glassmorphic header bar */
   .glass-header {
     background: linear-gradient(180deg, rgba(21,21,24,0.75) 0%, rgba(21,21,24,0.60) 100%);
     backdrop-filter: blur(24px) saturate(1.4);
@@ -235,7 +214,6 @@
                 0 4px 20px rgba(0,0,0,0.4);
   }
 
-  /* ── Status indicators ──────────────────────────────── */
   .status-indicator { @apply relative; }
 
   .status-indicator.active::before {
@@ -254,7 +232,6 @@
     animation: pulseSubtle 2.5s ease-in-out infinite;
   }
 
-  /* ── Sections ────────────────────────────────────────── */
   .editorial-section {
     @apply border-b border-neeti-border pb-8 mb-8;
   }
@@ -262,7 +239,6 @@
     @apply border-b-0 pb-0 mb-0;
   }
 
-  /* ── Typography classes ──────────────────────────────── */
   .text-headline {
     @apply font-display text-2xl font-semibold text-ink-primary;
     @apply tracking-tight leading-tight;
@@ -281,14 +257,12 @@
     @apply font-sans text-xs text-ink-tertiary;
   }
 
-  /* ── Interactive card ────────────────────────────────── */
   .interactive-authority {
     @apply transition-all duration-300 ease-out-expo;
     @apply hover:border-bronze/30 hover:shadow-card-hover;
     @apply hover:-translate-y-0.5;
   }
 
-  /* ── Loading skeleton ────────────────────────────────── */
   .loading-skeleton {
     @apply bg-neeti-border rounded-md;
     background: linear-gradient(90deg, #30303A 25%, #484854 50%, #30303A 75%);
@@ -296,7 +270,6 @@
     animation: shimmer 2s linear infinite;
   }
 
-  /* ── Dialog overlay ──────────────────────────────────── */
   .dialog-overlay {
     @apply fixed inset-0 z-50 bg-black/60 backdrop-blur-md;
     @apply flex items-center justify-center p-4;
@@ -316,10 +289,8 @@
   }
 }
 
-/* ── Utility Layer ──────────────────────────────────────── */
 @layer utilities {
 
-  /* Reduced motion — WCAG compliance */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -328,17 +299,14 @@
     }
   }
 
-  /* ── Spacing presets ─────────────────────────────────── */
   .space-editorial { @apply space-y-8; }
   .space-section   { @apply space-y-6; }
   .space-paragraph { @apply space-y-4; }
 
-  /* ── Text treatments ─────────────────────────────────── */
   .text-authority { @apply font-semibold text-bronze; }
   .text-critical  { @apply font-semibold text-status-critical; }
   .text-success   { @apply font-semibold text-status-success; }
 
-  /* ── Staggered reveals ───────────────────────────────── */
   .stagger-1 { animation: reveal 0.6s cubic-bezier(0.16,1,0.3,1) 0.05s backwards; }
   .stagger-2 { animation: reveal 0.6s cubic-bezier(0.16,1,0.3,1) 0.10s backwards; }
   .stagger-3 { animation: reveal 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s backwards; }
@@ -346,10 +314,8 @@
   .stagger-5 { animation: reveal 0.6s cubic-bezier(0.16,1,0.3,1) 0.25s backwards; }
   .stagger-6 { animation: reveal 0.6s cubic-bezier(0.16,1,0.3,1) 0.30s backwards; }
 
-  /* ── Page transitions ────────────────────────────────── */
   .page-enter { animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1); }
 
-  /* ── Grid control system ─────────────────────────────── */
   .grid-control    { @apply grid grid-cols-12 gap-4; }
   .grid-control-2  { @apply col-span-12 sm:col-span-6 md:col-span-2; }
   .grid-control-3  { @apply col-span-12 sm:col-span-6 md:col-span-3; }
@@ -358,7 +324,6 @@
   .grid-control-8  { @apply col-span-12 md:col-span-8; }
   .grid-control-12 { @apply col-span-12; }
 
-  /* ── Technical grid background ───────────────────────── */
   .technical-grid {
     background-size: 40px 40px;
     background-image:
@@ -373,7 +338,6 @@
       linear-gradient(to bottom, rgba(212,135,63,0.07) 1px, transparent 1px);
   }
 
-  /* ── Corner brackets — forensic schematic motif ──────── */
   .corner-brackets { position: relative; }
 
   .corner-brackets::before,
@@ -400,7 +364,6 @@
     opacity: 0.08;
   }
 
-  /* ── Scan line animation ─────────────────────────────── */
   .scan-line {
     position: absolute;
     left: 0; right: 0;
@@ -409,7 +372,6 @@
     box-shadow: 0 0 8px #D4873F;
     animation: scan 4s linear infinite;
   }
-  /* ── Ambient glow orbs — give glass something to blur ── */
   .ambient-orb {
     position: fixed;
     border-radius: 50%;
@@ -426,7 +388,6 @@
   .ambient-orb-warm {
     background: radial-gradient(circle, rgba(240,72,72,0.08) 0%, transparent 70%);
   }
-  /* ── Ambient glow — hero accent ──────────────────────── */
   .ambient-glow {
     position: absolute;
     border-radius: 50%;
@@ -434,7 +395,6 @@
     pointer-events: none;
   }
 
-  /* ── Gradient text ───────────────────────────────────── */
   .text-gradient-bronze {
     background: linear-gradient(135deg, #E09848, #D4873F, #B06A28);
     -webkit-background-clip: text;
@@ -442,7 +402,6 @@
     background-clip: text;
   }
 
-  /* ── Code annotations ────────────────────────────────── */
   .code-line-numbers {
     user-select: none;
     text-align: right;

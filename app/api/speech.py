@@ -16,7 +16,6 @@ from app.core.events import EventPublisher, Event, EventType
 
 router = APIRouter(prefix="/speech", tags=["Speech"])
 
-
 @router.post("/transcribe")
 async def transcribe_audio(
     session_id: int = Form(...),
@@ -31,7 +30,6 @@ async def transcribe_audio(
     Accepts audio file upload and returns transcription.
     """
     
-    # Verify session exists
     result = await db.execute(
         select(Session).where(Session.id == session_id)
     )
@@ -43,7 +41,6 @@ async def transcribe_audio(
             detail="Session not found"
         )
     
-    # Read audio file
     try:
         audio_bytes = await audio.read()
     except Exception as e:
@@ -53,7 +50,6 @@ async def transcribe_audio(
             detail="Invalid audio file"
         )
     
-    # Transcribe audio
     transcription_result = await speech_service.transcribe_audio(
         audio_file=audio_bytes,
         language=language
@@ -65,7 +61,6 @@ async def transcribe_audio(
             detail=transcription_result.get("error", "Transcription failed")
         )
     
-    # Publish speech event
     event = Event(
         event_type=EventType.SPEECH_TRANSCRIBED,
         session_id=session_id,
@@ -86,7 +81,6 @@ async def transcribe_audio(
         "language": transcription_result.get("language")
     }
 
-
 @router.post("/analyze")
 async def analyze_speech(
     session_id: int = Form(...),
@@ -104,7 +98,6 @@ async def analyze_speech(
         duration: Audio duration in seconds
     """
     
-    # Verify session exists
     result = await db.execute(
         select(Session).where(Session.id == session_id)
     )
@@ -116,7 +109,6 @@ async def analyze_speech(
             detail="Session not found"
         )
     
-    # Analyze speech quality
     analysis = await speech_service.analyze_speech_quality(
         transcription=transcription,
         audio_duration=duration
@@ -131,7 +123,6 @@ async def analyze_speech(
         "success": True,
         **analysis
     }
-
 
 @router.get("/status")
 async def get_speech_status() -> dict:

@@ -7,12 +7,10 @@ import { Card, MetricCard } from '../components/Card';
 import { StatusIndicator } from '../components/StatusIndicator';
 import { Logo } from '../components/Logo';
 
-/* ── types ──────────────────────────────────────────── */
 interface EvaluationScore { category: string; score: number; maxScore: number; feedback: string; agent: string; }
 interface Finding         { content: string; severity: 'positive' | 'negative' | 'neutral'; category: string; }
 interface AIAgent         { name: string; status: 'completed' | 'processing' | 'failed'; findings: Finding[]; confidence: number; }
 
-/* ── score color helper ─────────────────────────────── */
 const scoreCls = (s: number) =>
   s >= 80 ? { text: 'text-status-success', bg: 'bg-status-success/10 text-status-success border-status-success/20', bar: 'bg-status-success' } :
   s >= 60 ? { text: 'text-status-warning', bg: 'bg-status-warning/10 text-status-warning border-status-warning/20', bar: 'bg-status-warning' } :
@@ -27,7 +25,6 @@ const recCls: Record<string, { text: string; bg: string }> = {
 const dotCls: Record<string, string> = { positive: 'bg-status-success', negative: 'bg-status-critical', neutral: 'bg-status-warning' };
 const agentStatusCls: Record<string, 'success' | 'warning' | 'critical'> = { completed: 'success', processing: 'warning', failed: 'critical' };
 
-/* ═══════════════════════════════════════════════════════ */
 export default function SessionResults() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
@@ -80,8 +77,10 @@ export default function SessionResults() {
   const r = recCls[rec] || recCls.MAYBE;
 
   return (
-    <div className="min-h-screen bg-neeti-bg">
-      {/* ── Header ──────────────────────────────────── */}
+    <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
+      <div className="ambient-orb ambient-orb-bronze w-[500px] h-[500px] top-[-10%] right-[5%] z-0 opacity-50" />
+      <div className="ambient-orb ambient-orb-blue w-[400px] h-[400px] bottom-[15%] left-[-5%] z-0 opacity-35" />
+
       <header className="sticky top-0 z-30 glass-header px-6 lg:px-8 py-5">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -99,7 +98,6 @@ export default function SessionResults() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10 space-y-10">
-        {/* ── Final Verdict ────────────────────────── */}
         <section>
           <h2 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider mb-5">Final Verdict</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -114,7 +112,6 @@ export default function SessionResults() {
           </div>
         </section>
 
-        {/* ── Performance breakdown ────────────────── */}
         <section>
           <h2 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider mb-5">Performance Analysis</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -139,7 +136,6 @@ export default function SessionResults() {
           </div>
         </section>
 
-        {/* ── Agent reports ────────────────────────── */}
         <section>
           <h2 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider mb-5">Agent Analysis</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -168,7 +164,6 @@ export default function SessionResults() {
           </div>
         </section>
 
-        {/* ── Session info ─────────────────────────── */}
         <section>
           <h2 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider mb-5">Session Information</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

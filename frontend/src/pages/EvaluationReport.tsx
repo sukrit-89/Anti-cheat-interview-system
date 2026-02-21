@@ -1,7 +1,3 @@
-/**
- * Evaluation Report — Forensic-style technical assessment results
- * Visual: evidence-based verdict with multi-agent analysis breakdown
- */
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { EvidenceBlock } from '../components/EvidenceBlock';
@@ -9,7 +5,7 @@ import { Card } from '../components/Card';
 import { FileText, Download, Gavel } from 'lucide-react';
 import { Logo } from '../components/Logo';
 
-/* ── mock data (replace with API fetch) ─────────────── */
+
 const MOCK = {
   sessionRef: 'ARCH_009',
   protocol: 'V2.4_SECURE',
@@ -33,22 +29,24 @@ const MOCK = {
   analysis: `The candidate demonstrated strong technical proficiency across all evaluation criteria. Code quality was consistently high, with particular strength in algorithmic thinking and system design principles. Communication skills were effective, with clear articulation of tradeoffs and design decisions. Minor areas for improvement identified in edge case handling were addressed promptly when raised. Overall assessment indicates strong technical capability aligned with senior engineering expectations.`,
 };
 
-/* ── verdict colour map ─────────────────────────────── */
+
 const VERDICT_CFG = {
   QUALIFIED:    { border: 'border-status-success', text: 'text-status-success', label: 'VERDICT: QUALIFIED' },
   REJECTED:     { border: 'border-status-critical', text: 'text-status-critical', label: 'VERDICT: REJECTED' },
   INCONCLUSIVE: { border: 'border-status-warning', text: 'text-status-warning', label: 'VERDICT: INCONCLUSIVE' },
 } as const;
 
-/* ═══════════════════════════════════════════════════════ */
 export const EvaluationReport = () => {
   const { id } = useParams<{ id: string }>();
   const data = MOCK;
   const cfg = VERDICT_CFG[data.verdict];
 
   return (
-    <div className="min-h-screen bg-neeti-bg">
-      {/* ── Header ────────────────────────────────── */}
+    <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
+      <div className="ambient-orb ambient-orb-bronze w-[500px] h-[500px] top-[-10%] left-[20%] z-0 opacity-50" />
+      <div className="ambient-orb ambient-orb-blue w-[400px] h-[400px] bottom-[10%] right-[-5%] z-0 opacity-35" />
+      <div className="ambient-orb ambient-orb-warm w-[300px] h-[300px] top-[40%] right-[15%] z-0 opacity-25" />
+
       <header className="sticky top-0 z-30 glass-header px-6 lg:px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Logo size="md" linkTo="/" />
@@ -69,11 +67,8 @@ export const EvaluationReport = () => {
         </div>
       </header>
 
-      {/* ── Main grid ─────────────────────────────── */}
       <main className="max-w-[1400px] mx-auto px-6 lg:px-10 py-10 grid grid-cols-12 gap-6">
-        {/* Left column */}
         <div className="col-span-12 lg:col-span-8 space-y-8">
-          {/* Verdict banner */}
           <div className={`bg-neeti-surface border-l-4 ${cfg.border} rounded-lg p-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4`}>
             <div>
               <p className="text-[10px] text-ink-ghost font-mono uppercase tracking-widest mb-1">Final Determination</p>
@@ -85,7 +80,6 @@ export const EvaluationReport = () => {
             </div>
           </div>
 
-          {/* Agent score grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
             {data.agents.map(ag => (
               <Card key={ag.id} interactive className="group">
@@ -102,7 +96,6 @@ export const EvaluationReport = () => {
             ))}
           </div>
 
-          {/* Evidence breakdown */}
           <section className="space-y-4">
             <h2 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider">Evidence Breakdown</h2>
             {data.evidence.map((item, idx) => (
@@ -112,7 +105,6 @@ export const EvaluationReport = () => {
             ))}
           </section>
 
-          {/* Comprehensive analysis */}
           <Card>
             <h2 className="text-sm font-display font-semibold text-ink-primary mb-4 flex items-center gap-2">
               <FileText className="w-4 h-4 text-bronze" /> Comprehensive Analysis
@@ -121,10 +113,8 @@ export const EvaluationReport = () => {
           </Card>
         </div>
 
-        {/* Right column — candidate profile */}
         <div className="col-span-12 lg:col-span-4">
           <div className="sticky top-24 space-y-5">
-            {/* Candidate */}
             <Card>
               <p className="text-[10px] text-ink-ghost font-mono uppercase tracking-widest mb-4">Evaluated Candidate</p>
               <div className="flex items-center gap-4 mb-4">
@@ -146,7 +136,6 @@ export const EvaluationReport = () => {
               </div>
             </Card>
 
-            {/* Session metadata */}
             <Card>
               <p className="text-[10px] text-ink-ghost font-mono uppercase tracking-widest mb-4">Session Metadata</p>
               <div className="space-y-2 text-sm">
@@ -163,7 +152,6 @@ export const EvaluationReport = () => {
               </div>
             </Card>
 
-            {/* Actions */}
             <Link to="/dashboard">
               <Button variant="secondary" className="w-full">Return to Dashboard</Button>
             </Link>

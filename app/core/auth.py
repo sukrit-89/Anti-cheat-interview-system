@@ -9,10 +9,8 @@ from app.core.config import settings
 from app.core.logging import logger
 from supabase import create_client, Client
 
-# HTTP Bearer token scheme
 security = HTTPBearer()
 
-# Initialize Supabase client
 def get_supabase_client() -> Client:
     """Get Supabase client instance."""
     if not settings.SUPABASE_URL or not settings.SUPABASE_SERVICE_ROLE_KEY:
@@ -32,7 +30,6 @@ async def get_current_user(
     try:
         supabase = get_supabase_client()
         
-        # Verify the token with Supabase
         user_response = supabase.auth.get_user(token)
         
         if not user_response or not user_response.user:
@@ -44,7 +41,6 @@ async def get_current_user(
         
         user = user_response.user
         
-        # Return user data
         return {
             "id": user.id,
             "email": user.email,

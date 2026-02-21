@@ -1,6 +1,3 @@
-/**
- * Interview Room — LiveKit video + code editor split view
- */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LiveKitRoom, VideoConference, RoomAudioRenderer } from '@livekit/components-react';
@@ -51,9 +48,11 @@ export const InterviewRoom: React.FC = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-neeti-bg overflow-hidden">
-      {/* ── Header ──────────────────────────────────── */}
-      <header className="glass-header px-5 py-3 shrink-0">
+    <div className="h-screen flex flex-col bg-neeti-bg overflow-hidden relative">
+      <div className="ambient-orb ambient-orb-bronze w-[400px] h-[400px] top-[-15%] right-[5%] z-0 opacity-40" />
+      <div className="ambient-orb ambient-orb-blue w-[300px] h-[300px] bottom-[10%] left-[-5%] z-0 opacity-30" />
+
+      <header className="glass-header px-5 py-3 shrink-0 relative z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
             <div className="flex items-center gap-2.5">
@@ -94,9 +93,7 @@ export const InterviewRoom: React.FC = () => {
         </div>
       </header>
 
-      {/* ── Main split ─────────────────────────────── */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Video panel */}
         <div className={`${isCodeExpanded ? 'w-1/2' : 'w-2/3'} border-r border-neeti-border flex flex-col transition-all`}>
           <div className="flex-1 p-3">
             <LiveKitRoom token={roomToken} serverUrl={LIVEKIT_WS_URL} connectOptions={{ autoSubscribe: true }}>
@@ -105,7 +102,6 @@ export const InterviewRoom: React.FC = () => {
             </LiveKitRoom>
           </div>
 
-          {/* Status bar */}
           <div className="border-t border-neeti-border bg-neeti-surface/60 px-4 py-2">
             <div className="flex items-center justify-between text-[10px]">
               <div className="flex items-center gap-3">
@@ -124,9 +120,7 @@ export const InterviewRoom: React.FC = () => {
           </div>
         </div>
 
-        {/* Code editor panel */}
         <div className={`${isCodeExpanded ? 'w-1/2' : 'w-1/3'} flex flex-col transition-all`}>
-          {/* Editor header */}
           <div className="border-b border-neeti-border bg-neeti-surface/60 px-4 py-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -147,12 +141,10 @@ export const InterviewRoom: React.FC = () => {
             </div>
           </div>
 
-          {/* Editor */}
           <div className="flex-1 p-3">
             <CodeEditor value={currentCode} onChange={setCurrentCode} language={language} sessionId={currentSession?.id || 0} />
           </div>
 
-          {/* Editor footer */}
           <div className="border-t border-neeti-border bg-neeti-surface/60 px-4 py-2">
             <div className="flex items-center gap-4 text-[10px] text-ink-ghost">
               <span>Lines: <span className="font-mono text-ink-secondary">{currentCode.split('\n').length}</span></span>
@@ -162,7 +154,6 @@ export const InterviewRoom: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Leave dialog ───────────────────────────── */}
       {showLeaveDialog && (
         <div className="dialog-overlay">
           <div className="dialog-panel max-w-md w-full mx-4 p-7 space-y-5">

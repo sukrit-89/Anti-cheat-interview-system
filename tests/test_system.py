@@ -6,7 +6,6 @@ import pytest
 from httpx import AsyncClient
 from datetime import datetime, timedelta
 
-
 class TestSystemValidation:
     """Comprehensive system validation tests."""
     
@@ -16,7 +15,6 @@ class TestSystemValidation:
         Complete end-to-end test of the platform.
         Tests: Register -> Login -> Create Session -> Start -> End
         """
-        # Step 1: Register recruiter
         recruiter_data = {
             "email": "recruiter_system@example.com",
             "password": "SecurePass123!",
@@ -26,7 +24,6 @@ class TestSystemValidation:
         register_resp = await client.post("/api/auth/register", json=recruiter_data)
         assert register_resp.status_code == 201
         
-        # Step 2: Login as recruiter
         login_resp = await client.post("/api/auth/login", json={
             "email": recruiter_data["email"],
             "password": recruiter_data["password"]
@@ -35,7 +32,6 @@ class TestSystemValidation:
         recruiter_token = login_resp.json()["access_token"]
         recruiter_headers = {"Authorization": f"Bearer {recruiter_token}"}
         
-        # Step 3: Recruiter creates session
         session_data = {
             "title": "System Validation Interview",
             "description": "Complete platform test",
@@ -51,14 +47,12 @@ class TestSystemValidation:
         session_id = session["id"]
         session_code = session["session_code"]
         
-        # Step 4: Verify session created
         get_session = await client.get(
             f"/api/sessions/{session_id}",
             headers=recruiter_headers
         )
         assert get_session.status_code == 200
         
-        # Step 5: Recruiter starts session
         start_resp = await client.post(
             f"/api/sessions/{session_id}/start",
             headers=recruiter_headers
@@ -66,7 +60,6 @@ class TestSystemValidation:
         assert start_resp.status_code == 200
         assert start_resp.json()["status"] == "live"
         
-        # Step 6: Verify session is live
         check_session = await client.get(
             f"/api/sessions/{session_id}",
             headers=recruiter_headers
@@ -74,7 +67,6 @@ class TestSystemValidation:
         assert check_session.json()["status"] == "live"
         assert check_session.json()["started_at"] is not None
         
-        # Step 7: Recruiter ends session
         end_resp = await client.post(
             f"/api/sessions/{session_id}/end",
             headers=recruiter_headers
@@ -82,7 +74,6 @@ class TestSystemValidation:
         assert end_resp.status_code == 200
         assert end_resp.json()["status"] == "completed"
         
-        # Step 8: Verify final session state
         final_session = await client.get(
             f"/api/sessions/{session_id}",
             headers=recruiter_headers
@@ -92,7 +83,6 @@ class TestSystemValidation:
         assert final_data["started_at"] is not None
         assert final_data["ended_at"] is not None
         
-        # Step 9: List all sessions
         list_resp = await client.get("/api/sessions", headers=recruiter_headers)
         assert list_resp.status_code == 200
         sessions = list_resp.json()
@@ -101,11 +91,9 @@ class TestSystemValidation:
     @pytest.mark.asyncio
     async def test_api_documentation_accessible(self, client: AsyncClient):
         """Test that API documentation is accessible."""
-        # OpenAPI schema
         docs_resp = await client.get("/docs")
         assert docs_resp.status_code == 200
         
-        # OpenAPI JSON
         openapi_resp = await client.get("/openapi.json")
         assert openapi_resp.status_code == 200
         schema = openapi_resp.json()
@@ -119,47 +107,39 @@ class TestSystemValidation:
         schema = openapi_resp.json()
         paths = schema["paths"]
         
-        # Health endpoints
         assert "/" in paths
         assert "/health" in paths
         
-        # Auth endpoints
         assert "/api/auth/register" in paths
         assert "/api/auth/login" in paths
         assert "/api/auth/me" in paths
         assert "/api/auth/refresh" in paths
         
-        # Session endpoints
         assert "/api/sessions" in paths
         assert "/api/sessions/join" in paths
     
     @pytest.mark.asyncio
     async def test_error_handling(self, client: AsyncClient):
         """Test proper error handling across the platform."""
-        # 404 for non-existent endpoint
         resp = await client.get("/api/nonexistent")
         assert resp.status_code == 404
         
-        # 422 for invalid request data
         invalid_data = {"email": "not-an-email"}
         resp = await client.post("/api/auth/register", json=invalid_data)
         assert resp.status_code == 422
         
-        # 401 for invalid credentials
         resp = await client.post("/api/auth/login", json={
             "email": "fake@example.com",
             "password": "wrong"
         })
         assert resp.status_code == 401
         
-        # 403 for missing authentication
         resp = await client.get("/api/sessions")
         assert resp.status_code == 403
     
     @pytest.mark.asyncio
     async def test_data_validation(self, client: AsyncClient):
         """Test data validation across endpoints."""
-        # Email validation
         invalid_email = {
             "email": "invalid",
             "password": "ValidPass123!",
@@ -169,12 +149,10 @@ class TestSystemValidation:
         resp = await client.post("/api/auth/register", json=invalid_email)
         assert resp.status_code == 422
         
-        # Missing required fields
         incomplete_data = {"email": "test@example.com"}
         resp = await client.post("/api/auth/register", json=incomplete_data)
         assert resp.status_code == 422
         
-        # Invalid enum value
         invalid_role = {
             "email": "test@example.com",
             "password": "ValidPass123!",
@@ -189,7 +167,6 @@ class TestSystemValidation:
         """Test creating multiple sessions sequentially."""
         session_ids = []
         
-        # Create 5 sessions sequentially
         for i in range(5):
             session_data = {
                 "title": f"Multi Session {i}",
@@ -203,10 +180,8 @@ class TestSystemValidation:
             assert response.status_code == 201
             session_ids.append(response.json()["id"])
         
-        # All should have unique IDs
         assert len(session_ids) == len(set(session_ids))
         
-        # List should contain all sessions
         list_resp = await client.get("/api/sessions", headers=auth_headers)
         assert list_resp.status_code == 200
         listed_ids = [s["id"] for s in list_resp.json()]
@@ -217,7 +192,6 @@ class TestSystemValidation:
         """Test security-related response headers."""
         response = await client.get("/health")
         
-        # Should not expose server information
         assert "X-Powered-By" not in response.headers
         assert "Server" not in response.headers or "uvicorn" not in response.headers.get("Server", "").lower()
     
@@ -227,5 +201,4 @@ class TestSystemValidation:
         response = await client.get("/health")
         assert response.status_code == 200
         
-        # Content type should be JSON for API endpoints
         assert "application/json" in response.headers.get("content-type", "")

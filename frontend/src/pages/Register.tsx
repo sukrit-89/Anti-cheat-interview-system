@@ -54,9 +54,11 @@ export const Register: React.FC = () => {
     setFormData((f) => ({ ...f, [key]: value }));
 
   return (
-    <div className="min-h-screen bg-neeti-bg grid lg:grid-cols-12">
-      {/* ── Left branding panel ──────────────────────── */}
-      <div className="hidden lg:flex lg:col-span-5 border-r border-white/[0.06] p-12 flex-col justify-between relative overflow-hidden">
+    <div className="min-h-screen bg-neeti-bg grid lg:grid-cols-12 relative overflow-hidden">
+      <div className="ambient-orb ambient-orb-bronze w-[500px] h-[500px] top-[-10%] left-[-5%] z-0 opacity-60" />
+      <div className="ambient-orb ambient-orb-blue w-[350px] h-[350px] bottom-[10%] right-[10%] z-0 opacity-40" />
+
+      <div className="hidden lg:flex lg:col-span-5 border-r border-white/[0.06] p-12 flex-col justify-between relative overflow-hidden z-10">
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.015]"
           style={{
@@ -89,8 +91,7 @@ export const Register: React.FC = () => {
         </p>
       </div>
 
-      {/* ── Right registration form ──────────────────── */}
-      <div className="lg:col-span-7 flex items-center justify-center p-8 lg:p-12">
+      <div className="lg:col-span-7 flex items-center justify-center p-8 lg:p-12 relative z-10">
         <div className="w-full max-w-md animate-fadeUp">
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-1">
@@ -128,7 +129,6 @@ export const Register: React.FC = () => {
               required
             />
 
-            {/* Role selector */}
             <div>
               <p className="block text-sm font-medium text-ink-secondary mb-2">Account Type</p>
               <div className="grid grid-cols-2 gap-3">

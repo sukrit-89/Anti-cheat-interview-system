@@ -17,7 +17,6 @@ import { Troubleshooting } from './pages/Troubleshooting';
 import { useAuthStore } from './store/useAuthStore';
 import './index.css';
 
-// Error Boundary
 import { Component, type ErrorInfo } from 'react';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error?: Error }> {
@@ -55,7 +54,6 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   }
 }
 
-// Route guards using reactive hook selectors
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
@@ -69,7 +67,6 @@ function RecruiterRoute({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-// 404 Page
 function NotFound() {
   return (
     <div className="min-h-screen bg-neeti-bg flex items-center justify-center p-8">
@@ -141,7 +138,6 @@ function App() {
             path="/evaluation/:id"
             element={<ProtectedRoute><EvaluationReport /></ProtectedRoute>}
           />
-          {/* 404 catch-all */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

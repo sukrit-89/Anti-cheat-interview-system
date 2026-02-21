@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     container_name: interview_db
@@ -19,7 +18,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Redis
   redis:
     image: redis:7-alpine
     container_name: interview_redis
@@ -33,7 +31,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # FastAPI Application
   api:
     build:
       context: .
@@ -42,46 +39,37 @@ services:
     ports:
       - "8000:8000"
     environment:
-      # Application
       ENVIRONMENT: ${ENVIRONMENT:-production}
       DEBUG: ${DEBUG:-False}
       
-      # Database
       POSTGRES_USER: ${POSTGRES_USER:-interview_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: ${POSTGRES_DB:-interview_platform}
       
-      # Supabase
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       
-      # Redis
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_DB: 0
       
-      # Security
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       
-      # LiveKit
       LIVEKIT_API_KEY: ${LIVEKIT_API_KEY}
       LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET}
       LIVEKIT_WS_URL: ${LIVEKIT_WS_URL}
       
-      # S3
       S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
       S3_BUCKET_NAME: ${S3_BUCKET_NAME}
       S3_REGION: ${S3_REGION:-us-east-1}
       
-      # AI Services
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       
-      # Code Execution
       JUDGE0_API_URL: ${JUDGE0_API_URL}
       JUDGE0_API_KEY: ${JUDGE0_API_KEY}
     
@@ -93,7 +81,6 @@ services:
     
     restart: unless-stopped
 
-  # Celery Worker for Agents
   worker_agents:
     build:
       context: .
@@ -101,7 +88,6 @@ services:
     container_name: interview_worker_agents
     command: celery -A app.workers.celery_app worker --loglevel=info -Q agents --concurrency=4
     environment:
-      # Same as API
       ENVIRONMENT: ${ENVIRONMENT:-production}
       POSTGRES_USER: ${POSTGRES_USER:-interview_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
@@ -120,7 +106,6 @@ services:
     
     restart: unless-stopped
 
-  # Celery Worker for Sessions
   worker_sessions:
     build:
       context: .
@@ -144,7 +129,6 @@ services:
     
     restart: unless-stopped
 
-  # Celery Beat (Scheduler)
   beat:
     build:
       context: .
@@ -168,7 +152,6 @@ services:
     
     restart: unless-stopped
 
-  # Frontend - Vite React App
   frontend:
     build:
       context: ./frontend
@@ -180,13 +163,12 @@ services:
       - api
     restart: unless-stopped
 
-  # MinIO - S3-Compatible Storage (FREE)
   minio:
     image: minio/minio:latest
     container_name: interview_minio
     ports:
-      - "9000:9000"  # API
-      - "9001:9001"  # Console
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID:-minioadmin}
       MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY:-minioadmin}
@@ -199,7 +181,6 @@ services:
       timeout: 20s
       retries: 3
 
-  # Ollama - Local LLM (100% FREE)
   ollama:
     image: ollama/ollama:latest
     container_name: interview_ollama
@@ -209,9 +190,6 @@ services:
       - ollama_data:/root/.ollama
     environment:
       - OLLAMA_HOST=0.0.0.0
-    # Optional: Uncomment to pull model on startup
-    # command: >
-    #   sh -c "ollama serve & sleep 5 && ollama pull llama2 && wait"
 
 volumes:
   postgres_data:

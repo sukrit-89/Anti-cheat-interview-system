@@ -8,7 +8,6 @@ from sqlalchemy import select
 from app.models.models import User, Session, Candidate, UserRole, SessionStatus
 from app.core.auth import AuthService
 
-
 class TestDatabaseModels:
     """Test database models and relationships."""
     
@@ -93,7 +92,6 @@ class TestDatabaseModels:
         await db_session.commit()
         await db_session.refresh(session)
         
-        # Load recruiter relationship
         stmt = select(Session).where(Session.id == session.id)
         result = await db_session.execute(stmt)
         loaded_session = result.scalar_one()
@@ -107,7 +105,6 @@ class TestDatabaseModels:
         """Test creating a candidate."""
         import uuid
         
-        # Create session first
         session = Session(
             session_code=f"TEST-{uuid.uuid4().hex[:6].upper()}",
             recruiter_id=test_user.id,
@@ -119,7 +116,6 @@ class TestDatabaseModels:
         await db_session.commit()
         await db_session.refresh(session)
         
-        # Create candidate
         candidate = Candidate(
             session_id=session.id,
             full_name="Test Candidate",
@@ -139,7 +135,6 @@ class TestDatabaseModels:
         """Test that deleting session cascades to candidates."""
         import uuid
         
-        # Create session with candidate
         session = Session(
             session_code=f"TEST-{uuid.uuid4().hex[:6].upper()}",
             recruiter_id=test_user.id,
@@ -161,11 +156,9 @@ class TestDatabaseModels:
         
         candidate_id = candidate.id
         
-        # Delete session
         await db_session.delete(session)
         await db_session.commit()
         
-        # Check candidate is also deleted
         stmt = select(Candidate).where(Candidate.id == candidate_id)
         result = await db_session.execute(stmt)
         assert result.scalar_one_or_none() is None
@@ -175,7 +168,6 @@ class TestDatabaseModels:
         """Test user can have multiple sessions."""
         import uuid
         
-        # Create multiple sessions
         for i in range(3):
             session = Session(
                 session_code=f"TEST-{uuid.uuid4().hex[:6].upper()}",
@@ -188,7 +180,6 @@ class TestDatabaseModels:
         
         await db_session.commit()
         
-        # Query user's sessions
         stmt = select(Session).where(Session.recruiter_id == test_user.id)
         result = await db_session.execute(stmt)
         sessions = result.scalars().all()

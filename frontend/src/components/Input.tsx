@@ -1,12 +1,10 @@
 import React, { useId } from 'react';
 import { clsx } from 'clsx';
 
-/* ── Input ─────────────────────────────────────────────── */
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   hint?: string;
-  /** @deprecated use `hint` instead */
   helperText?: string;
   icon?: React.ReactNode;
   variant?: 'default' | 'evidence' | 'control';
@@ -67,7 +65,6 @@ export const Input: React.FC<InputProps> = ({
   );
 };
 
-/* ── Textarea ──────────────────────────────────────────── */
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;

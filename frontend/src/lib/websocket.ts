@@ -1,6 +1,3 @@
-/**
- * WebSocket Client for Real-time Updates
- */
 import { useEffect, useCallback, useRef, useState } from 'react';
 
 const WS_BASE_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
@@ -45,7 +42,6 @@ export function useWebSocket(sessionId: number | null) {
             setIsConnected(false);
             wsRef.current = null;
 
-            // Attempt reconnection after 3 seconds
             reconnectTimeoutRef.current = setTimeout(() => {
                 console.log('Attempting to reconnect...');
                 connect();
@@ -85,7 +81,6 @@ export function useWebSocket(sessionId: number | null) {
     };
 }
 
-// Hook for live monitoring (recruiter)
 export function useLiveMonitoring(sessionId: number | null) {
     const [isConnected, setIsConnected] = useState(false);
     const [metrics, setMetrics] = useState<any>(null);
@@ -101,7 +96,6 @@ export function useLiveMonitoring(sessionId: number | null) {
             console.log('Live monitoring connected');
             setIsConnected(true);
 
-            // Send ping every 30 seconds
             pingIntervalRef.current = setInterval(() => {
                 if (ws.readyState === WebSocket.OPEN) {
                     ws.send(JSON.stringify({ type: 'ping' }));

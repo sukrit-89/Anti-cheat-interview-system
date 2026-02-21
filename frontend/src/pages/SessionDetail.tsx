@@ -47,7 +47,6 @@ export const SessionDetail: React.FC = () => {
   const s = currentSession;
   const statusColor = STATUS_MAP[s.status] ?? 'warning';
 
-  /* timeline rows */
   const timeline = [
     { label: 'Created',   ts: s.created_at },
     { label: 'Scheduled', ts: s.scheduled_at },
@@ -56,8 +55,10 @@ export const SessionDetail: React.FC = () => {
   ].filter(r => r.ts);
 
   return (
-    <div className="min-h-screen bg-neeti-bg">
-      {/* ── Header ──────────────────────────────────── */}
+    <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
+      <div className="ambient-orb ambient-orb-bronze w-[450px] h-[450px] top-[-10%] left-[20%] z-0 opacity-50" />
+      <div className="ambient-orb ambient-orb-blue w-[350px] h-[350px] bottom-[15%] right-[-3%] z-0 opacity-35" />
+
       <header className="sticky top-0 z-30 glass-header">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5">
           <button onClick={() => navigate('/dashboard')} className="flex items-center gap-1.5 text-xs text-ink-ghost hover:text-ink-secondary transition-colors mb-3">
@@ -75,12 +76,9 @@ export const SessionDetail: React.FC = () => {
         </div>
       </header>
 
-      {/* ── Body ────────────────────────────────────── */}
-      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-10 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* ── Left: 2 col ──────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Access Code */}
             <Card>
               <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-5">
                 Session Access Code
@@ -101,7 +99,6 @@ export const SessionDetail: React.FC = () => {
               </p>
             </Card>
 
-            {/* Description */}
             {s.description && (
               <Card>
                 <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-3">Details</h2>
@@ -109,7 +106,6 @@ export const SessionDetail: React.FC = () => {
               </Card>
             )}
 
-            {/* Timeline */}
             <Card>
               <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-5">Timeline</h2>
               <div className="divide-y divide-neeti-border">
@@ -123,9 +119,7 @@ export const SessionDetail: React.FC = () => {
             </Card>
           </div>
 
-          {/* ── Right sidebar ────────────────────────── */}
           <div className="space-y-6">
-            {/* Controls */}
             <Card>
               <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-5">Controls</h2>
               <div className="space-y-3">
@@ -155,7 +149,6 @@ export const SessionDetail: React.FC = () => {
               </div>
             </Card>
 
-            {/* AI Agents */}
             <Card>
               <h2 className="text-sm font-semibold text-ink-secondary uppercase tracking-wider mb-5">AI Agents</h2>
               <div className="space-y-3">
@@ -177,7 +170,6 @@ export const SessionDetail: React.FC = () => {
         </div>
       </main>
 
-      {/* ── End-session dialog ─────────────────────── */}
       {showEndDialog && (
         <div className="dialog-overlay">
           <div className="dialog-panel max-w-md w-full mx-4 p-7 space-y-5">

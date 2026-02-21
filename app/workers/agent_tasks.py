@@ -16,7 +16,6 @@ from app.core.database import AsyncSessionLocal
 from app.core.events import publish_agent_completed
 from app.core.logging import logger
 
-
 @celery_app.task(name="process_coding_agent", bind=True)
 def process_coding_agent(self, session_id: int, data: dict[str, Any]) -> dict:
     """Process session through coding agent."""
@@ -27,7 +26,6 @@ def process_coding_agent(self, session_id: int, data: dict[str, Any]) -> dict:
         input_data = AgentInput(session_id=session_id, data=data)
         output = await agent.run(input_data)
         
-        # Save to database
         async with AsyncSessionLocal() as db:
             db_output = AgentOutputModel(
                 session_id=session_id,
@@ -43,7 +41,6 @@ def process_coding_agent(self, session_id: int, data: dict[str, Any]) -> dict:
             await db.commit()
             await db.refresh(db_output)
             
-            # Publish completion event
             await publish_agent_completed(
                 session_id=session_id,
                 agent_type="coding",
@@ -53,7 +50,6 @@ def process_coding_agent(self, session_id: int, data: dict[str, Any]) -> dict:
             return output.model_dump()
     
     return asyncio.run(_process())
-
 
 @celery_app.task(name="process_speech_agent", bind=True)
 def process_speech_agent(self, session_id: int, data: dict[str, Any]) -> dict:
@@ -90,7 +86,6 @@ def process_speech_agent(self, session_id: int, data: dict[str, Any]) -> dict:
     
     return asyncio.run(_process())
 
-
 @celery_app.task(name="process_vision_agent", bind=True)
 def process_vision_agent(self, session_id: int, data: dict[str, Any]) -> dict:
     """Process session through vision agent."""
@@ -125,7 +120,6 @@ def process_vision_agent(self, session_id: int, data: dict[str, Any]) -> dict:
             return output.model_dump()
     
     return asyncio.run(_process())
-
 
 @celery_app.task(name="process_reasoning_agent", bind=True)
 def process_reasoning_agent(self, session_id: int, data: dict[str, Any]) -> dict:
@@ -162,7 +156,6 @@ def process_reasoning_agent(self, session_id: int, data: dict[str, Any]) -> dict
     
     return asyncio.run(_process())
 
-
 @celery_app.task(name="process_evaluation_agent", bind=True)
 def process_evaluation_agent(self, session_id: int, data: dict[str, Any]) -> dict:
     """Generate final evaluation from all agents."""
@@ -175,7 +168,6 @@ def process_evaluation_agent(self, session_id: int, data: dict[str, Any]) -> dic
         output = await agent.run(input_data)
         
         async with AsyncSessionLocal() as db:
-            # Save agent output
             db_output = AgentOutputModel(
                 session_id=session_id,
                 agent_type=AgentType.EVALUATION,
@@ -188,7 +180,6 @@ def process_evaluation_agent(self, session_id: int, data: dict[str, Any]) -> dic
             )
             db.add(db_output)
             
-            # Create evaluation record
             findings = output.findings
             evaluation = Evaluation(
                 session_id=session_id,
@@ -215,7 +206,6 @@ def process_evaluation_agent(self, session_id: int, data: dict[str, Any]) -> dic
     
     return asyncio.run(_process())
 
-
 @celery_app.task(name="trigger_all_agents", bind=True)
 def trigger_all_agents(self, session_id: int) -> None:
     """
@@ -224,7 +214,6 @@ def trigger_all_agents(self, session_id: int) -> None:
     """
     logger.info(f"Triggering all agents for session {session_id}")
     
-    # Dispatch agents in parallel
     from celery import group
     
     job = group(
@@ -236,10 +225,8 @@ def trigger_all_agents(self, session_id: int) -> None:
     
     result = job.apply_async()
     
-    # Wait for all agents to complete, then trigger evaluation
     result.get()
     
-    # Trigger evaluation agent
     process_evaluation_agent.delay(session_id, {})
     
     logger.info(f"All agents dispatched for session {session_id}")

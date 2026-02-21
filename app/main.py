@@ -14,25 +14,20 @@ from app.core.redis import redis_client
 from app.core.logging import logger
 from app.api import supabase_auth, sessions, websocket, coding_events, speech
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager - handles startup and shutdown."""
-    # Startup
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     
-    # Initialize database
     await init_db()
     
-    # Initialize Redis
     await redis_client.connect()
     
     logger.info("Application startup complete")
     
     yield
     
-    # Shutdown
     logger.info("Shutting down application...")
     
     await redis_client.disconnect()
@@ -40,8 +35,6 @@ async def lifespan(app: FastAPI):
     
     logger.info("Application shutdown complete")
 
-
-# Create FastAPI app
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
@@ -51,7 +44,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
@@ -60,16 +52,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Gzip compression
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# Include routers
 app.include_router(supabase_auth.router, prefix="/api")
 app.include_router(sessions.router, prefix="/api")
 app.include_router(websocket.router, prefix="/api")
 app.include_router(coding_events.router, prefix="/api")
 app.include_router(speech.router, prefix="/api")
-
 
 @app.get("/")
 async def root():
@@ -80,14 +69,12 @@ async def root():
         "status": "operational"
     }
 
-
 @app.get("/health")
 async def health_check():
     """Health check endpoint with real service connectivity checks."""
     db_status = "connected"
     redis_status = "connected"
     
-    # Check database
     try:
         from app.core.database import get_db
         from sqlalchemy import text
@@ -97,7 +84,6 @@ async def health_check():
     except Exception:
         db_status = "disconnected"
     
-    # Check Redis
     try:
         if redis_client.client:
             await redis_client.client.ping()
@@ -115,7 +101,6 @@ async def health_check():
         "redis": redis_status
     }
 
-
 @app.get("/api/info")
 async def api_info():
     """API information endpoint."""
@@ -130,7 +115,6 @@ async def api_info():
             "docs": "/docs" if settings.DEBUG else None
         }
     }
-
 
 if __name__ == "__main__":
     import uvicorn
