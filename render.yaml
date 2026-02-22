@@ -2,10 +2,10 @@ services:
   - type: web
     name: neeti-ai-backend
     runtime: python
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
-    plan: free
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.7"
@@ -23,10 +23,6 @@ services:
         value: "True"
       - key: LOG_LEVEL
         value: INFO
-      - key: DATABASE_URL
-        sync: false
-      - key: REDIS_URL
-        sync: false
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_ANON_KEY
@@ -38,6 +34,10 @@ services:
       - key: LIVEKIT_API_KEY
         sync: false
       - key: LIVEKIT_API_SECRET
+        sync: false
+      # Set this to your Supabase "direct connection" string (Session mode, port 5432)
+      # Format: postgresql://postgres.[project-ref]:[db-password]@aws-0-[region].pooler.supabase.com:5432/postgres
+      - key: DATABASE_URL
         sync: false
       - key: CORS_ORIGINS
         sync: false

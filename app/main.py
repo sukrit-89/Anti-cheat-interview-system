@@ -20,8 +20,8 @@ async def lifespan(app: FastAPI):
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     
+    # Non-fatal: app starts in degraded mode if DB/Redis are unreachable
     await init_db()
-    
     await redis_client.connect()
     
     logger.info("Application startup complete")

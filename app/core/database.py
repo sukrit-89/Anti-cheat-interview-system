@@ -77,10 +77,23 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             await session.close()
 
 async def init_db() -> None:
-    """Initialize database tables."""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    logger.info("Database initialized")
+    """Initialize database tables.
+    
+    Non-fatal: if the database is unreachable the app still starts
+    in a degraded state so the health-check endpoint can report the
+    issue instead of crashing the whole process.
+    """
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database initialized")
+    except Exception as e:
+        logger.error(f"Database initialization failed (app will start degraded): {e}")
+        logger.error(
+            "Hint: Set DATABASE_URL to your Supabase *direct* connection string "
+            "(Session mode, port 5432). Pooler / Transaction mode often causes "
+            "'Tenant or user not found' errors with asyncpg."
+        )
 
 async def close_db() -> None:
     """Close database connections."""
