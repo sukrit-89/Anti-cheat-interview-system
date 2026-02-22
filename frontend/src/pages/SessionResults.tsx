@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Download, FileText, TrendingUp, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
+import { evaluationApi, type Evaluation } from '../lib/api';
 import { Button } from '../components/Button';
 import { Card, MetricCard } from '../components/Card';
 import { StatusIndicator } from '../components/StatusIndicator';
@@ -25,6 +26,36 @@ const recCls: Record<string, { text: string; bg: string }> = {
 const dotCls: Record<string, string> = { positive: 'bg-status-success', negative: 'bg-status-critical', neutral: 'bg-status-warning' };
 const agentStatusCls: Record<string, 'success' | 'warning' | 'critical'> = { completed: 'success', processing: 'warning', failed: 'critical' };
 
+function mapEvalToScores(ev: Evaluation): EvaluationScore[] {
+  return [
+    { category: 'Problem Solving', score: ev.reasoning_score ?? 0, maxScore: 100, feedback: 'Reasoning & problem decomposition analysis', agent: 'ReasoningAgent' },
+    { category: 'Code Quality',    score: ev.coding_score ?? 0,    maxScore: 100, feedback: 'Code structure, quality & execution analysis', agent: 'CodingAgent' },
+    { category: 'Communication',   score: ev.communication_score ?? 0, maxScore: 100, feedback: 'Speech clarity & technical vocabulary analysis', agent: 'SpeechAgent' },
+    { category: 'Engagement',      score: ev.engagement_score ?? 0, maxScore: 100, feedback: 'Visual engagement & attention analysis', agent: 'VisionAgent' },
+  ];
+}
+
+function mapEvalToAgents(ev: Evaluation): AIAgent[] {
+  const findings: Finding[] = (ev.key_findings as Finding[] || []).map((f: any) => ({
+    content: f.message || f.content || String(f),
+    severity: f.severity === 'high' ? 'negative' : f.severity === 'medium' ? 'neutral' : 'positive',
+    category: f.type || f.category || 'General',
+  }));
+  return [
+    { name: 'CodingAgent',    status: 'completed', confidence: ev.confidence_level ? Math.round(ev.confidence_level * 100) : 85, findings: findings.filter(f => f.category.toLowerCase().includes('code') || f.category.toLowerCase().includes('execution')).slice(0, 3) },
+    { name: 'SpeechAgent',    status: 'completed', confidence: ev.confidence_level ? Math.round(ev.confidence_level * 100) : 85, findings: findings.filter(f => f.category.toLowerCase().includes('speech') || f.category.toLowerCase().includes('communication')).slice(0, 3) },
+    { name: 'VisionAgent',    status: 'completed', confidence: ev.confidence_level ? Math.round(ev.confidence_level * 100) : 85, findings: findings.filter(f => f.category.toLowerCase().includes('vision') || f.category.toLowerCase().includes('gaze')).slice(0, 3) },
+    { name: 'ReasoningAgent', status: 'completed', confidence: ev.confidence_level ? Math.round(ev.confidence_level * 100) : 85, findings: findings.filter(f => f.category.toLowerCase().includes('reason') || f.category.toLowerCase().includes('logic')).slice(0, 3) },
+  ];
+}
+
+function normalizeRec(rec: string): 'HIRE' | 'MAYBE' | 'NO_HIRE' {
+  const r = rec.toUpperCase().replace(/[\s-]/g, '_');
+  if (r === 'HIRE' || r === 'STRONG_HIRE') return 'HIRE';
+  if (r === 'NO_HIRE' || r === 'REJECT') return 'NO_HIRE';
+  return 'MAYBE';
+}
+
 export default function SessionResults() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
@@ -33,45 +64,48 @@ export default function SessionResults() {
   const [agents, setAgents] = useState<AIAgent[]>([]);
   const [overall, setOverall] = useState(0);
   const [rec, setRec] = useState<'HIRE' | 'MAYBE' | 'NO_HIRE'>('MAYBE');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (sessionId) { fetchSession(parseInt(sessionId)); loadMock(); }
+    if (!sessionId) return;
+    fetchSession(parseInt(sessionId));
+
+    const loadEvaluation = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const ev = await evaluationApi.getEvaluation(parseInt(sessionId));
+        setOverall(Math.round(ev.overall_score));
+        setRec(normalizeRec(ev.recommendation));
+        setScores(mapEvalToScores(ev));
+        setAgents(mapEvalToAgents(ev));
+      } catch (err: any) {
+        const msg = err?.response?.status === 404
+          ? 'Evaluation not available yet. It will appear once the session ends and agents finish processing.'
+          : 'Failed to load evaluation data.';
+        setError(msg);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadEvaluation();
   }, [sessionId, fetchSession]);
 
-  const loadMock = () => {
-    setOverall(78); setRec('HIRE');
-    setScores([
-      { category: 'Problem Solving', score: 82, maxScore: 100, feedback: 'Strong analytical skills, efficient algorithmic approach', agent: 'ReasoningAgent' },
-      { category: 'Code Quality',    score: 85, maxScore: 100, feedback: 'Clean, well-structured code with good practices',        agent: 'CodingAgent' },
-      { category: 'Communication',   score: 74, maxScore: 100, feedback: 'Clear explanations, good technical vocabulary',           agent: 'SpeechAgent' },
-      { category: 'Engagement',      score: 71, maxScore: 100, feedback: 'Consistent attention, professional demeanor',             agent: 'VisionAgent' },
-    ]);
-    setAgents([
-      { name: 'CodingAgent',    status: 'completed', confidence: 92, findings: [
-        { content: 'Implemented efficient binary search algorithm', severity: 'positive', category: 'Algorithm' },
-        { content: 'Code follows SOLID principles', severity: 'positive', category: 'Best Practices' },
-        { content: 'Minor optimization opportunities in loop structure', severity: 'neutral', category: 'Optimization' },
-      ]},
-      { name: 'SpeechAgent',    status: 'completed', confidence: 88, findings: [
-        { content: 'Excellent technical explanation clarity', severity: 'positive', category: 'Communication' },
-        { content: 'Used appropriate industry terminology', severity: 'positive', category: 'Vocabulary' },
-        { content: 'Occasional filler words during complex explanations', severity: 'neutral', category: 'Delivery' },
-      ]},
-      { name: 'VisionAgent',    status: 'completed', confidence: 85, findings: [
-        { content: 'Maintained consistent eye contact with screen', severity: 'positive', category: 'Attention' },
-        { content: 'Professional posture throughout interview', severity: 'positive', category: 'Demeanor' },
-        { content: 'Brief attention lapses during complex problems', severity: 'negative', category: 'Focus' },
-      ]},
-      { name: 'ReasoningAgent', status: 'completed', confidence: 90, findings: [
-        { content: 'Systematic problem decomposition approach', severity: 'positive', category: 'Methodology' },
-        { content: 'Logical progression through solution steps', severity: 'positive', category: 'Logic' },
-        { content: 'Good adaptation to edge cases', severity: 'positive', category: 'Adaptability' },
-      ]},
-    ]);
-  };
+  if (loading) {
+    return <div className="min-h-screen bg-neeti-bg flex items-center justify-center"><p className="text-ink-ghost text-sm">Loading evaluation…</p></div>;
+  }
 
-  if (!currentSession) {
-    return <div className="min-h-screen bg-neeti-bg flex items-center justify-center"><p className="text-ink-ghost text-sm">Loading results…</p></div>;
+  if (error) {
+    return (
+      <div className="min-h-screen bg-neeti-bg flex items-center justify-center">
+        <Card className="max-w-md text-center p-8">
+          <AlertTriangle className="w-8 h-8 text-status-warning mx-auto mb-4" />
+          <p className="text-ink-secondary text-sm mb-4">{error}</p>
+          <Button variant="secondary" size="sm" onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>
+        </Card>
+      </div>
+    );
   }
 
   const r = recCls[rec] || recCls.MAYBE;

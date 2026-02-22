@@ -1,34 +1,20 @@
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { EvidenceBlock } from '../components/EvidenceBlock';
 import { Card } from '../components/Card';
-import { FileText, Download, Gavel } from 'lucide-react';
+import { FileText, Download, Gavel, AlertTriangle } from 'lucide-react';
 import { Logo } from '../components/Logo';
+import { evaluationApi, type Evaluation } from '../lib/api';
 
+type Verdict = 'QUALIFIED' | 'REJECTED' | 'INCONCLUSIVE';
 
-const MOCK = {
-  sessionRef: 'ARCH_009',
-  protocol: 'V2.4_SECURE',
-  verdict: 'QUALIFIED' as const,
-  confidence: 96.8,
-  timestamp: '2024-02-17T14:30:00Z',
-  candidate: { name: 'Alex Chen', email: 'alex.chen@example.com', experience: '5 years', degree: 'BS Computer Science' },
-  agents: [
-    { id: 1, name: 'Code Integrity', score: 94 },
-    { id: 2, name: 'Logic Flow',     score: 98 },
-    { id: 3, name: 'Architecture',   score: 91 },
-    { id: 4, name: 'Security',       score: 97 },
-    { id: 5, name: 'Efficiency',     score: 95 },
-  ],
-  evidence: [
-    { type: 'success' as const, title: 'Strong Algorithm Implementation', content: 'Candidate demonstrated proficiency in implementing efficient sorting and search algorithms with optimal time complexity.', level: 'STRENGTH' },
-    { type: 'success' as const, title: 'Clean Code Structure', content: 'Code exhibits strong organizational patterns with appropriate use of functions, clear variable naming, and logical flow.', level: 'STRENGTH' },
-    { type: 'warning' as const, title: 'Edge Case Handling', content: 'Some edge cases were not initially considered. Candidate addressed this after prompting.', level: 'ADVISORY' },
-    { type: 'success' as const, title: 'Problem Solving Approach', content: 'Methodical approach to problem decomposition. Clear communication of thought process throughout evaluation.', level: 'STRENGTH' },
-  ],
-  analysis: `The candidate demonstrated strong technical proficiency across all evaluation criteria. Code quality was consistently high, with particular strength in algorithmic thinking and system design principles. Communication skills were effective, with clear articulation of tradeoffs and design decisions. Minor areas for improvement identified in edge case handling were addressed promptly when raised. Overall assessment indicates strong technical capability aligned with senior engineering expectations.`,
-};
-
+function toVerdict(rec: string): Verdict {
+  const r = rec.toUpperCase().replace(/[\s-]/g, '_');
+  if (r === 'HIRE' || r === 'STRONG_HIRE') return 'QUALIFIED';
+  if (r === 'NO_HIRE' || r === 'REJECT') return 'REJECTED';
+  return 'INCONCLUSIVE';
+}
 
 const VERDICT_CFG = {
   QUALIFIED:    { border: 'border-status-success', text: 'text-status-success', label: 'VERDICT: QUALIFIED' },
@@ -38,8 +24,76 @@ const VERDICT_CFG = {
 
 export const EvaluationReport = () => {
   const { id } = useParams<{ id: string }>();
-  const data = MOCK;
-  const cfg = VERDICT_CFG[data.verdict];
+  const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const ev = await evaluationApi.getEvaluation(parseInt(id));
+        setEvaluation(ev);
+      } catch (err: any) {
+        setError(err?.response?.status === 404
+          ? 'Evaluation not available yet.'
+          : 'Failed to load evaluation.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [id]);
+
+  if (loading) {
+    return <div className="min-h-screen bg-neeti-bg flex items-center justify-center"><p className="text-ink-ghost text-sm">Loading report…</p></div>;
+  }
+
+  if (error || !evaluation) {
+    return (
+      <div className="min-h-screen bg-neeti-bg flex items-center justify-center">
+        <Card className="max-w-md text-center p-8">
+          <AlertTriangle className="w-8 h-8 text-status-warning mx-auto mb-4" />
+          <p className="text-ink-secondary text-sm mb-4">{error || 'No data available.'}</p>
+          <Link to="/dashboard"><Button variant="secondary" size="sm">Back to Dashboard</Button></Link>
+        </Card>
+      </div>
+    );
+  }
+
+  const verdict = toVerdict(evaluation.recommendation);
+  const cfg = VERDICT_CFG[verdict];
+  const confidencePct = evaluation.confidence_level ? Math.round(evaluation.confidence_level * 100) : 85;
+
+  const agents = [
+    { id: 1, name: 'Code Quality',   score: Math.round(evaluation.coding_score ?? 0) },
+    { id: 2, name: 'Reasoning',      score: Math.round(evaluation.reasoning_score ?? 0) },
+    { id: 3, name: 'Communication',  score: Math.round(evaluation.communication_score ?? 0) },
+    { id: 4, name: 'Engagement',     score: Math.round(evaluation.engagement_score ?? 0) },
+    { id: 5, name: 'Overall',        score: Math.round(evaluation.overall_score) },
+  ];
+
+  const evidence: { type: 'success' | 'warning'; title: string; content: string; level: string }[] = [];
+  for (const s of evaluation.strengths) {
+    evidence.push({ type: 'success', title: s, content: s, level: 'STRENGTH' });
+  }
+  for (const w of evaluation.weaknesses) {
+    evidence.push({ type: 'warning', title: w, content: w, level: 'ADVISORY' });
+  }
+  if (evidence.length === 0 && evaluation.key_findings) {
+    for (const f of evaluation.key_findings as any[]) {
+      evidence.push({
+        type: (f.severity === 'high' ? 'warning' : 'success'),
+        title: f.message || f.type || 'Finding',
+        content: f.message || String(f),
+        level: f.severity === 'high' ? 'ADVISORY' : 'STRENGTH',
+      });
+    }
+  }
+
+  const analysis = evaluation.detailed_report || evaluation.summary || 'No detailed analysis available.';
 
   return (
     <div className="min-h-screen bg-neeti-bg relative overflow-hidden">
@@ -55,9 +109,9 @@ export const EvaluationReport = () => {
               Neeti AI <span className="text-ink-ghost font-normal">|</span> Forensic Report
             </h2>
             <div className="flex items-center gap-3 text-[10px] text-ink-ghost font-mono">
-              <span>SYS_REF: {data.sessionRef}</span>
+              <span>SESSION: {evaluation.session_id}</span>
               <span className="text-ink-ghost/40">•</span>
-              <span>PROTOCOL: {data.protocol}</span>
+              <span>{evaluation.evaluated_at ? new Date(evaluation.evaluated_at).toLocaleDateString() : 'Pending'}</span>
             </div>
           </div>
         </div>
@@ -76,12 +130,12 @@ export const EvaluationReport = () => {
             </div>
             <div className="text-right">
               <p className="text-[10px] text-ink-ghost font-mono uppercase tracking-widest mb-1">Aggregate Confidence</p>
-              <p className={`text-3xl font-mono font-bold ${cfg.text}`}>{data.confidence}%</p>
+              <p className={`text-3xl font-mono font-bold ${cfg.text}`}>{confidencePct}%</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
-            {data.agents.map(ag => (
+            {agents.map(ag => (
               <Card key={ag.id} interactive className="group">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-lg">📊</span>
@@ -98,7 +152,7 @@ export const EvaluationReport = () => {
 
           <section className="space-y-4">
             <h2 className="text-xs font-semibold text-ink-secondary uppercase tracking-wider">Evidence Breakdown</h2>
-            {data.evidence.map((item, idx) => (
+            {evidence.map((item, idx) => (
               <EvidenceBlock key={idx} type={item.type} title={item.title} label={item.level}>
                 {item.content}
               </EvidenceBlock>
@@ -109,25 +163,20 @@ export const EvaluationReport = () => {
             <h2 className="text-sm font-display font-semibold text-ink-primary mb-4 flex items-center gap-2">
               <FileText className="w-4 h-4 text-bronze" /> Comprehensive Analysis
             </h2>
-            <p className="text-sm text-ink-secondary leading-relaxed font-display italic">{data.analysis}</p>
+            <p className="text-sm text-ink-secondary leading-relaxed font-display italic">{analysis}</p>
           </Card>
         </div>
 
         <div className="col-span-12 lg:col-span-4">
           <div className="sticky top-24 space-y-5">
             <Card>
-              <p className="text-[10px] text-ink-ghost font-mono uppercase tracking-widest mb-4">Evaluated Candidate</p>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-14 h-14 rounded-full bg-bronze/10 border-2 border-bronze flex items-center justify-center text-bronze text-xl font-bold">
-                  {data.candidate.name.split(' ').map(n => n[0]).join('')}
-                </div>
-                <div>
-                  <h3 className="text-ink-primary font-semibold">{data.candidate.name}</h3>
-                  <p className="text-ink-ghost text-xs font-mono">{data.candidate.email}</p>
-                </div>
-              </div>
+              <p className="text-[10px] text-ink-ghost font-mono uppercase tracking-widest mb-4">Evaluation Summary</p>
               <div className="space-y-2 text-sm border-t border-neeti-border pt-4">
-                {[['Experience', data.candidate.experience], ['Education', data.candidate.degree]].map(([l, v]) => (
+                {[
+                  ['Overall Score', `${Math.round(evaluation.overall_score)}/100`],
+                  ['Recommendation', evaluation.recommendation.toUpperCase()],
+                  ['Confidence', `${confidencePct}%`],
+                ].map(([l, v]) => (
                   <div key={l} className="flex justify-between">
                     <span className="text-ink-ghost">{l}</span>
                     <span className="text-ink-primary font-medium">{v}</span>
@@ -140,9 +189,8 @@ export const EvaluationReport = () => {
               <p className="text-[10px] text-ink-ghost font-mono uppercase tracking-widest mb-4">Session Metadata</p>
               <div className="space-y-2 text-sm">
                 {[
-                  ['Session ID', id || 'EVAL_001'],
-                  ['Timestamp',  new Date(data.timestamp).toLocaleString()],
-                  ['Duration',   '54m 32s'],
+                  ['Session ID', String(evaluation.session_id)],
+                  ['Evaluated',  evaluation.evaluated_at ? new Date(evaluation.evaluated_at).toLocaleString() : 'Pending'],
                 ].map(([l, v]) => (
                   <div key={l} className="flex justify-between">
                     <span className="text-ink-ghost">{l}</span>

@@ -81,9 +81,34 @@ class SpeechAgent(BaseAgent):
         wpm = (word_count / total_duration * 60) if total_duration > 0 else 0
         
         clarity = min(100.0, avg_confidence)
-        technical_depth = 70.0
         fluency = min(100.0, max(0.0, (wpm / 150) * 100))
-        confidence = 75.0
+
+        tech_keywords = {
+            "algorithm", "function", "variable", "loop", "recursion", "array",
+            "object", "class", "method", "complexity", "runtime", "memory",
+            "stack", "queue", "tree", "graph", "hash", "sort", "search",
+            "database", "api", "server", "client", "cache", "index",
+            "optimize", "refactor", "debug", "test", "deploy", "interface",
+            "abstract", "inherit", "polymorphism", "encapsulation", "async",
+            "callback", "promise", "thread", "process", "mutex", "semaphore",
+        }
+        words_lower = full_transcript.lower().split()
+        tech_count = sum(1 for w in words_lower if w.strip(".,;:!?()") in tech_keywords)
+        tech_ratio = tech_count / max(len(words_lower), 1)
+        technical_depth = min(100.0, 40.0 + tech_ratio * 600)
+
+        confidence = 50.0
+        if total_duration > 120:
+            confidence += 10
+        if wpm >= 100:
+            confidence += 10
+        if word_count > 200:
+            confidence += 10
+        if total_segments > 5:
+            confidence += 10
+        if avg_confidence > 70:
+            confidence += 10
+        confidence = min(100.0, max(0.0, confidence))
         
         return {
             "total_segments": total_segments,

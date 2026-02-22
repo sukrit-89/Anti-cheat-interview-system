@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Clock, LogIn, BarChart3, Radio, CalendarClock, CheckCircle2 } from 'lucide-react';
+import { Plus, Clock, LogIn, LogOut, BarChart3, Radio, CalendarClock, CheckCircle2 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useSessionStore } from '../store/useSessionStore';
 import { Button } from '../components/Button';
@@ -39,7 +39,7 @@ const badgeClass = (s: string) =>
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { sessions, fetchSessions } = useSessionStore();
 
   useEffect(() => { fetchSessions(); }, [fetchSessions]);
@@ -71,11 +71,16 @@ export function Dashboard() {
               </p>
             </div>
           </div>
-          {user?.role === 'recruiter' && (
-            <Button variant="primary" onClick={() => navigate('/sessions/create')} icon={<Plus className="w-4 h-4" />}>
-              Schedule Interview
+          <div className="flex items-center gap-3">
+            {user?.role === 'recruiter' && (
+              <Button variant="primary" onClick={() => navigate('/sessions/create')} icon={<Plus className="w-4 h-4" />}>
+                Schedule Interview
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={() => { logout(); navigate('/login'); }} icon={<LogOut className="w-4 h-4" />}>
+              Logout
             </Button>
-          )}
+          </div>
         </div>
       </header>
 

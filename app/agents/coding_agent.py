@@ -56,7 +56,7 @@ class CodingAgent(BaseAgent):
         
         flags = self._extract_flags(events, metrics)
         
-        insights = self._generate_insights(metrics, flags)
+        insights = await self._generate_insights(metrics, flags)
         
         return AgentOutput(
             agent_type=self.agent_type,
@@ -81,10 +81,10 @@ class CodingAgent(BaseAgent):
         )
         
         keystroke_events = [e for e in events if e.event_type == "keystroke"]
-        
-        code_quality = 75.0
-        problem_solving = 70.0
-        efficiency = 65.0
+
+        code_quality = self._compute_code_quality(events, execution_events)
+        problem_solving = self._compute_problem_solving(events, execution_events, successful_executions)
+        efficiency = self._compute_efficiency(events, execution_events, keystroke_events)
         
         return {
             "total_events": total_events,
@@ -94,6 +94,61 @@ class CodingAgent(BaseAgent):
             "problem_solving": problem_solving,
             "efficiency": efficiency
         }
+
+    def _compute_code_quality(self, events, execution_events) -> float:
+        """Compute code quality from snapshots and execution results."""
+        score = 50.0
+        snapshots = [e for e in events if e.code_snapshot]
+        if not snapshots:
+            return score
+        latest = snapshots[-1].code_snapshot or ""
+        lines = [l for l in latest.split("\n") if l.strip()]
+        if len(lines) > 3:
+            score += 10
+        has_functions = any("def " in l or "function " in l for l in lines)
+        if has_functions:
+            score += 15
+        blank_ratio = sum(1 for l in latest.split("\n") if not l.strip()) / max(len(latest.split("\n")), 1)
+        if 0.1 <= blank_ratio <= 0.4:
+            score += 5
+        if execution_events:
+            success_rate = sum(1 for e in execution_events if e.execution_error is None) / len(execution_events)
+            score += success_rate * 20
+        return min(100.0, max(0.0, score))
+
+    def _compute_problem_solving(self, events, execution_events, successful) -> float:
+        """Compute problem-solving score from iteration patterns."""
+        score = 50.0
+        snapshots = [e for e in events if e.code_snapshot]
+        if len(snapshots) >= 2:
+            score += 10
+        if len(snapshots) >= 5:
+            score += 5
+        if execution_events:
+            if len(execution_events) <= 10:
+                score += 10
+            if successful > 0:
+                score += 15
+            if successful >= 3:
+                score += 10
+        return min(100.0, max(0.0, score))
+
+    def _compute_efficiency(self, events, execution_events, keystroke_events) -> float:
+        """Compute efficiency score from execution-to-total-event ratio."""
+        score = 50.0
+        if not events:
+            return score
+        if execution_events:
+            ratio = len(execution_events) / len(events)
+            if 0.1 <= ratio <= 0.4:
+                score += 20
+            elif ratio < 0.1:
+                score += 5
+        if keystroke_events and len(keystroke_events) > 20:
+            score += 10
+        if len(events) > 30:
+            score += 10
+        return min(100.0, max(0.0, score))
     
     def _extract_flags(
         self,
@@ -119,7 +174,7 @@ class CodingAgent(BaseAgent):
         
         return flags
     
-    def _generate_insights(
+    async def _generate_insights(
         self,
         metrics: dict[str, float],
         flags: list[dict[str, Any]]
@@ -145,13 +200,12 @@ Provide a 2-3 sentence assessment of their coding skills.
         system_prompt = "You are an expert technical interviewer evaluating a candidate's coding ability."
         
         try:
-            import asyncio
-            insights = asyncio.run(ai_service.generate_completion(
+            insights = await ai_service.generate_completion(
                 prompt=prompt,
                 system_prompt=system_prompt,
                 temperature=0.3,
                 max_tokens=200
-            ))
+            )
             return insights.strip()
         except Exception as e:
             logger.warning(f"AI insights generation failed, using rule-based: {e}")

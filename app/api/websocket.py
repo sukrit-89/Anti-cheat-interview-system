@@ -1,18 +1,78 @@
 """
 WebSocket handlers for real-time session events.
+Authenticated via token query parameter.
 """
-from typing import Dict
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException
+from typing import Dict, Optional
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, and_
 
-from app.core.database import get_db
+from app.core.database import get_db, AsyncSessionLocal
 from app.core.logging import logger
-from app.models.models import Session
+from app.models.models import Session, Candidate
 from app.core.redis import redis_client
 from app.core.events import EventType, EventSubscriber
 
 router = APIRouter()
+
+async def authenticate_websocket(websocket: WebSocket, session_id: int) -> Optional[dict]:
+    """
+    Authenticate WebSocket connection using token query parameter.
+    Returns user dict or None if authentication fails.
+    """
+    token = websocket.query_params.get("token")
+    if not token:
+        await websocket.close(code=4001, reason="Missing authentication token")
+        return None
+
+    try:
+        from app.core.config import settings
+        if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_ROLE_KEY:
+            from supabase import create_client
+            supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+            user_response = supabase.auth.get_user(token)
+            if not user_response or not user_response.user:
+                await websocket.close(code=4003, reason="Invalid token")
+                return None
+            user = user_response.user
+            return {
+                "id": user.id,
+                "email": user.email,
+                "role": user.user_metadata.get("role", "candidate"),
+            }
+        else:
+            await websocket.close(code=4003, reason="Auth service unavailable")
+            return None
+    except Exception as e:
+        logger.error(f"WebSocket auth failed: {e}")
+        await websocket.close(code=4003, reason="Authentication failed")
+        return None
+
+async def verify_session_membership(user: dict, session_id: int) -> bool:
+    """Verify the authenticated user belongs to this session."""
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(
+            select(Session).where(Session.id == session_id)
+        )
+        session = result.scalar_one_or_none()
+        if not session:
+            return False
+
+        if user.get("role") == "recruiter" and str(session.recruiter_id) == str(user["id"]):
+            return True
+
+        result = await db.execute(
+            select(Candidate).where(
+                and_(
+                    Candidate.session_id == session_id,
+                    Candidate.user_id == str(user["id"])
+                )
+            )
+        )
+        if result.scalar_one_or_none():
+            return True
+
+    return False
 
 class ConnectionManager:
     """Manages WebSocket connections for real-time updates."""
@@ -70,13 +130,16 @@ async def websocket_endpoint(
 ):
     """
     WebSocket endpoint for real-time session updates.
-    
-    Streams:
-    - Coding events
-    - Speech transcriptions
-    - Vision metrics
-    - Session status changes
+    Requires ?token=<supabase_access_token> query parameter.
     """
+    user = await authenticate_websocket(websocket, session_id)
+    if not user:
+        return
+
+    if not await verify_session_membership(user, session_id):
+        await websocket.close(code=4003, reason="Not authorized for this session")
+        return
+
     await manager.connect(websocket, session_id)
     
     try:
@@ -113,12 +176,26 @@ async def live_monitoring_endpoint(
 ):
     """
     WebSocket endpoint for recruiter live monitoring dashboard.
-    
-    Provides aggregated real-time metrics:
-    - Candidate presence
-    - Activity levels
-    - Preliminary scores
+    Requires ?token=<supabase_access_token> query parameter.
+    Only accessible to the session's recruiter.
     """
+    user = await authenticate_websocket(websocket, session_id)
+    if not user:
+        return
+
+    if user.get("role") != "recruiter":
+        await websocket.close(code=4003, reason="Recruiter access required")
+        return
+
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(
+            select(Session).where(Session.id == session_id)
+        )
+        session = result.scalar_one_or_none()
+        if not session or str(session.recruiter_id) != str(user["id"]):
+            await websocket.close(code=4003, reason="Not authorized for this session")
+            return
+
     await manager.connect(websocket, session_id)
     
     try:

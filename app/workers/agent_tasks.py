@@ -211,22 +211,21 @@ def trigger_all_agents(self, session_id: int) -> None:
     """
     Trigger all agents to process a session.
     This is called when a session ends.
+    Uses a chord so the evaluation agent runs automatically
+    after all four analysis agents finish — no blocking get().
     """
     logger.info(f"Triggering all agents for session {session_id}")
     
-    from celery import group
+    from celery import chord
     
-    job = group(
-        process_coding_agent.s(session_id, {}),
-        process_speech_agent.s(session_id, {}),
-        process_vision_agent.s(session_id, {}),
-        process_reasoning_agent.s(session_id, {})
-    )
-    
-    result = job.apply_async()
-    
-    result.get()
-    
-    process_evaluation_agent.delay(session_id, {})
+    chord(
+        [
+            process_coding_agent.s(session_id, {}),
+            process_speech_agent.s(session_id, {}),
+            process_vision_agent.s(session_id, {}),
+            process_reasoning_agent.s(session_id, {}),
+        ],
+        process_evaluation_agent.si(session_id, {})
+    ).apply_async()
     
     logger.info(f"All agents dispatched for session {session_id}")

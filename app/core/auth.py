@@ -41,11 +41,16 @@ async def get_current_user(
         
         user = user_response.user
         
+        role = user.user_metadata.get("role", "candidate")
+        allowed_roles = {"recruiter", "candidate", "admin"}
+        if role not in allowed_roles:
+            role = "candidate"
+        
         return {
             "id": user.id,
             "email": user.email,
             "full_name": user.user_metadata.get("full_name"),
-            "role": user.user_metadata.get("role", "candidate"),
+            "role": role,
         }
         
     except Exception as e:

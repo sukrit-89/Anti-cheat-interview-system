@@ -78,18 +78,54 @@ class ReasoningAgent(BaseAgent):
             len(s.transcript.split())
             for s in speech_segments
         )
-        
-        logical_approach = 70.0
-        problem_decomposition = 65.0
-        explanation_quality = 75.0
-        adaptability = 70.0
-        
-        if execution_attempts > 0:
-            if execution_attempts > 10:
-                logical_approach = max(40.0, logical_approach - 20)
-        
+
+        successful_execs = sum(
+            1 for e in coding_events
+            if e.event_type == "execute" and e.execution_error is None
+        )
+
+        logical_approach = 50.0
+        if code_iterations > 0:
+            logical_approach += 10
+        if code_iterations >= 3:
+            logical_approach += 10
+        if execution_attempts > 0 and successful_execs / execution_attempts >= 0.5:
+            logical_approach += 15
+        if execution_attempts > 15:
+            logical_approach -= 15
+
+        problem_decomposition = 50.0
+        if code_iterations >= 2:
+            problem_decomposition += 15
+        if code_iterations >= 5:
+            problem_decomposition += 10
+        if execution_attempts > 0 and execution_attempts <= 10:
+            problem_decomposition += 10
+
+        explanation_quality = 50.0
+        if total_words > 100:
+            explanation_quality += 10
+        if total_words > 300:
+            explanation_quality += 10
         if total_words > 500:
-            explanation_quality = min(90.0, explanation_quality + 15)
+            explanation_quality += 15
+        if speech_segments:
+            avg_len = total_words / len(speech_segments)
+            if avg_len > 20:
+                explanation_quality += 10
+
+        adaptability = 50.0
+        if execution_attempts >= 2 and successful_execs > 0:
+            adaptability += 15
+        if code_iterations >= 3:
+            adaptability += 10
+        if total_words > 200:
+            adaptability += 10
+
+        logical_approach = min(100.0, max(0.0, logical_approach))
+        problem_decomposition = min(100.0, max(0.0, problem_decomposition))
+        explanation_quality = min(100.0, max(0.0, explanation_quality))
+        adaptability = min(100.0, max(0.0, adaptability))
         
         return {
             "code_iterations": code_iterations,

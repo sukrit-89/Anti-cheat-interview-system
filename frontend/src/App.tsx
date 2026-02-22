@@ -107,13 +107,13 @@ function App() {
           <Route path="/cookies" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/join" element={<SessionJoin />} />
+          <Route path="/join" element={<ProtectedRoute><SessionJoin /></ProtectedRoute>} />
           <Route
             path="/sessions/join"
             element={<ProtectedRoute><SessionJoin /></ProtectedRoute>}
           />
-          <Route path="/interview" element={<InterviewRoom />} />
-          <Route path="/sessions/:id/interview" element={<InterviewRoom />} />
+          <Route path="/interview" element={<ProtectedRoute><InterviewRoom /></ProtectedRoute>} />
+          <Route path="/sessions/:id/interview" element={<ProtectedRoute><InterviewRoom /></ProtectedRoute>} />
           <Route
             path="/dashboard"
             element={<ProtectedRoute><Dashboard /></ProtectedRoute>}

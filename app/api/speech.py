@@ -5,16 +5,41 @@ Handle audio transcription and speech analysis.
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, and_
 
 from app.core.database import get_db
 from app.core.auth import get_current_user
-from app.models.models import User, Session
+from app.models.models import User, Session, Candidate
 from app.services.speech_service import speech_service
 from app.core.logging import logger
 from app.core.events import EventPublisher, Event, EventType
 
 router = APIRouter(prefix="/speech", tags=["Speech"])
+
+
+async def verify_session_participant(session_id: int, current_user: dict, db: AsyncSession) -> Session:
+    """Verify user is a participant (recruiter or enrolled candidate) of the session."""
+    result = await db.execute(select(Session).where(Session.id == session_id))
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+
+    user_id = current_user.get("id") or current_user.get("sub")
+    role = current_user.get("role", "candidate")
+
+    if role == "recruiter":
+        if str(session.recruiter_id) != str(user_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorised for this session")
+    else:
+        candidate = await db.execute(
+            select(Candidate).where(
+                and_(Candidate.session_id == session_id, Candidate.user_id == str(user_id))
+            )
+        )
+        if not candidate.scalar_one_or_none():
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enrolled in this session")
+
+    return session
 
 @router.post("/transcribe")
 async def transcribe_audio(
@@ -30,16 +55,7 @@ async def transcribe_audio(
     Accepts audio file upload and returns transcription.
     """
     
-    result = await db.execute(
-        select(Session).where(Session.id == session_id)
-    )
-    session = result.scalar_one_or_none()
-    
-    if not session:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Session not found"
-        )
+    await verify_session_participant(session_id, current_user, db)
     
     try:
         audio_bytes = await audio.read()
@@ -98,16 +114,7 @@ async def analyze_speech(
         duration: Audio duration in seconds
     """
     
-    result = await db.execute(
-        select(Session).where(Session.id == session_id)
-    )
-    session = result.scalar_one_or_none()
-    
-    if not session:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Session not found"
-        )
+    await verify_session_participant(session_id, current_user, db)
     
     analysis = await speech_service.analyze_speech_quality(
         transcription=transcription,
