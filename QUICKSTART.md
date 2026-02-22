@@ -30,8 +30,6 @@ LIVEKIT_API_KEY=APIxxxxx
 LIVEKIT_API_SECRET=xxxxx
 LIVEKIT_WS_URL=wss://xxxx.livekit.cloud
 
-JWT_SECRET_KEY=change-me-to-at-least-32-characters
-
 # ── Optional (sensible defaults exist) ────────
 OPENAI_API_KEY=sk-...              # AI evaluation (or use Ollama)
 JUDGE0_API_URL=http://localhost:2358  # code execution

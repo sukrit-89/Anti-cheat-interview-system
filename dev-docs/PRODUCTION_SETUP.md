@@ -213,9 +213,6 @@ ssl/
 
 ### **Environment Security**
 ```bash
-# Generate secure secrets
-JWT_SECRET_KEY=$(openssl rand -hex 32)
-
 # Use HTTPS only
 CORS_ORIGINS=https://yourdomain.com
 

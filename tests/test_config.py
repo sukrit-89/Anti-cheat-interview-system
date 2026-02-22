@@ -7,11 +7,6 @@ from app.core.config import settings
 class TestConfiguration:
     """Test application configuration."""
     
-    def test_jwt_secret_configured(self):
-        """Test JWT secret is configured."""
-        assert settings.JWT_SECRET_KEY is not None
-        assert len(settings.JWT_SECRET_KEY) > 0
-    
     def test_database_url_configured(self):
         """Test database URL is configured."""
         assert settings.POSTGRES_HOST is not None
@@ -32,11 +27,6 @@ class TestConfiguration:
         """Test environment-specific settings."""
         assert settings.ENVIRONMENT in ["development", "staging", "production"]
         assert isinstance(settings.DEBUG, bool)
-    
-    def test_jwt_token_expiry(self):
-        """Test JWT token expiration settings."""
-        assert settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES > 0
-        assert settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS > 0
     
     def test_storage_configuration(self):
         """Test storage configuration."""

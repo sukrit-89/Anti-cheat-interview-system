@@ -129,7 +129,6 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...
 LIVEKIT_API_KEY=APIxxxxx
 LIVEKIT_API_SECRET=xxxxx
 LIVEKIT_WS_URL=wss://xxxx.livekit.cloud
-JWT_SECRET_KEY=change-me-to-at-least-32-characters
 ```
 
 ### 2. Launch everything
@@ -324,7 +323,6 @@ python reset_all.py          # full reset — all auth users + all data
 | `LIVEKIT_API_KEY` | ✅ | — | LiveKit API key |
 | `LIVEKIT_API_SECRET` | ✅ | — | LiveKit API secret |
 | `LIVEKIT_WS_URL` | ✅ | — | LiveKit WebSocket URL |
-| `JWT_SECRET_KEY` | ✅ | — | Min 32-char secret for tokens |
 | `OPENAI_API_KEY` | — | — | GPT-4 for AI agents |
 | `ANTHROPIC_API_KEY` | — | — | Claude fallback |
 | `JUDGE0_API_URL` | — | — | Judge0 base URL |

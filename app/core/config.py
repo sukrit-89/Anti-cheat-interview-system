@@ -30,11 +30,6 @@ class Settings(BaseSettings):
     SUPABASE_ANON_KEY: Optional[str] = None
     SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
     
-    JWT_SECRET_KEY: str
-    JWT_ALGORITHM: str = "HS256"
-    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
-    
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0

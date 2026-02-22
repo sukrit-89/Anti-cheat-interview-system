@@ -54,8 +54,6 @@ services:
       REDIS_PORT: 6379
       REDIS_DB: 0
       
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-      
       LIVEKIT_API_KEY: ${LIVEKIT_API_KEY}
       LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET}
       LIVEKIT_WS_URL: ${LIVEKIT_WS_URL}
@@ -94,7 +92,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-interview_platform}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     
@@ -119,7 +116,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-interview_platform}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     
     depends_on:
       - postgres
@@ -142,7 +138,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-interview_platform}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     
     depends_on:
       - postgres

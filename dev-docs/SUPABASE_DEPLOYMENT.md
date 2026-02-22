@@ -46,7 +46,6 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
 USE_SUPABASE=True
 
 # Keep existing config
-JWT_SECRET_KEY=your-jwt-secret
 APP_NAME=Neeti AI
 ENVIRONMENT=production
 ```
@@ -205,9 +204,6 @@ docker-compose -f docker-compose.prod.yml up -d --scale worker=3
 
 ### Environment Security
 ```bash
-# Generate secure secrets
-JWT_SECRET_KEY=$(openssl rand -hex 32)
-
 # Use HTTPS only
 CORS_ORIGINS=https://your-domain.com
 
