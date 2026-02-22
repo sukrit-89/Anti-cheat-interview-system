@@ -17,10 +17,21 @@ from app.core.logging import logger
 Base = declarative_base()
 
 def get_database_url() -> str:
-    """Get the database connection URL."""
+    """Get the database connection URL.
+    
+    Handles various DATABASE_URL formats from cloud providers
+    (Railway, Supabase, Heroku) and converts them to asyncpg format.
+    """
     import os
     db_url = os.getenv("DATABASE_URL")
     if db_url:
+        # Convert postgres:// or postgresql:// to postgresql+asyncpg://
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif db_url.startswith("postgresql://"):
+            db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        elif not db_url.startswith("postgresql+asyncpg://"):
+            db_url = f"postgresql+asyncpg://{db_url}"
         return db_url
     
     postgres_user = os.getenv("POSTGRES_USER", "interview_user")

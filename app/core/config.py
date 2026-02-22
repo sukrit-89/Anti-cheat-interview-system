@@ -34,9 +34,13 @@ class Settings(BaseSettings):
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
     REDIS_PASSWORD: Optional[str] = None
+    REDIS_URL: Optional[str] = None
     
     @property
     def redis_url(self) -> str:
+        """Support REDIS_URL env var (Railway/Render) or construct from parts."""
+        if self.REDIS_URL:
+            return self.REDIS_URL
         if self.REDIS_PASSWORD:
             return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
@@ -49,6 +53,9 @@ class Settings(BaseSettings):
     def set_celery_broker(cls, v: Optional[str], info) -> str:
         if v:
             return v
+        redis_url = info.data.get("REDIS_URL")
+        if redis_url:
+            return redis_url
         redis_host = info.data.get("REDIS_HOST", "localhost")
         redis_port = info.data.get("REDIS_PORT", 6379)
         redis_db = info.data.get("REDIS_DB", 0)
@@ -63,6 +70,9 @@ class Settings(BaseSettings):
     def set_celery_backend(cls, v: Optional[str], info) -> str:
         if v:
             return v
+        redis_url = info.data.get("REDIS_URL")
+        if redis_url:
+            return redis_url
         redis_host = info.data.get("REDIS_HOST", "localhost")
         redis_port = info.data.get("REDIS_PORT", 6379)
         redis_db = info.data.get("REDIS_DB", 0)
