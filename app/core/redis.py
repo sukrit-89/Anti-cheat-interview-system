@@ -18,13 +18,19 @@ class RedisClient:
     
     async def connect(self):
         """Initialize Redis connection pool."""
-        self.pool = ConnectionPool.from_url(
-            settings.redis_url,
-            decode_responses=True,
-            max_connections=50
-        )
-        self.client = Redis(connection_pool=self.pool)
-        logger.info("Redis connected")
+        try:
+            self.pool = ConnectionPool.from_url(
+                settings.redis_url,
+                decode_responses=True,
+                max_connections=50
+            )
+            self.client = Redis(connection_pool=self.pool)
+            await self.client.ping()
+            logger.info("Redis connected")
+        except Exception as e:
+            logger.warning(f"Redis connection failed (non-fatal): {e}")
+            self.client = None
+            self.pool = None
     
     async def disconnect(self):
         """Close Redis connections."""

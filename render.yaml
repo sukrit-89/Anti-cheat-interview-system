@@ -5,6 +5,7 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
+    plan: free
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.7"
@@ -22,6 +23,10 @@ services:
         value: "True"
       - key: LOG_LEVEL
         value: INFO
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_ANON_KEY
@@ -34,26 +39,5 @@ services:
         sync: false
       - key: LIVEKIT_API_SECRET
         sync: false
-      - key: DATABASE_URL
-        fromDatabase:
-          name: neeti-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          name: neeti-redis
-          type: redis
-          property: connectionString
       - key: CORS_ORIGINS
         sync: false
-
-  - type: redis
-    name: neeti-redis
-    plan: free
-    maxmemoryPolicy: allkeys-lru
-    ipAllowList: []
-
-databases:
-  - name: neeti-db
-    plan: free
-    databaseName: neeti_ai
-    user: neeti_user
