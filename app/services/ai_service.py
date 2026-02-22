@@ -1,7 +1,8 @@
 """
 AI Service - Unified interface for LLM providers
-Supports: OpenAI (paid), Ollama (free, local), rule-based fallback
+Supports: OpenAI (paid), Ollama (free, local)
 """
+import json
 import httpx
 from typing import Optional
 from app.core.config import settings
@@ -14,7 +15,8 @@ class AIService:
     Multi-provider AI service with automatic fallback:
     1. OpenAI (if API key provided)
     2. Ollama (if enabled, 100% free)
-    3. Rule-based responses (always free)
+    
+    No rule-based fallback — requires at least one LLM provider.
     """
     
     def __init__(self):
@@ -28,38 +30,52 @@ class AIService:
         
         if self.ollama_available:
             self.ollama_url = settings.OLLAMA_BASE_URL
-            logger.info(f"Ollama configured: {self.ollama_url}")
+            self.ollama_model = settings.OLLAMA_MODEL
+            logger.info(f"Ollama configured: {self.ollama_url} model={self.ollama_model}")
+        
+        if not self.openai_available and not self.ollama_available:
+            logger.warning("No AI provider configured! Set OPENAI_API_KEY or USE_OLLAMA=True")
     
     async def generate_completion(
         self, 
         prompt: str, 
         system_prompt: Optional[str] = None,
         temperature: float = 0.7,
-        max_tokens: int = 500
+        max_tokens: int = 1024,
+        json_mode: bool = False,
     ) -> str:
         """
-        Generate AI completion with automatic provider fallback
+        Generate AI completion with automatic provider fallback.
+        Raises RuntimeError if no provider is available.
         """
+        last_error: Optional[Exception] = None
+        
         if self.openai_available:
             try:
-                return await self._openai_completion(prompt, system_prompt, temperature, max_tokens)
+                return await self._openai_completion(prompt, system_prompt, temperature, max_tokens, json_mode)
             except Exception as e:
-                logger.warning(f"OpenAI failed, trying fallback: {e}")
+                logger.warning(f"OpenAI failed, trying Ollama: {e}")
+                last_error = e
         
         if self.ollama_available:
             try:
-                return await self._ollama_completion(prompt, system_prompt, temperature, max_tokens)
+                return await self._ollama_completion(prompt, system_prompt, temperature, max_tokens, json_mode)
             except Exception as e:
-                logger.warning(f"Ollama failed, using rule-based: {e}")
+                logger.error(f"Ollama failed: {e}")
+                last_error = e
         
-        return self._rule_based_completion(prompt)
+        raise RuntimeError(
+            f"All AI providers failed. Last error: {last_error}. "
+            "Ensure Ollama is running and a model is pulled."
+        )
     
     async def _openai_completion(
         self, 
         prompt: str, 
         system_prompt: Optional[str],
         temperature: float,
-        max_tokens: int
+        max_tokens: int,
+        json_mode: bool = False,
     ) -> str:
         """Call OpenAI API"""
         messages = []
@@ -67,13 +83,16 @@ class AIService:
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": prompt})
         
-        response = self.openai_client.chat.completions.create(
-            model="gpt-3.5-turbo",
+        kwargs = dict(
+            model="gpt-4o-mini",
             messages=messages,
             temperature=temperature,
-            max_tokens=max_tokens
+            max_tokens=max_tokens,
         )
+        if json_mode:
+            kwargs["response_format"] = {"type": "json_object"}
         
+        response = self.openai_client.chat.completions.create(**kwargs)
         return response.choices[0].message.content
     
     async def _ollama_completion(
@@ -81,85 +100,35 @@ class AIService:
         prompt: str, 
         system_prompt: Optional[str],
         temperature: float,
-        max_tokens: int
+        max_tokens: int,
+        json_mode: bool = False,
     ) -> str:
-        """Call Ollama API (free, local)"""
-        full_prompt = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
+        """Call Ollama chat API (free, local)"""
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+        
+        payload = {
+            "model": self.ollama_model,
+            "messages": messages,
+            "stream": False,
+            "options": {
+                "temperature": temperature,
+                "num_predict": max_tokens,
+            }
+        }
+        if json_mode:
+            payload["format"] = "json"
         
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                f"{self.ollama_url}/api/generate",
-                json={
-                    "model": settings.OLLAMA_MODEL,
-                    "prompt": full_prompt,
-                    "stream": False,
-                    "options": {
-                        "temperature": temperature,
-                        "num_predict": max_tokens
-                    }
-                },
-                timeout=60.0
+                f"{self.ollama_url}/api/chat",
+                json=payload,
+                timeout=120.0,
             )
             response.raise_for_status()
             result = response.json()
-            return result.get("response", "")
-    
-    def _rule_based_completion(self, prompt: str) -> str:
-        """
-        Rule-based fallback (100% free, no API needed)
-        Returns template-based responses
-        """
-        prompt_lower = prompt.lower()
-        
-        if "code quality" in prompt_lower or "code review" in prompt_lower:
-            return """
-Code Quality Analysis:
-- Syntax: Valid
-- Structure: Acceptable
-- Best Practices: Review recommended
-- Performance: Standard
-
-Recommendations:
-- Add error handling
-- Include documentation
-- Consider edge cases
-"""
-        
-        elif "communication" in prompt_lower or "speech" in prompt_lower:
-            return """
-Communication Assessment:
-- Clarity: Good
-- Technical Vocabulary: Adequate
-- Fluency: Acceptable
-- Confidence: Moderate
-
-Suggestions:
-- Provide more structured explanations
-- Use industry-standard terminology
-- Reduce filler words
-"""
-        
-        elif "reasoning" in prompt_lower or "problem solving" in prompt_lower:
-            return """
-Reasoning Evaluation:
-- Logical Approach: Sound
-- Problem Decomposition: Adequate
-- Solution Strategy: Acceptable
-- Adaptability: Moderate
-
-Notes:
-- Demonstrates basic problem-solving skills
-- Could improve systematic approach
-- Shows potential for growth
-"""
-        
-        else:
-            return """
-Analysis completed using rule-based evaluation.
-For enhanced AI-powered insights, configure OpenAI or Ollama.
-
-Current assessment: Meets baseline requirements.
-Consider deeper evaluation with AI models for production use.
-"""
+            return result.get("message", {}).get("content", "")
 
 ai_service = AIService()

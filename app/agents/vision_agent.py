@@ -9,6 +9,7 @@ from app.agents.base import BaseAgent, AgentInput, AgentOutput
 from app.models.models import VisionMetric
 from app.core.database import AsyncSessionLocal
 from app.core.logging import logger
+from app.services.ai_service import ai_service
 
 class VisionAgent(BaseAgent):
     """
@@ -53,7 +54,7 @@ class VisionAgent(BaseAgent):
         
         flags = self._extract_flags(metrics_list, metrics)
         
-        insights = self._generate_insights(metrics, flags)
+        insights = await self._generate_insights(metrics, flags)
         
         return AgentOutput(
             agent_type=self.agent_type,
@@ -137,22 +138,41 @@ class VisionAgent(BaseAgent):
         
         return flags
     
-    def _generate_insights(
+    async def _generate_insights(
         self,
         metrics: dict[str, float],
         flags: list[dict[str, Any]]
     ) -> str:
-        """Generate natural language insights."""
-        insights = []
+        """Generate natural language insights using AI."""
+        prompt = f"""Analyze this candidate's visual engagement during a technical interview:
+
+Metrics:
+- Total vision samples: {metrics['total_metrics']}
+- Gaze tracking samples: {metrics['gaze_samples']}
+- Emotion samples: {metrics['emotion_samples']}
+- Presence samples: {metrics['presence_samples']}
+- Engagement score: {metrics['engagement']:.1f}/100
+- Attention score: {metrics['attention']:.1f}/100
+- Presence score: {metrics['presence']:.1f}/100
+
+Flags: {len(flags)} issues detected
+{chr(10).join(f"- {flag['message']}" for flag in flags) if flags else "- None"}
+
+Provide a 2-3 sentence assessment of their engagement and attentiveness."""
         
-        if metrics["engagement"] > 80:
-            insights.append("High visual engagement throughout the session.")
-        elif metrics["engagement"] > 60:
-            insights.append("Moderate visual engagement.")
-        else:
-            insights.append("Low visual engagement - candidate may be distracted.")
+        system_prompt = "You are an expert interviewer evaluating a candidate's visual engagement. Be concise and specific."
         
-        if metrics["presence"] > 95:
-            insights.append("Consistent camera presence.")
-        
-        return " ".join(insights)
+        try:
+            return (await ai_service.generate_completion(
+                prompt=prompt,
+                system_prompt=system_prompt,
+                temperature=0.3,
+                max_tokens=250,
+            )).strip()
+        except Exception as e:
+            logger.warning(f"AI insights failed for vision agent: {e}")
+            if metrics["engagement"] > 80:
+                return "High visual engagement throughout the session."
+            elif metrics["engagement"] > 60:
+                return "Moderate visual engagement."
+            return "Low visual engagement - candidate may be distracted."

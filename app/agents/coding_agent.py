@@ -1,6 +1,6 @@
 """
 Coding Agent - Analyzes coding behavior and problem-solving skills.
-Uses: AI Service (OpenAI/Ollama) or rule-based fallback.
+Uses: AI Service (OpenAI/Ollama).
 """
 from typing import Any
 from sqlalchemy import select
@@ -179,7 +179,7 @@ class CodingAgent(BaseAgent):
         metrics: dict[str, float],
         flags: list[dict[str, Any]]
     ) -> str:
-        """Generate natural language insights using AI or rule-based fallback."""
+        """Generate natural language insights using AI."""
         prompt = f"""
 Analyze this candidate's coding performance:
 
@@ -204,29 +204,13 @@ Provide a 2-3 sentence assessment of their coding skills.
                 prompt=prompt,
                 system_prompt=system_prompt,
                 temperature=0.3,
-                max_tokens=200
+                max_tokens=250
             )
             return insights.strip()
         except Exception as e:
-            logger.warning(f"AI insights generation failed, using rule-based: {e}")
-            return self._fallback_insights(metrics, flags)
-    
-    def _fallback_insights(
-        self,
-        metrics: dict[str, float],
-        flags: list[dict[str, Any]]
-    ) -> str:
-        """Rule-based insights fallback."""
-        insights = []
-        
-        if metrics["execution_success_rate"] > 80:
-            insights.append("Strong code execution success rate.")
-        elif metrics["execution_success_rate"] > 50:
-            insights.append("Moderate code execution success rate.")
-        else:
-            insights.append("Low code execution success - may need more practice.")
-        
-        if metrics["code_quality"] > 80:
-            insights.append("High code quality observed.")
-        
-        return " ".join(insights)
+            logger.warning(f"AI insights generation failed: {e}")
+            if metrics["execution_success_rate"] > 80:
+                return "Strong code execution success rate."
+            elif metrics["execution_success_rate"] > 50:
+                return "Moderate code execution success rate."
+            return "Low code execution success - may need more practice."

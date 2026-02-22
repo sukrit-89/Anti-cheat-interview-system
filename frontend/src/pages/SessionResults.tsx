@@ -121,7 +121,7 @@ export default function SessionResults() {
             <FileText className="w-5 h-5 text-bronze" />
             <div>
               <h1 className="text-base font-display font-semibold text-ink-primary">Evaluation Report</h1>
-              <p className="text-[10px] text-ink-ghost">{currentSession.title} · {currentSession.join_code}</p>
+              <p className="text-[10px] text-ink-ghost">{currentSession?.title} · {currentSession?.join_code}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">

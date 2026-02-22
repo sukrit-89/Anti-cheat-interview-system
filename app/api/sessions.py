@@ -423,6 +423,11 @@ async def end_session(
     
     await publish_session_end_event(session_id, session)
     
+    # Trigger agent processing pipeline via Celery
+    from app.workers.session_tasks import handle_session_ended
+    handle_session_ended.delay(session_id)
+    logger.info(f"Agent processing triggered for session {session_id}")
+    
     return session
 
 @router.get("/{session_id}/candidates", response_model=List[CandidateResponse])

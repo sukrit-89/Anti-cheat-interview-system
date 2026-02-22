@@ -9,6 +9,7 @@ from app.agents.base import BaseAgent, AgentInput, AgentOutput
 from app.models.models import AgentOutput as AgentOutputModel, AgentType
 from app.core.database import AsyncSessionLocal
 from app.core.logging import logger
+from app.services.ai_service import ai_service
 
 class EvaluationAgent(BaseAgent):
     """
@@ -49,7 +50,7 @@ class EvaluationAgent(BaseAgent):
         
         findings = self._extract_key_findings(agent_outputs, evaluation)
         
-        insights = self._generate_comprehensive_insights(evaluation, recommendation)
+        insights = await self._generate_comprehensive_insights(evaluation, recommendation, agent_outputs)
         
         return AgentOutput(
             agent_type=self.agent_type,
@@ -154,30 +155,54 @@ class EvaluationAgent(BaseAgent):
             "weaknesses": weaknesses
         }
     
-    def _generate_comprehensive_insights(
+    async def _generate_comprehensive_insights(
         self,
         evaluation: dict[str, Any],
-        recommendation: dict[str, Any]
+        recommendation: dict[str, Any],
+        agent_outputs: list[AgentOutputModel],
     ) -> str:
-        """Generate comprehensive natural language insights."""
+        """Generate comprehensive natural language insights using AI."""
         
-        insights = []
+        agent_summaries = []
+        for output in agent_outputs:
+            agent_summaries.append(
+                f"- {output.agent_type.value}: score={output.score}, insights={output.insights}"
+            )
         
-        score = evaluation["overall_score"]
-        insights.append(
-            f"Overall performance score: {score:.1f}/100. "
-            f"Recommendation: {recommendation['recommendation'].upper()}."
+        prompt = f"""Generate a comprehensive interview evaluation report.
+
+Overall Score: {evaluation['overall_score']:.1f}/100
+Recommendation: {recommendation['recommendation'].upper()}
+Confidence: {recommendation['confidence']:.0%}
+
+Scores:
+- Coding: {evaluation.get('coding_score', 'N/A')}
+- Communication: {evaluation.get('communication_score', 'N/A')}
+- Reasoning: {evaluation.get('reasoning_score', 'N/A')}
+- Engagement: {evaluation.get('engagement_score', 'N/A')}
+
+Agent Analyses:
+{chr(10).join(agent_summaries)}
+
+Write a 4-6 sentence professional evaluation summary covering strengths, weaknesses, and the hiring recommendation with reasoning."""
+        
+        system_prompt = (
+            "You are a senior technical hiring manager writing a final evaluation report. "
+            "Be professional, balanced, and data-driven."
         )
         
-        if evaluation.get("coding_score"):
-            insights.append(f"Coding: {evaluation['coding_score']:.1f}/100.")
-        if evaluation.get("communication_score"):
-            insights.append(f"Communication: {evaluation['communication_score']:.1f}/100.")
-        if evaluation.get("reasoning_score"):
-            insights.append(f"Reasoning: {evaluation['reasoning_score']:.1f}/100.")
-        if evaluation.get("engagement_score"):
-            insights.append(f"Engagement: {evaluation['engagement_score']:.1f}/100.")
-        
-        insights.append(recommendation["reasoning"])
-        
-        return " ".join(insights)
+        try:
+            return (await ai_service.generate_completion(
+                prompt=prompt,
+                system_prompt=system_prompt,
+                temperature=0.3,
+                max_tokens=400,
+            )).strip()
+        except Exception as e:
+            logger.warning(f"AI insights failed for evaluation agent: {e}")
+            parts = [
+                f"Overall performance score: {evaluation['overall_score']:.1f}/100.",
+                f"Recommendation: {recommendation['recommendation'].upper()}.",
+                recommendation["reasoning"],
+            ]
+            return " ".join(parts)

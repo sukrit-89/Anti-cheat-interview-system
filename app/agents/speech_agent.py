@@ -9,6 +9,7 @@ from app.agents.base import BaseAgent, AgentInput, AgentOutput
 from app.models.models import SpeechSegment
 from app.core.database import AsyncSessionLocal
 from app.core.logging import logger
+from app.services.ai_service import ai_service
 
 class SpeechAgent(BaseAgent):
     """
@@ -54,7 +55,7 @@ class SpeechAgent(BaseAgent):
         
         flags = self._extract_flags(segments, metrics)
         
-        insights = self._generate_insights(metrics, flags)
+        insights = await self._generate_insights(metrics, flags)
         
         return AgentOutput(
             agent_type=self.agent_type,
@@ -159,23 +160,45 @@ class SpeechAgent(BaseAgent):
         
         return flags
     
-    def _generate_insights(
+    async def _generate_insights(
         self,
         metrics: dict[str, float],
         flags: list[dict[str, Any]]
     ) -> str:
-        """Generate natural language insights."""
-        insights = []
+        """Generate natural language insights using AI."""
+        prompt = f"""Analyze this candidate's communication during a technical interview:
+
+Metrics:
+- Total speech segments: {metrics['total_segments']}
+- Total duration: {metrics['total_duration']:.1f}s
+- Word count: {metrics['word_count']}
+- Speaking pace: {metrics['words_per_minute']:.0f} words/min
+- Clarity score: {metrics['clarity']:.1f}/100
+- Technical depth: {metrics['technical_depth']:.1f}/100
+- Fluency: {metrics['fluency']:.1f}/100
+- Confidence: {metrics['confidence']:.1f}/100
+
+Flags: {len(flags)} issues detected
+{chr(10).join(f"- {flag['message']}" for flag in flags) if flags else "- None"}
+
+Provide a 2-3 sentence assessment of their communication skills."""
         
-        if metrics["clarity"] > 80:
-            insights.append("Clear and articulate communication.")
-        elif metrics["clarity"] > 60:
-            insights.append("Generally clear communication with some unclear moments.")
-        else:
-            insights.append("Communication clarity could be improved.")
+        system_prompt = "You are an expert interviewer evaluating a candidate's communication ability. Be concise and specific."
         
-        wpm = metrics["words_per_minute"]
-        if 120 <= wpm <= 180:
-            insights.append("Good speaking pace.")
-        
-        return " ".join(insights)
+        try:
+            return (await ai_service.generate_completion(
+                prompt=prompt,
+                system_prompt=system_prompt,
+                temperature=0.3,
+                max_tokens=250,
+            )).strip()
+        except Exception as e:
+            logger.warning(f"AI insights failed for speech agent: {e}")
+            parts = []
+            if metrics["clarity"] > 80:
+                parts.append("Clear and articulate communication.")
+            elif metrics["clarity"] > 60:
+                parts.append("Generally clear communication.")
+            else:
+                parts.append("Communication clarity could be improved.")
+            return " ".join(parts)

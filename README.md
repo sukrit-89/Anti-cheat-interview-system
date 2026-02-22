@@ -48,6 +48,39 @@ Most interview platforms force a choice between **live interaction** and **AI an
 
 ---
 
+## 📸 Demo
+
+<table>
+<tr>
+<td align="center" width="50%">
+<img src="Demo/Landing-page.png" alt="Landing Page" width="100%" />
+<br /><b>Landing Page</b>
+</td>
+<td align="center" width="50%">
+<img src="Demo/session-create.png" alt="Create Session" width="100%" />
+<br /><b>Session Creation</b>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<img src="Demo/join-session.png" alt="Join Session" width="100%" />
+<br /><b>Candidate Join (6-char code)</b>
+</td>
+<td align="center" width="50%">
+<img src="Demo/interview-conduction.png" alt="Interview Conduction" width="100%" />
+<br /><b>Live Interview Session</b>
+</td>
+</tr>
+<tr>
+<td align="center" colspan="2">
+<img src="Demo/neeti-docs.png" alt="Documentation" width="70%" />
+<br /><b>Comprehensive Documentation</b>
+</td>
+</tr>
+</table>
+
+---
+
 ## ✨ Features
 
 <table>
@@ -99,7 +132,7 @@ Five specialized agents run in parallel:
 <tr><td><b>Auth</b></td><td>Supabase Auth (JWT with refresh rotation)</td></tr>
 <tr><td><b>Video</b></td><td>LiveKit Cloud (WebRTC SFU)</td></tr>
 <tr><td><b>Code Exec</b></td><td>Judge0 (sandboxed, 50+ languages)</td></tr>
-<tr><td><b>AI</b></td><td>OpenAI GPT-4 → Ollama (local) → rule-based fallback</td></tr>
+<tr><td><b>AI</b></td><td>Ollama (llama3, local) · OpenAI GPT-4o-mini (optional)</td></tr>
 <tr><td><b>Infra</b></td><td>Docker Compose · Nginx · MinIO (S3-compatible)</td></tr>
 </table>
 

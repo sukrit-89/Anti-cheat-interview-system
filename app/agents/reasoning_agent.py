@@ -9,6 +9,7 @@ from app.agents.base import BaseAgent, AgentInput, AgentOutput
 from app.models.models import CodingEvent, SpeechSegment
 from app.core.database import AsyncSessionLocal
 from app.core.logging import logger
+from app.services.ai_service import ai_service
 
 class ReasoningAgent(BaseAgent):
     """
@@ -53,7 +54,7 @@ class ReasoningAgent(BaseAgent):
         
         flags = self._extract_flags(metrics)
         
-        insights = self._generate_insights(metrics, flags)
+        insights = await self._generate_insights(metrics, flags)
         
         return AgentOutput(
             agent_type=self.agent_type,
@@ -164,25 +165,41 @@ class ReasoningAgent(BaseAgent):
         
         return flags
     
-    def _generate_insights(
+    async def _generate_insights(
         self,
         metrics: dict[str, float],
         flags: list[dict[str, Any]]
     ) -> str:
-        """Generate natural language insights."""
-        insights = []
+        """Generate natural language insights using AI."""
+        prompt = f"""Analyze this candidate's problem-solving and reasoning during a technical interview:
+
+Metrics:
+- Code iterations: {metrics['code_iterations']}
+- Execution attempts: {metrics['execution_attempts']}
+- Total words spoken: {metrics['total_words']}
+- Logical approach score: {metrics['logical_approach']:.1f}/100
+- Problem decomposition score: {metrics['problem_decomposition']:.1f}/100
+- Explanation quality score: {metrics['explanation_quality']:.1f}/100
+- Adaptability score: {metrics['adaptability']:.1f}/100
+
+Flags: {len(flags)} issues detected
+{chr(10).join(f"- {flag['message']}" for flag in flags) if flags else "- None"}
+
+Provide a 2-3 sentence assessment of their reasoning and problem-solving ability."""
         
-        if metrics["logical_approach"] > 80:
-            insights.append("Strong systematic problem-solving approach.")
-        elif metrics["logical_approach"] > 60:
-            insights.append("Reasonable problem-solving approach with room for improvement.")
-        else:
-            insights.append("Problem-solving approach needs improvement.")
+        system_prompt = "You are an expert technical interviewer evaluating a candidate's reasoning ability. Be concise and specific."
         
-        if metrics["explanation_quality"] > 80:
-            insights.append("Excellent verbal explanation of reasoning.")
-        
-        if metrics["execution_attempts"] <= 5:
-            insights.append("Efficient code execution - minimal trial and error.")
-        
-        return " ".join(insights)
+        try:
+            return (await ai_service.generate_completion(
+                prompt=prompt,
+                system_prompt=system_prompt,
+                temperature=0.3,
+                max_tokens=250,
+            )).strip()
+        except Exception as e:
+            logger.warning(f"AI insights failed for reasoning agent: {e}")
+            if metrics["logical_approach"] > 80:
+                return "Strong systematic problem-solving approach."
+            elif metrics["logical_approach"] > 60:
+                return "Reasonable problem-solving approach with room for improvement."
+            return "Problem-solving approach needs improvement."

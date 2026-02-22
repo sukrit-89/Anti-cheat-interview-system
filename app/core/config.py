@@ -87,7 +87,7 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: Optional[str] = None
     USE_OLLAMA: bool = False
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    OLLAMA_MODEL: str = "llama2"
+    OLLAMA_MODEL: str = "llama3"
     WHISPER_MODEL: str = "tiny"
     USE_LOCAL_WHISPER: bool = True
     
