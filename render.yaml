@@ -1,0 +1,59 @@
+services:
+  - type: web
+    name: neeti-ai-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.7"
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "False"
+      - key: USE_SUPABASE
+        value: "True"
+      - key: USE_OLLAMA
+        value: "False"
+      - key: USE_LOCAL_WHISPER
+        value: "False"
+      - key: USE_LOCAL_STORAGE
+        value: "True"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: LIVEKIT_WS_URL
+        sync: false
+      - key: LIVEKIT_API_KEY
+        sync: false
+      - key: LIVEKIT_API_SECRET
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: neeti-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: neeti-redis
+          type: redis
+          property: connectionString
+      - key: CORS_ORIGINS
+        sync: false
+
+  - type: redis
+    name: neeti-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
+
+databases:
+  - name: neeti-db
+    plan: free
+    databaseName: neeti_ai
+    user: neeti_user
